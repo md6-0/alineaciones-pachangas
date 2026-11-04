@@ -1,6 +1,6 @@
 # ⚽ Alineador pachangas
 
-La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos lo más igualados posible y tú colocas a cada uno en su sitio arrastrando los imanes. Se acabaron los "¿hacemos pares y nones?" y los equipos descompensados de 10-2.
+La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos lo más igualados posible y tú colocas a cada uno en su sitio arrastrando los imanes.
 
 Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
 
