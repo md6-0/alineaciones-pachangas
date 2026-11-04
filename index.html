@@ -50,7 +50,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px -18px rgba(0,0,0,.55)}
 .board.over{box-shadow:0 0 0 2px var(--gk),0 18px 40px -18px rgba(0,0,0,.55)}
 .board svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.board .tag{position:absolute;right:5.5%;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-soft);pointer-events:none}
+.board .tag-top{top:4.5%}.board .tag-bot{bottom:4.5%}
+.board .tag{position:absolute;right:6.5%;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-soft);pointer-events:none}
 
 .mag{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;
   touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;z-index:2}
@@ -713,7 +714,7 @@ function render(){
     :n>need?`Sobra${n-need>1?'n':''} ${n-need} para ${st.mode} vs ${st.mode}; van al banquillo.`:'';
   s.hidden=n===need;
   const onPitch=Object.keys(layout).filter(k=>layout[k].zone==='pitch');
-  board.innerHTML=pitch().svg+`<span class="tag" style="top:46%">Oscuro</span><span class="tag" style="top:54%">Blanco</span>`
+  board.innerHTML=pitch().svg+`<span class="tag tag-top">Oscuro</span><span class="tag tag-bot">Blanco</span>`
     +emptySlots('D')+emptySlots('W')+onPitch.map(magHTML).join('');
   document.getElementById('teams').innerHTML=Object.keys(layout).length?teamHTML('D')+teamHTML('W'):(P.length?'<section class="sec"><p class="status">Marca al menos dos jugadores.</p></section>':'<section class="sec"><p class="status">Todavía no hay jugadores. Añádelos en la pestaña Jugadores o restaura una copia en Opciones (⚙).</p></section>');
 }
