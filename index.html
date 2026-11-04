@@ -491,6 +491,8 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 let P=[], BY={}, loaded=false, failed=false, db=null;
 let st={sel:null,ratings:true,date:null,mode:'7',form:{W:{'7':'2-3-1','8':'3-3-1'},D:{'7':'2-3-1','8':'3-3-1'}},tab:'alin',sort:'list'};
 try{const s=JSON.parse(localStorage.getItem('pach-v4')||'null');if(s&&typeof s==='object')st=Object.assign(st,s)}catch(e){}
+// A past date that came from loading a history match only lasts until the page is reopened
+if(st.datePast){st.date=null;st.datePast=false}
 ['W','D'].forEach(t=>{st.form[t]=st.form[t]||{}; Object.keys(FORMS).forEach(m=>{if(!FORMS[m].includes(st.form[t][m])) st.form[t][m]=FORMS[m][0]})});
 if(!FORMS[st.mode]) st.mode='7';
 if(location.hash==='#jugadores') st.tab='jug';
@@ -695,7 +697,7 @@ function teamHTML(team){
 
 function render(){
   document.querySelectorAll('#modeseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===st.mode));
-  {const mdi=document.getElementById('matchdate'); if(document.activeElement!==mdi) mdi.value=isoDate(nextSat()); mdi.min=isoDate(new Date()); document.getElementById('datereset').hidden=!customDate();}
+  {const mdi=document.getElementById('matchdate'); if(document.activeElement!==mdi) mdi.value=isoDate(nextSat()); mdi.min=st.datePast?'':isoDate(new Date()); document.getElementById('datereset').hidden=!customDate();}
   const board=document.getElementById('board');
   board.style.aspectRatio=`${pitch().w}/${pitch().h}`; board.classList.toggle('f11',st.mode==='11');
   if(!loaded){
@@ -888,9 +890,9 @@ document.getElementById('ratingseg').addEventListener('click',e=>{
   st.ratings=b.dataset.r==='1'; save(); applyRatings(); render(); renderPlayers(); renderHistory();
 });
 document.getElementById('matchdate').addEventListener('change',e=>{
-  const v=e.target.value; st.date=/^\d{4}-\d{2}-\d{2}$/.test(v)?v:null; save(); showTab(); render();
+  const v=e.target.value; st.date=/^\d{4}-\d{2}-\d{2}$/.test(v)?v:null; st.datePast=false; save(); showTab(); render();
 });
-document.getElementById('datereset').addEventListener('click',()=>{st.date=null; save(); showTab(); render();});
+document.getElementById('datereset').addEventListener('click',()=>{st.date=null; st.datePast=false; save(); showTab(); render();});
 document.querySelector('#modeseg').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b||!loaded) return;
   st.mode=b.dataset.mode; save(); rebuild(); render();
@@ -1068,7 +1070,7 @@ wipeBtn.addEventListener('click',async()=>{
     for(const id of Object.keys(rawPlayers)) await db.doc('players/'+id).delete();
     for(const m of matches) await db.doc('matches/'+m.id).delete();
     await db.doc('settings/general').delete();
-    st=Object.assign(st,{sel:[],date:null}); save(); layout={}; autoLoaded=false;
+    st=Object.assign(st,{sel:[],date:null,datePast:false}); save(); layout={}; autoLoaded=false;
     render(); renderPlayers(); renderHistory(); renderStats();
     toast('Datos borrados.');
   }catch(e){toast(e&&e.code==='invalid_argument'?'No tienes permiso para borrar los datos.':'El borrado se cortó a medias. Vuelve a pulsar para terminar.')}
@@ -1147,7 +1149,7 @@ const WEEKDAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sáb
 function customDate(){
   if(!st.date) return null;
   const [y,m,d]=st.date.split('-').map(Number), dt=new Date(y,m-1,d,12), today=new Date(); today.setHours(0,0,0,0);
-  return dt>=today?dt:null;
+  return (dt>=today||st.datePast)?dt:null;
 }
 function nextSat(){const c=customDate(); if(c) return c; const d=new Date();d.setHours(12,0,0,0);return d}
 const dayName=()=>WEEKDAYS[nextSat().getDay()];
@@ -1318,7 +1320,13 @@ function loadMatch(m,quiet){
     const row=Object.keys(layout).filter(k=>layout[k].team===team&&layout[k].zone==='pitch'&&layout[k].y===y).sort((a,b)=>layout[a].x-layout[b].x);
     row.forEach((k,j)=>{layout[k].x=slotX(j,row.length)});
   }));
-  st.sel=sel; seed=0; save();
+  st.sel=sel; seed=0;
+  // Loaded by hand from the history: the match date comes too (even if it has passed)
+  if(!quiet&&/^\d{4}-\d{2}-\d{2}$/.test(m.date||'')){
+    const [y,mo,d]=m.date.split('-').map(Number), today=new Date(); today.setHours(0,0,0,0);
+    st.date=m.date; st.datePast=new Date(y,mo-1,d,12)<today;
+  }
+  save();
   if(quiet){showTab(); render(); return}
   st.tab='alin'; save(); showTab(); render();
   toast(missing?`Alineación cargada. ${missing} jugador${missing>1?'es ya no están':' ya no está'} en la lista.`:'Alineación cargada en la pizarra.');
