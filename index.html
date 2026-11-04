@@ -368,10 +368,10 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
         <input type="text" id="groupname" class="textopt" maxlength="40" aria-label="Nombre del grupo">
       </div>
       <div class="optrow">
-        <div><h3>Día del partido</h3><p class="hint">Por defecto, el próximo sábado. Cuando pasa la fecha elegida, vuelve al sábado.</p></div>
+        <div><h3>Día del partido</h3><p class="hint">Por defecto, hoy. Cuando pasa la fecha elegida, vuelve a la de hoy.</p></div>
         <div class="datepick">
           <input type="date" id="matchdate" aria-label="Fecha del partido">
-          <button type="button" class="btn ghost" id="datereset">Próximo sábado</button>
+          <button type="button" class="btn ghost" id="datereset">Hoy</button>
         </div>
       </div>
       <div class="optrow">
@@ -1128,7 +1128,7 @@ document.getElementById('bk-file').addEventListener('change',e=>{
 });
 
 /* ---------- Fix line-up & history ---------- */
-// Match date: the date chosen in Opciones while it has not passed, otherwise the next Saturday (today if it is Saturday)
+// Match date: the date chosen in Opciones while it has not passed, otherwise today
 // Group name: shared setting kept with the data (settings/general)
 const DEFAULT_GROUP='Mi pachanga ⚽';
 let settings={};
@@ -1148,7 +1148,7 @@ function customDate(){
   const [y,m,d]=st.date.split('-').map(Number), dt=new Date(y,m-1,d,12), today=new Date(); today.setHours(0,0,0,0);
   return dt>=today?dt:null;
 }
-function nextSat(){const c=customDate(); if(c) return c; const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+((6-d.getDay()+7)%7));return d}
+function nextSat(){const c=customDate(); if(c) return c; const d=new Date();d.setHours(12,0,0,0);return d}
 const dayName=()=>WEEKDAYS[nextSat().getDay()];
 const isoDate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const ROLE_ORDER=['POR','DEF','MED','ATQ','SUP'];

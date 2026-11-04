@@ -16,7 +16,7 @@ Es una aplicación web que se instala en el móvil como cualquier otra app. Func
 - Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada equipo elige su **formación** (2-3-1, 3-3-1, 4-4-2, 4-3-3…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Los fichajes de última hora, en dos segundos.
 - **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio.
 - El portero cuenta en la media de su equipo con su nota de portero, y su imán la muestra.
-- **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, el próximo sábado). Al abrir la app, la pizarra carga la última alineación guardada.
+- **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, la de hoy). Al abrir la app, la pizarra carga la última alineación guardada.
 - **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla. Así nadie se pica al ver su nota.
 
 ### 👟 Jugadores
@@ -30,7 +30,7 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 ### ⚙️ Opciones
 
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
-- **Día del partido**: por defecto el próximo sábado, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve solo al sábado.
+- **Día del partido**: por defecto, hoy, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve sola a la de hoy.
 - **Formato**: 7 vs 7, 8 vs 8 u 11 vs 11.
 - **Medias**: puedes ocultarlas en toda la app sin perder las notas.
 - **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
