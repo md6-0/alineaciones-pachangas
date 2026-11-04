@@ -41,7 +41,7 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 1. Abre [md6-0.github.io/alineaciones-pachangas](https://md6-0.github.io/alineaciones-pachangas/) en el navegador del móvil.
 2. Instálala: en Android, menú del navegador → *Añadir a pantalla de inicio*; en iPhone, botón *Compartir* → *Añadir a pantalla de inicio*.
-3. Añade a los jugadores en la pestaña **Jugadores**, o restaura una copia en **Opciones** (⚙) si ya tenías datos.
+3. La primera vez la app trae una plantilla de ejemplo (Jugador 1, Jugador 2…) ya colocada en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las notas en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
 
 Los datos se guardan en el navegador de cada dispositivo. Si borras los datos del navegador se pierden, así que descarga una copia de vez en cuando, mejor después de cada partido.
 

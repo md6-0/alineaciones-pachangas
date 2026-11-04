@@ -429,6 +429,15 @@ const LDB_KEY='pachangas-db-v1';
 const localDB=(function(){
   const read=()=>{try{const d=JSON.parse(localStorage.getItem(LDB_KEY)||'null');if(d&&typeof d==='object')return d}catch(_){}return {}};
   let data=read(); const subs={};
+  // First visit: a sample squad so there is something to play with straight away
+  let firstRun=false; try{firstRun=localStorage.getItem(LDB_KEY)===null}catch(_){}
+  if(firstRun){
+    const plan=[['POR'],['DEF'],['DEF'],['DEF','MED'],['MED'],['MED'],['MED','ATQ'],['ATQ'],['ATQ'],['DEF'],['MED'],['ATQ'],['POR','DEF'],['DEF','MED','ATQ']];
+    const atq=[55,58,62,70,74,78,82,85,80,60,72,76,50,68], def=[60,82,78,74,70,64,60,55,58,76,68,62,70,72], por=[84,55,50,52,48,50,45,40,42,50,46,44,72,55];
+    data={players:{}};
+    plan.forEach((pos,i)=>{data.players['jugador-'+(i+1)]={name:'Jugador '+(i+1),atq:atq[i],def:def[i],por:por[i],pos,order:i+1}});
+    try{localStorage.setItem(LDB_KEY,JSON.stringify(data))}catch(_){}
+  }
   const persist=()=>{try{localStorage.setItem(LDB_KEY,JSON.stringify(data))}catch(_){throw {code:'quota_exceeded'}}};
   const snap=c=>({docs:Object.entries(data[c]||{}).map(([id,v])=>({id,exists:true,data:()=>JSON.parse(JSON.stringify(v))}))});
   const emit=c=>(subs[c]||[]).forEach(f=>{try{f(snap(c))}catch(e){console.error(e)}});
@@ -1243,7 +1252,7 @@ function onPlayers(snap){
   const ids=new Set(P.map(p=>p.id));
   if(!loaded){
     loaded=true;
-    if(!Array.isArray(st.sel)) st.sel=P.slice(0,13).map(p=>p.id);
+    if(!Array.isArray(st.sel)) st.sel=P.slice(0,14).map(p=>p.id);
     st.sel=st.sel.filter(id=>ids.has(id)); save(); rebuild();
   }else{
     const before=st.sel.length;
