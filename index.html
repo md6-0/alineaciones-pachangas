@@ -123,7 +123,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .smenu a:hover,.smenu button:hover,.smenu a:focus-visible,.smenu button:focus-visible{background:var(--line)}
 .smenu small{font-size:.74rem;font-weight:500;color:var(--muted)}
 @media (max-width:520px){.smenu{left:0;right:auto}}
-.toast{margin:-8px 0 0;font-size:.86rem;color:var(--accent);font-weight:600}
+.toast{position:fixed;z-index:95;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,0);margin:0;
+  max-width:min(440px,calc(100% - 32px));box-sizing:border-box;padding:10px 16px;border-radius:10px;
+  background:var(--surface);color:var(--fg);border:1px solid var(--line);border-left:4px solid var(--accent);
+  font-size:.88rem;font-weight:600;line-height:1.35;box-shadow:0 12px 30px -8px rgba(0,0,0,.6);
+  animation:toastIn .22s ease-out;pointer-events:auto;cursor:pointer}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-12px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){.toast{animation:none}}
 .overlay{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
   padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .ovbox{background:var(--surface);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;max-width:520px;max-height:100%;overflow:auto}
@@ -923,7 +929,8 @@ async function drawImage(){
   });
   return cv;
 }
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,4000)}
+function toast(msg){const t=document.getElementById('toast');t.hidden=true;void t.offsetWidth;t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3500)}
+document.getElementById('toast').addEventListener('click',()=>{document.getElementById('toast').hidden=true});
 let dl=null;
 dl=localDownloads;
 /* Share menu */
