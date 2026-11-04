@@ -29,6 +29,7 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 ### ⚙️ Opciones
 
+- **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
 - **Día del partido**: por defecto el próximo sábado, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve solo al sábado.
 - Formato: 7 vs 7 u 8 vs 8.
 - **Medias**: puedes ocultarlas en toda la app sin perder las notas.

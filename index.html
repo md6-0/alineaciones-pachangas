@@ -276,6 +276,9 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 .datepick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .datepick input{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
 .datepick input:focus{outline:2px solid var(--accent);border-color:transparent}
+
+.textopt{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;min-width:0;width:min(320px,100%)}
+.textopt:focus{outline:2px solid var(--accent);border-color:transparent}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -283,7 +286,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 <div class="wrap">
   <header>
     <div>
-      <p class="eyebrow">Pachangas - Sábados - UA ⚽</p>
+      <p class="eyebrow" id="eyebrow">Mi pachanga ⚽</p>
       <h1 id="h1">Alineación</h1>
     </div>
     <div class="hctl" id="hctl">
@@ -339,6 +342,10 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 
   <section id="p-opc" class="folder" role="tabpanel" aria-labelledby="t-opc" hidden>
     <div class="opts">
+      <div class="optrow">
+        <div><h3>Nombre del grupo</h3><p class="hint">Sale encima del título y en la imagen que compartes. Se guarda en este dispositivo y en la copia de seguridad.</p></div>
+        <input type="text" id="groupname" class="textopt" maxlength="40" aria-label="Nombre del grupo">
+      </div>
       <div class="optrow">
         <div><h3>Día del partido</h3><p class="hint">Por defecto, el próximo sábado. Si eliges otro día, se usa hasta que pase y luego vuelve al sábado. Cambia la fecha del título, la imagen, el mensaje y la alineación guardada en el historial.</p></div>
         <div class="datepick">
@@ -838,7 +845,7 @@ async function drawImage(){
   const c=cv.getContext('2d'), F='Archivo, system-ui, sans-serif';
   c.fillStyle='#1d3327'; c.fillRect(0,0,W,H);
   c.fillStyle='#87a090'; c.font=`600 22px ${F}`; c.textBaseline='alphabetic';
-  c.fillText(`PACHANGAS - SÁBADOS - UA ⚽  ·  ${st.mode} VS ${st.mode}`,M,72);
+  c.fillText(`${groupName().toUpperCase()}  ·  ${st.mode} VS ${st.mode}`,M,72);
   const d=nextSat();
   const MESES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
   c.fillStyle='#eef3ef'; c.font=`800 56px ${F}`;
@@ -958,7 +965,7 @@ function showImageOverlay(){document.getElementById('ovimg').hidden=false;docume
 document.getElementById('bk-down').addEventListener('click',async()=>{
   if(!loaded||!histLoaded){toast('Espera a que carguen los datos.');return}
   const data={app:'pachangas',version:1,exportedAt:new Date().toISOString(),
-    players:rawPlayers,matches:Object.fromEntries(matches.map(m=>{const c=Object.assign({},m);delete c.id;return [m.id,c]}))};
+    settings:Object.assign({},settings),players:rawPlayers,matches:Object.fromEntries(matches.map(m=>{const c=Object.assign({},m);delete c.id;return [m.id,c]}))};
   const txt=JSON.stringify(data,null,2), name=`pachangas-copia-${todayIso()}.json`;
   if(dl){
     try{await dl.save({filename:name,data:txt});toast(`Copia guardada: ${cnt(Object.keys(data.players).length,'jugador','jugadores')} y ${cnt(matches.length,'partido','partidos')}.`);return}
@@ -982,6 +989,7 @@ bkUp.addEventListener('click',async()=>{
     for(const id of Object.keys(rawPlayers)) if(!pIds.includes(id)) await db.doc('players/'+id).delete();
     for(const id of mIds) await db.doc('matches/'+id).set(data.matches[id]);
     for(const m of matches) if(!mIds.includes(m.id)) await db.doc('matches/'+m.id).delete();
+    if(data.settings&&typeof data.settings==='object') await db.doc('settings/general').set(data.settings);
     toast(`Copia restaurada: ${cnt(pIds.length,'jugador','jugadores')} y ${cnt(mIds.length,'partido','partidos')}.`);
   }catch(e){toast(e&&e.code==='invalid_argument'?'No tienes permiso para restaurar.':'La restauración se cortó a medias. Vuelve a intentarlo con el mismo archivo.')}
   bkUp.disabled=false; resetRestore();
@@ -1005,6 +1013,19 @@ document.getElementById('bk-file').addEventListener('change',e=>{
 
 /* ---------- Fix line-up & history ---------- */
 // Match date: the date chosen in Opciones while it has not passed, otherwise the next Saturday (today if it is Saturday)
+// Group name: shared setting kept with the data (settings/general)
+const DEFAULT_GROUP='Mi pachanga ⚽';
+let settings={};
+const groupName=()=>(settings.groupName||'').trim()||DEFAULT_GROUP;
+function paintGroup(){
+  document.getElementById('eyebrow').textContent=groupName();
+  const gi=document.getElementById('groupname'); if(document.activeElement!==gi) gi.value=groupName();
+}
+document.getElementById('groupname').addEventListener('change',async e=>{
+  const v=e.target.value.trim().slice(0,40);
+  settings=Object.assign({},settings,{groupName:v}); paintGroup();
+  if(db) try{await db.doc('settings/general').set(Object.assign({},settings))}catch(_){toast('No se pudo guardar el nombre del grupo.')}
+});
 const WEEKDAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 function customDate(){
   if(!st.date) return null;
@@ -1224,6 +1245,9 @@ function onPlayers(snap){
 (async()=>{
   db=localDB;
   if(!db){failed=true;render();renderPlayers();renderHistory();return}
+  db.collection('settings').onSnapshot(snap=>{
+    const d=snap.docs.find(x=>x.id==='general'); settings=d?Object.assign({},d.data()):{}; paintGroup();
+  },()=>{});
   db.collection('matches').onSnapshot(snap=>{
     histLoaded=true;
     matches=snap.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>String(b.date||b.id).localeCompare(String(a.date||a.id)));
@@ -1232,7 +1256,7 @@ function onPlayers(snap){
   db.collection('players').onSnapshot(onPlayers,()=>{if(!loaded){failed=true;render();renderPlayers()}else toast('Se perdió la conexión con los datos. Recarga la página.')});
 })();
 
-applyRatings(); showTab(); render(); renderPlayers(); renderHistory();
+paintGroup(); applyRatings(); showTab(); render(); renderPlayers(); renderHistory();
 </script>
 </body>
 </html>
