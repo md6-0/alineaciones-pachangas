@@ -279,6 +279,17 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 
 .textopt{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;min-width:0;width:min(320px,100%)}
 .textopt:focus{outline:2px solid var(--accent);border-color:transparent}
+
+/* compact options on phones */
+@media (max-width:520px){
+  .optrow{padding:11px 13px;gap:8px}
+  .optrow h3{font-size:.88rem;margin-bottom:2px}
+  .optrow .hint{font-size:.74rem;line-height:1.35}
+  .optrow .seg button{padding:4px 11px;font-size:.8rem}
+  .optrow .btn{padding:5px 11px;font-size:.8rem}
+  .datepick input,.textopt{padding:5px 10px;font-size:.85rem}
+  .backup .btns{gap:6px}
+}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -343,25 +354,25 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
   <section id="p-opc" class="folder" role="tabpanel" aria-labelledby="t-opc" hidden>
     <div class="opts">
       <div class="optrow">
-        <div><h3>Nombre del grupo</h3><p class="hint">Sale encima del título y en la imagen que compartes. Se guarda en este dispositivo y en la copia de seguridad.</p></div>
+        <div><h3>Nombre del grupo</h3><p class="hint">Sale encima del título y en la imagen.</p></div>
         <input type="text" id="groupname" class="textopt" maxlength="40" aria-label="Nombre del grupo">
       </div>
       <div class="optrow">
-        <div><h3>Día del partido</h3><p class="hint">Por defecto, el próximo sábado. Si eliges otro día, se usa hasta que pase y luego vuelve al sábado. Cambia la fecha del título, la imagen, el mensaje y la alineación guardada en el historial.</p></div>
+        <div><h3>Día del partido</h3><p class="hint">Por defecto, el próximo sábado. Cuando pasa la fecha elegida, vuelve al sábado.</p></div>
         <div class="datepick">
           <input type="date" id="matchdate" aria-label="Fecha del partido">
           <button type="button" class="btn ghost" id="datereset">Próximo sábado</button>
         </div>
       </div>
       <div class="optrow">
-        <div><h3>Formato</h3><p class="hint">Cuántos juegan por equipo. Al cambiarlo se rehace el reparto.</p></div>
+        <div><h3>Formato</h3><p class="hint">Al cambiarlo se rehace el reparto.</p></div>
         <div class="seg" id="modeseg" role="group" aria-label="Formato">
           <button type="button" id="m7" data-mode="7">7 vs 7</button>
           <button type="button" id="m8" data-mode="8">8 vs 8</button>
         </div>
       </div>
       <div class="optrow">
-        <div><h3>Medias</h3><p class="hint">Oculta las medias y las notas en toda la página. Los datos guardados no se borran y el reparto sigue usándolos.</p></div>
+        <div><h3>Medias</h3><p class="hint">Se ocultan en toda la página sin borrar las notas.</p></div>
         <div class="seg" id="ratingseg" role="group" aria-label="Mostrar medias">
           <button type="button" data-r="1">Mostrar</button>
           <button type="button" data-r="0">Ocultar</button>
@@ -370,7 +381,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
       <div class="backup optrow">
         <div>
           <h3>Copia de seguridad</h3>
-          <p class="hint">Descarga un archivo con todos los jugadores y el historial. Si algún día se borra algo, puedes restaurarlo desde ese archivo.</p>
+          <p class="hint">Jugadores e historial en un archivo, para restaurarlos aquí o en otro dispositivo.</p>
         </div>
         <div class="btns">
           <button class="btn ghost" id="bk-down" type="button">Descargar copia</button>
