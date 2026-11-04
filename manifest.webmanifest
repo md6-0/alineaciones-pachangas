@@ -1,6 +1,6 @@
 {
-  "name": "Alineador pachangas",
-  "short_name": "Pachangas",
+  "name": "Mi pachanga",
+  "short_name": "Mi pachanga",
   "lang": "es",
   "start_url": "./index.html",
   "scope": "./",

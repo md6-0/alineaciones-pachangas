@@ -1,4 +1,4 @@
-# ⚽ Alineador pachangas
+# ⚽ Mi pachanga
 
 La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos lo más igualados posible y tú colocas a cada uno en su sitio arrastrando los imanes.
 
