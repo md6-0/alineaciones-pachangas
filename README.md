@@ -4,7 +4,7 @@ La pizarra del míster para la pachanga del fin de semana: pasas lista, la app r
 
 Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
 
-Es una aplicación web que se instala en el móvil como cualquier otra app. Funciona sin conexión (también en el campo, con una raya de cobertura), no pide cuenta ni registro y todo se guarda en tu dispositivo: no hay ningún servidor detrás.
+Es una aplicación web que se instala en el móvil como cualquier otra app. Funciona sin conexión, no pide cuenta ni registro y todo se guarda en tu dispositivo: no hay ningún servidor detrás.
 
 ---
 
