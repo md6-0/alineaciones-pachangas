@@ -290,6 +290,9 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
   .datepick input,.textopt{padding:5px 10px;font-size:.85rem}
   .backup .btns{gap:6px}
 }
+
+.btn.danger{color:#f3a59b;border-color:rgba(243,165,155,.45)}
+.btn.danger.arm{background:#c0453a;border-color:#c0453a;color:#fff}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -389,6 +392,10 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
           <input type="file" id="bk-file" accept=".json,application/json" hidden>
         </div>
         <p class="hint bk-msg" id="bk-msg" hidden></p>
+      </div>
+      <div class="optrow">
+        <div><h3>Borrar todos los datos</h3><p class="hint" id="wipehint">Elimina jugadores, historial y ajustes de este dispositivo. No se puede deshacer: descarga antes una copia.</p></div>
+        <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
   </section>
@@ -977,6 +984,27 @@ document.getElementById('export').addEventListener('click',async()=>{
   document.getElementById('overlay').hidden=false;
 });
 document.getElementById('ovclose').addEventListener('click',()=>{document.getElementById('overlay').hidden=true});
+
+/* ---------- Delete everything ---------- */
+const wipeBtn=document.getElementById('wipe');
+wipeBtn.addEventListener('click',async()=>{
+  if(!wipeBtn.classList.contains('arm')){
+    wipeBtn.classList.add('arm'); wipeBtn.textContent='Sí, borrar todo';
+    setTimeout(()=>{if(!wipeBtn.disabled){wipeBtn.classList.remove('arm');wipeBtn.textContent='Borrar todo'}},5000);
+    return;
+  }
+  if(!db){toast('No se puede borrar ahora mismo.');return}
+  wipeBtn.disabled=true; wipeBtn.textContent='Borrando…';
+  try{
+    for(const id of Object.keys(rawPlayers)) await db.doc('players/'+id).delete();
+    for(const m of matches) await db.doc('matches/'+m.id).delete();
+    await db.doc('settings/general').delete();
+    st=Object.assign(st,{sel:[],date:null}); save(); layout={}; autoLoaded=false;
+    render(); renderPlayers(); renderHistory(); renderStats();
+    toast('Datos borrados.');
+  }catch(e){toast(e&&e.code==='invalid_argument'?'No tienes permiso para borrar los datos.':'El borrado se cortó a medias. Vuelve a pulsar para terminar.')}
+  wipeBtn.disabled=false; wipeBtn.classList.remove('arm'); wipeBtn.textContent='Borrar todo';
+});
 
 /* ---------- Backup ---------- */
 const todayIso=()=>isoDate(new Date());

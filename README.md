@@ -34,6 +34,7 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 - Formato: 7 vs 7 u 8 vs 8.
 - **Medias**: puedes ocultarlas en toda la app sin perder las notas.
 - **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
+- **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.
 
 ---
 
