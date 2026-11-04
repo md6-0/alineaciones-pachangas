@@ -125,7 +125,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:520px){.smenu{left:0;right:auto}}
 .toast{position:fixed;z-index:95;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,0);margin:0;
   max-width:min(440px,calc(100% - 32px));box-sizing:border-box;padding:10px 16px;border-radius:10px;
-  background:var(--surface);color:var(--fg);border:1px solid var(--line);border-left:4px solid var(--accent);
+  background:var(--surface);color:var(--fg);border:1px solid var(--line);
   font-size:.88rem;font-weight:600;line-height:1.35;box-shadow:0 12px 30px -8px rgba(0,0,0,.6);
   animation:toastIn .22s ease-out;pointer-events:auto;cursor:pointer}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-12px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -378,6 +378,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
         <div class="seg" id="modeseg" role="group" aria-label="Formato">
           <button type="button" id="m7" data-mode="7">7 vs 7</button>
           <button type="button" id="m8" data-mode="8">8 vs 8</button>
+          <button type="button" id="m11" data-mode="11">11 vs 11</button>
         </div>
       </div>
       <div class="optrow">
@@ -445,8 +446,11 @@ const localDB=(function(){
   // First visit: a sample squad so there is something to play with straight away
   let firstRun=false; try{firstRun=localStorage.getItem(LDB_KEY)===null}catch(_){}
   if(firstRun){
-    const plan=[['POR'],['DEF'],['DEF'],['DEF','MED'],['MED'],['MED'],['MED','ATQ'],['ATQ'],['ATQ'],['DEF'],['MED'],['ATQ'],['POR','DEF'],['DEF','MED','ATQ']];
-    const atq=[55,58,62,70,74,78,82,85,80,60,72,76,50,68], def=[60,82,78,74,70,64,60,55,58,76,68,62,70,72], por=[84,55,50,52,48,50,45,40,42,50,46,44,72,55];
+    const plan=[['POR'],['DEF'],['DEF'],['DEF','MED'],['MED'],['MED'],['MED','ATQ'],['ATQ'],['ATQ'],['DEF'],['MED'],['ATQ'],['POR','DEF'],['DEF','MED','ATQ'],
+                ['POR'],['DEF'],['DEF'],['MED'],['MED','ATQ'],['ATQ'],['DEF','MED'],['MED'],['ATQ'],['DEF']];
+    const atq=[55,58,62,70,74,78,82,85,80,60,72,76,50,68, 52,57,61,73,79,83,66,71,77,59];
+    const def=[60,82,78,74,70,64,60,55,58,76,68,62,70,72, 58,80,75,69,61,54,73,66,57,79];
+    const por=[84,55,50,52,48,50,45,40,42,50,46,44,72,55, 80,52,49,47,44,41,51,46,43,53];
     data={players:{}};
     plan.forEach((pos,i)=>{data.players['jugador-'+(i+1)]={name:'Jugador '+(i+1),atq:atq[i],def:def[i],por:por[i],pos,order:i+1}});
     try{localStorage.setItem(LDB_KEY,JSON.stringify(data))}catch(_){}
@@ -476,7 +480,8 @@ if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.se
 <script>
 const tier=r=>r>=75?'gold':r>=65?'silver':'bronze';
 const TEAMS={W:'Equipo Blanco',D:'Equipo Oscuro'};
-const FORMS={'7':['2-3-1','3-2-1','2-2-2','3-1-2'],'8':['3-3-1','3-2-2','2-3-2','2-4-1']};
+const FORMS={'7':['2-3-1','3-2-1','2-2-2','3-1-2'],'8':['3-3-1','3-2-2','2-3-2','2-4-1'],'11':['4-4-2','4-3-3','3-5-2','4-5-1']};
+const NEED={'7':14,'8':16,'11':22};
 const DIST={GK:6,DEF:18,MED:30.5,ATQ:43.5};
 const STATS=[['atq','ATQ'],['def','DEF'],['por','POR']];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -484,6 +489,8 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 let P=[], BY={}, loaded=false, failed=false, db=null;
 let st={sel:null,ratings:true,date:null,mode:'7',form:{W:{'7':'2-3-1','8':'3-3-1'},D:{'7':'2-3-1','8':'3-3-1'}},tab:'alin',sort:'list'};
 try{const s=JSON.parse(localStorage.getItem('pach-v4')||'null');if(s&&typeof s==='object')st=Object.assign(st,s)}catch(e){}
+['W','D'].forEach(t=>{st.form[t]=st.form[t]||{}; Object.keys(FORMS).forEach(m=>{if(!FORMS[m].includes(st.form[t][m])) st.form[t][m]=FORMS[m][0]})});
+if(!FORMS[st.mode]) st.mode='7';
 if(location.hash==='#jugadores') st.tab='jug';
 if(location.hash==='#historial') st.tab='hist';
 if(location.hash==='#estadisticas') st.tab='stats';
@@ -522,23 +529,47 @@ function teamValue(list,gk){
   const g=gk!==undefined?gk:pickGK(list);
   return list.reduce((a,p)=>a+(p===g?p.por:p.m),0)/list.length;
 }
+function splitCost(A,B){
+  const can=(p,r)=>p.pos.includes(r);
+  let cost=Math.abs(teamValue(A)-teamValue(B));
+  for(const r of ['POR','DEF','ATQ']){
+    const d=Math.abs(A.filter(p=>can(p,r)).length-B.filter(p=>can(p,r)).length);
+    cost+=Math.max(0,d-1)*(r==='POR'?6:1.5);
+  }
+  return cost;
+}
+// Small deterministic random generator so the same squad always gives the same options
+function rng(seedN){let t=seedN>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
 function solve(list){
   const n=list.length; if(n<2) return null;
   const k=Math.floor(n/2), odd=n%2===1, out=[];
-  const can=(p,r)=>p.pos.includes(r);
-  for(let m=0;m<(1<<n);m++){
-    let c=0,x=m; while(x){c+=x&1;x>>=1}
-    if(c!==k) continue;
-    if(!odd && !(m&1)) continue;
-    const A=[],B=[];
-    for(let i=0;i<n;i++)((m>>i)&1?A:B).push(list[i]);
-    const mA=teamValue(A), mB=teamValue(B);
-    let cost=Math.abs(mA-mB);
-    for(const r of ['POR','DEF','ATQ']){
-      const d=Math.abs(A.filter(p=>can(p,r)).length-B.filter(p=>can(p,r)).length);
-      cost+=Math.max(0,d-1)*(r==='POR'?6:1.5);
+  if(n<=16){
+    for(let m=0;m<(1<<n);m++){
+      let c=0,x=m; while(x){c+=x&1;x>>=1}
+      if(c!==k) continue;
+      if(!odd && !(m&1)) continue;
+      const A=[],B=[];
+      for(let i=0;i<n;i++)((m>>i)&1?A:B).push(list[i]);
+      out.push({A,B,cost:splitCost(A,B)});
     }
-    out.push({A,B,mA,mB,cost});
+  }else{
+    // Too many players to try every split: random starts improved by swapping pairs
+    const rand=rng(n*7919+list.reduce((a,p)=>a+p.m,0)|0), seen=new Set();
+    for(let t=0;t<120;t++){
+      const idx=[...list.keys()];
+      for(let i=idx.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+      let A=idx.slice(0,k).map(i=>list[i]), B=idx.slice(k).map(i=>list[i]), cost=splitCost(A,B), better=true;
+      while(better){
+        better=false;
+        for(let i=0;i<A.length&&!better;i++) for(let j=0;j<B.length&&!better;j++){
+          const A2=A.slice(),B2=B.slice(); [A2[i],B2[j]]=[B2[j],A2[i]];
+          const c2=splitCost(A2,B2); if(c2<cost-1e-9){A=A2;B=B2;cost=c2;better=true}
+        }
+      }
+      if(!odd&&!A.includes(list[0])) [A,B]=[B,A];
+      const key=A.map(p=>p.id).sort().join('|');
+      if(!seen.has(key)){seen.add(key);out.push({A,B,cost})}
+    }
   }
   if(!out.length) return null;
   out.sort((a,b)=>a.cost-b.cost);
@@ -549,7 +580,7 @@ function solve(list){
 
 const yFor=(team,d)=>team==='W'?100-d:d;
 // Wide players sit near the touchlines: 1 → centre, 2 → 27/73, 3+ → spread from 18 to 82
-const slotX=(j,k)=>k===1?50:k===2?(j?73:27):18+j*(64/(k-1));
+const slotX=(j,k)=>k===1?50:k===2?(j?73:27):k>=5?10+j*(80/(k-1)):18+j*(64/(k-1));
 function slotsFor(team,withGK){
   const f=st.form[team][st.mode], parts=f.split('-').map(Number), roles=['DEF','MED','ATQ'], out=[];
   if(withGK) out.push({role:'GK',x:50,y:yFor(team,DIST.GK)});
@@ -614,7 +645,7 @@ function emptySlots(team){
     .map(s=>`<div class="slot" style="left:${s.x}%;top:${s.y}%">${s.role==='GK'?'POR':s.role}</div>`).join('');
 }
 
-const LINES=`<svg class="lines" viewBox="0 0 44 64" preserveAspectRatio="none" aria-hidden="true">
+const LINES7=`<svg class="lines" viewBox="0 0 44 64" preserveAspectRatio="none" aria-hidden="true">
 <g fill="none" stroke="var(--chalk)" stroke-width=".2" stroke-linecap="round">
 <rect x="2" y="2" width="40" height="60"/>
 <line x1="2" y1="32" x2="42" y2="32"/>
@@ -626,6 +657,21 @@ const LINES=`<svg class="lines" viewBox="0 0 44 64" preserveAspectRatio="none" a
 </g>
 <g fill="none" stroke="var(--chalk)" stroke-width=".2" stroke-dasharray=".9 .7"><line x1="2" y1="15" x2="42" y2="15"/><line x1="2" y1="49" x2="42" y2="49"/></g>
 <g fill="var(--chalk)"><circle cx="22" cy="32" r=".35"/><circle cx="22" cy="11" r=".3"/><circle cx="22" cy="53" r=".3"/></g></svg>`;
+// Full-size pitch (105 x 68 m) for 11-a-side, drawn in metres with a 2 m margin
+const LINES11=`<svg class="lines" viewBox="0 0 72 109" preserveAspectRatio="none" aria-hidden="true">
+<g fill="none" stroke="var(--chalk)" stroke-width=".25" stroke-linecap="round">
+<rect x="2" y="2" width="68" height="105"/>
+<line x1="2" y1="54.5" x2="70" y2="54.5"/>
+<circle cx="36" cy="54.5" r="9.15"/>
+<rect x="15.84" y="2" width="40.32" height="16.5"/><rect x="26.84" y="2" width="18.32" height="5.5"/>
+<rect x="15.84" y="90.5" width="40.32" height="16.5"/><rect x="26.84" y="101.5" width="18.32" height="5.5"/>
+<path d="M30.51 18.5 A9.15 9.15 0 0 0 41.49 18.5"/><path d="M30.51 90.5 A9.15 9.15 0 0 1 41.49 90.5"/>
+<rect x="32.34" y=".6" width="7.32" height="1.4"/><rect x="32.34" y="107" width="7.32" height="1.4"/>
+<path d="M2 3 A1 1 0 0 0 3 2 M69 2 A1 1 0 0 0 70 3 M2 106 A1 1 0 0 1 3 107 M69 107 A1 1 0 0 1 70 106"/>
+</g>
+<g fill="var(--chalk)"><circle cx="36" cy="54.5" r=".45"/><circle cx="36" cy="13" r=".4"/><circle cx="36" cy="96" r=".4"/></g></svg>`;
+const PITCH={'7':{w:44,h:64,svg:LINES7},'11':{w:72,h:109,svg:LINES11}};
+const pitch=()=>PITCH[st.mode==='11'?'11':'7'];
 
 function teamHTML(team){
   const ids=Object.keys(layout).filter(n=>layout[n].team===team);
@@ -649,15 +695,16 @@ function render(){
   document.querySelectorAll('#modeseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===st.mode));
   {const mdi=document.getElementById('matchdate'); if(document.activeElement!==mdi) mdi.value=isoDate(nextSat()); mdi.min=isoDate(new Date()); document.getElementById('datereset').hidden=!customDate();}
   const board=document.getElementById('board');
+  board.style.aspectRatio=`${pitch().w}/${pitch().h}`; board.classList.toggle('f11',st.mode==='11');
   if(!loaded){
-    board.innerHTML=LINES+`<div class="loading">${failed?'No se pudieron leer los datos guardados en este navegador.':'Cargando jugadores…'}</div>`;
+    board.innerHTML=pitch().svg+`<div class="loading">${failed?'No se pudieron leer los datos guardados en este navegador.':'Cargando jugadores…'}</div>`;
     document.getElementById('chips').innerHTML='';
     document.getElementById('teams').innerHTML='';
     document.getElementById('count').textContent='';
     return;
   }
   document.getElementById('chips').innerHTML=[...P].sort((a,b)=>a.n.localeCompare(b.n,'es',{sensitivity:'base'})).map(p=>`<button class="chip" type="button" aria-pressed="${st.sel.includes(p.id)}" data-n="${esc(p.id)}">${esc(p.n)}<span class="r rc">${p.ovr}</span></button>`).join('');
-  const n=st.sel.length, need=st.mode==='7'?14:16;
+  const n=st.sel.length, need=NEED[st.mode]||14;
   const onField=Object.values(layout).filter(l=>l.zone==='pitch').length;
   document.getElementById('count').textContent=`${onField} en el campo`;
   const s=document.getElementById('status');
@@ -666,7 +713,7 @@ function render(){
     :n>need?`Sobra${n-need>1?'n':''} ${n-need} para ${st.mode} vs ${st.mode}; van al banquillo.`:'';
   s.hidden=n===need;
   const onPitch=Object.keys(layout).filter(k=>layout[k].zone==='pitch');
-  board.innerHTML=LINES+`<span class="tag" style="top:46%">Oscuro</span><span class="tag" style="top:54%">Blanco</span>`
+  board.innerHTML=pitch().svg+`<span class="tag" style="top:46%">Oscuro</span><span class="tag" style="top:54%">Blanco</span>`
     +emptySlots('D')+emptySlots('W')+onPitch.map(magHTML).join('');
   document.getElementById('teams').innerHTML=Object.keys(layout).length?teamHTML('D')+teamHTML('W'):(P.length?'<section class="sec"><p class="status">Marca al menos dos jugadores.</p></section>':'<section class="sec"><p class="status">Todavía no hay jugadores. Añádelos en la pestaña Jugadores o restaura una copia en Opciones (⚙).</p></section>');
 }
@@ -816,7 +863,7 @@ function endDrag(e){
 function snapDrop(id,x,y){
   const team=y>=50?'W':'D';
   const slots=slotsFor(team,true);
-  const k=64/44;
+  const k=pitch().h/pitch().w;
   const s=slots.reduce((b,c)=>{const dd=(c.x-x)**2+((c.y-y)*k)**2;return dd<b.d?{s:c,d:dd}:b},{s:null,d:Infinity}).s;
   if(!s) return;
   const prev=Object.assign({},layout[id]);
@@ -869,7 +916,7 @@ document.getElementById('swap').addEventListener('click',()=>{
 function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
 async function drawImage(){
   try{await document.fonts.ready}catch(_){}
-  const W=1080, M=40, bw=W-2*M, bh=Math.round(bw*64/44), top=205;
+  const PT=pitch(), W=1080, M=40, bw=W-2*M, bh=Math.round(bw*PT.h/PT.w), top=205;
   const benchW=Object.keys(layout).filter(n=>layout[n].zone==='bench'&&layout[n].team==='W');
   const benchD=Object.keys(layout).filter(n=>layout[n].zone==='bench'&&layout[n].team==='D');
   const foot=70+(benchD.length?150:0)+(benchW.length?150:0);
@@ -886,17 +933,30 @@ async function drawImage(){
   const bx=M, by=top;
   c.save(); rr(c,bx,by,bw,bh,10); c.clip();
   for(let i=0;i<10;i++){c.fillStyle=i%2?'#346649':'#2f5e44';c.fillRect(bx,by+i*bh/10,bw,bh/10+1)}
-  const sx=bw/44, sy=bh/64, X=v=>bx+v*sx, Y=v=>by+v*sy;
+  const sx=bw/PT.w, sy=bh/PT.h, X=v=>bx+v*sx, Y=v=>by+v*sy;
   c.strokeStyle='rgba(255,255,255,.7)'; c.lineWidth=3;
   const R=(x,y,w,h)=>c.strokeRect(X(x),Y(y),w*sx,h*sy);
   const Ln=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(X(x1),Y(y1));c.lineTo(X(x2),Y(y2));c.stroke()};
-  R(2,2,40,60); Ln(2,32,42,32);
-  c.beginPath();c.arc(X(22),Y(32),6*sx,0,7);c.stroke();
-  R(10,2,24,11);R(16,2,12,4.3);R(10,51,24,11);R(16,57.7,12,4.3);
-  R(19,.9,6,1.1);R(19,62,6,1.1);
-  c.setLineDash([0.9*sx,0.7*sx]); Ln(2,15,42,15); Ln(2,49,42,49); c.setLineDash([]);
+  const dots=[];
+  if(st.mode==='11'){
+    R(2,2,68,105); Ln(2,54.5,70,54.5);
+    c.beginPath();c.arc(X(36),Y(54.5),9.15*sx,0,7);c.stroke();
+    R(15.84,2,40.32,16.5);R(26.84,2,18.32,5.5);R(15.84,90.5,40.32,16.5);R(26.84,101.5,18.32,5.5);
+    R(32.34,.6,7.32,1.4);R(32.34,107,7.32,1.4);
+    const a=Math.acos(5.5/9.15);
+    c.beginPath();c.arc(X(36),Y(13),9.15*sx,Math.PI/2-a,Math.PI/2+a);c.stroke();
+    c.beginPath();c.arc(X(36),Y(96),9.15*sx,-Math.PI/2-a,-Math.PI/2+a);c.stroke();
+    dots.push([36,54.5,5],[36,13,4],[36,96,4]);
+  }else{
+    R(2,2,40,60); Ln(2,32,42,32);
+    c.beginPath();c.arc(X(22),Y(32),6*sx,0,7);c.stroke();
+    R(10,2,24,11);R(16,2,12,4.3);R(10,51,24,11);R(16,57.7,12,4.3);
+    R(19,.9,6,1.1);R(19,62,6,1.1);
+    c.setLineDash([0.9*sx,0.7*sx]); Ln(2,15,42,15); Ln(2,49,42,49); c.setLineDash([]);
+    dots.push([22,32,5],[22,11,4],[22,53,4]);
+  }
   c.fillStyle='rgba(255,255,255,.7)';
-  [[22,32,5],[22,11,4],[22,53,4]].forEach(([x,y,r])=>{c.beginPath();c.arc(X(x),Y(y),r,0,7);c.fill()});
+  dots.forEach(([x,y,r])=>{c.beginPath();c.arc(X(x),Y(y),r,0,7);c.fill()});
   c.restore();
   const magnet=(id,team,x,y,r,role,pill)=>{
     const n=nameOf(id);
@@ -1237,7 +1297,7 @@ function autoLoadLatest(){
 }
 function loadMatch(m,quiet){
   if(!loaded){if(!quiet) toast('Espera a que carguen los jugadores.');return}
-  const mode=m.mode==='8'?'8':'7';
+  const mode=FORMS[m.mode]?m.mode:'7';
   st.mode=mode;
   ['W','D'].forEach(t=>{const f=m.formation&&m.formation[t]; if(f&&FORMS[mode].includes(f)) st.form[t][mode]=f;});
   layout={}; let missing=0; const sel=[];

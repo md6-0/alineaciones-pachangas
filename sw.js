@@ -1,7 +1,7 @@
 /* Service worker: la app funciona sin conexión.
    Sirve lo guardado al momento y lo actualiza por detrás, así la siguiente vez que abras la app tendrás la última versión.
    Al publicar cambios grandes, sube VERSION para que se renueve la caché. */
-const VERSION = "1.3.1";
+const VERSION = "1.4.0";
 const CACHE = "pachangas-" + VERSION;
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
 

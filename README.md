@@ -13,7 +13,7 @@ Es una aplicación web que se instala en el móvil como cualquier otra app. Func
 ### 📋 Alineación
 
 - Marca en la **convocatoria** quién viene y la app reparte el Equipo Blanco y el Equipo Oscuro igualando sus medias y repartiendo bien las posiciones. Si no te convence el reparto, pulsa **Otra opción**.
-- Cada equipo elige su **formación** (2-3-1, 3-2-1, 3-3-1…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Los fichajes de última hora, en dos segundos.
+- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada equipo elige su **formación** (2-3-1, 3-3-1, 4-4-2, 4-3-3…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Los fichajes de última hora, en dos segundos.
 - **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio.
 - El portero cuenta en la media de su equipo con su nota de portero, y su imán la muestra.
 - **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, el próximo sábado). Al abrir la app, la pizarra carga la última alineación guardada.
@@ -31,7 +31,7 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
 - **Día del partido**: por defecto el próximo sábado, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve solo al sábado.
-- Formato: 7 vs 7 u 8 vs 8.
+- **Formato**: 7 vs 7, 8 vs 8 u 11 vs 11.
 - **Medias**: puedes ocultarlas en toda la app sin perder las notas.
 - **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
 - **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.
@@ -42,7 +42,7 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 1. Abre [md6-0.github.io/alineaciones-pachangas](https://md6-0.github.io/alineaciones-pachangas/) en el navegador del móvil.
 2. Instálala: en Android, menú del navegador → *Añadir a pantalla de inicio*; en iPhone, botón *Compartir* → *Añadir a pantalla de inicio*.
-3. La primera vez la app trae una plantilla de ejemplo (Jugador 1, Jugador 2…) ya colocada en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las notas en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
+3. La primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, ya colocada en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las notas en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
 
 Los datos se guardan en el navegador de cada dispositivo. Si borras los datos del navegador se pierden, así que descarga una copia de vez en cuando, mejor después de cada partido.
 
