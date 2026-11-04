@@ -1,31 +1,33 @@
-# Alineador pachangas
+# ⚽ Alineador pachangas
 
-Una pizarra para organizar la pachanga del fin de semana: marcas quién viene, la app reparte dos equipos lo más igualados posible y los colocas en el campo arrastrando los imanes. Guarda el historial de partidos con resultado y goleadores, y saca estadísticas.
+La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos lo más igualados posible y tú colocas a cada uno en su sitio arrastrando los imanes. Se acabaron los "¿hacemos pares y nones?" y los equipos descompensados de 10-2.
 
-Es una aplicación web que se instala en el móvil como cualquier otra app. Funciona sin conexión, no pide cuenta ni registro y todo se guarda en tu dispositivo: no hay ningún servidor detrás.
+Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
+
+Es una aplicación web que se instala en el móvil como cualquier otra app. Funciona sin conexión (también en el campo, con una raya de cobertura), no pide cuenta ni registro y todo se guarda en tu dispositivo: no hay ningún servidor detrás.
 
 ---
 
 ## Qué puedes hacer
 
-### Alineación
+### 📋 Alineación
 
 - Marca en la **convocatoria** quién viene y la app reparte el Equipo Blanco y el Equipo Oscuro igualando sus medias y repartiendo bien las posiciones. Si no te convence el reparto, pulsa **Otra opción**.
-- Cada equipo elige su **formación** (2-3-1, 3-2-1, 3-3-1…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo.
+- Cada equipo elige su **formación** (2-3-1, 3-2-1, 3-3-1…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Los fichajes de última hora, en dos segundos.
 - **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio.
 - El portero cuenta en la media de su equipo con su nota de portero, y su imán la muestra.
 - **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, el próximo sábado). Al abrir la app, la pizarra carga la última alineación guardada.
-- **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla.
+- **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla. Así nadie se pica al ver su nota.
 
-### Jugadores
+### 👟 Jugadores
 
 Cada jugador tiene nota de ataque, defensa y portero (de 1 a 99) y una o varias posiciones. La media se calcula según la posición: un defensa cuenta más su defensa, un delantero su ataque, y un portero su nota de portero.
 
-### Historial y estadísticas
+### 🏆 Historial y estadísticas
 
-En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores, partidos jugados y partidos ganados, empatados y perdidos de cada jugador.
+En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores, partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten.
 
-### Opciones
+### ⚙️ Opciones
 
 - **Día del partido**: por defecto el próximo sábado, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve solo al sábado.
 - Formato: 7 vs 7 u 8 vs 8.
@@ -34,13 +36,13 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 ---
 
-## Empezar a usarla
+## Saltar al campo
 
 1. Abre [md6-0.github.io/alineaciones-pachangas](https://md6-0.github.io/alineaciones-pachangas/) en el navegador del móvil.
 2. Instálala: en Android, menú del navegador → *Añadir a pantalla de inicio*; en iPhone, botón *Compartir* → *Añadir a pantalla de inicio*.
 3. Añade a los jugadores en la pestaña **Jugadores**, o restaura una copia en **Opciones** (⚙) si ya tenías datos.
 
-Los datos se guardan en el navegador de cada dispositivo. Si borras los datos del navegador se pierden, así que descarga una copia de vez en cuando.
+Los datos se guardan en el navegador de cada dispositivo. Si borras los datos del navegador se pierden, así que descarga una copia de vez en cuando, mejor después de cada partido.
 
 ## Cómo está hecha
 
