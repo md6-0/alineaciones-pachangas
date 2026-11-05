@@ -1,0 +1,93 @@
+/* Historial y estadísticas: guardar la alineación, resultado, goles, cargarla en la pizarra y borrarla. */
+const { open, checker, tab, toastText } = require('./helpers');
+const { ok, done } = checker();
+
+(async () => {
+  const app = await open(), { page } = app;
+  await tab(page, 'hist');
+  ok('historial vacío', /Aún no hay partidos/.test(await page.innerText('#hlist')));
+  await tab(page, 'stats');
+  ok('estadísticas vacías', /Aún no hay partidos/.test(await page.innerText('#stats')));
+
+  // Guardar con fecha elegida
+  await tab(page, 'opc');
+  await page.fill('#matchdate', '2099-03-07'); await page.dispatchEvent('#matchdate', 'change');
+  ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));
+  await tab(page, 'alin');
+  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Alineación · Sábado 7 mar', await page.textContent('#h1'));
+  await page.click('#fix');
+  ok('guardada', (await toastText(page)) === 'Alineación guardada en el historial.');
+  await page.click('#fix');
+  ok('la segunda vez pide reemplazar', (await page.innerText('#fix')) === 'Reemplazar la ya guardada');
+  await page.click('#fix');
+  ok('reemplazada', (await page.innerText('#fix')) === 'Guardar alineación en historial');
+
+  await tab(page, 'hist');
+  const match = page.locator('#hlist .match');
+  ok('un partido', (await match.count()) === 1);
+  ok('fecha del partido', (await match.locator('.mdate').textContent()) === 'Sábado 7 mar 2099');
+  ok('formato y formaciones', (await match.locator('.msub').innerText()) === '7 vs 7 · Blanco 2-3-1 · Oscuro 2-3-1');
+  ok('sin resultado', (await match.locator('.res').innerText()).toLowerCase() === 'sin resultado');
+  ok('7 nombres por equipo', (await match.locator('.mteam.W .mline span:not(.r)').allInnerTexts()).join(', ').split(', ').length === 7);
+
+  // Resultado
+  await match.locator('input[data-s=W]').fill('3'); await match.locator('input[data-s=W]').press('Tab');
+  await match.locator('input[data-s=D]').fill('1'); await match.locator('input[data-s=D]').press('Tab');
+  await page.locator('h1').click(); await page.waitForTimeout(150);
+  ok('gana Blanco', (await page.locator('#hlist .res').innerText()).toLowerCase() === 'gana blanco');
+
+  // Goles
+  const goals = page.locator('#hlist .goals[data-team=D]');
+  await goals.locator('[data-gadd]').click();
+  ok('sin elegir avisa', (await toastText(page)) === 'Elige quién marcó el gol.');
+  const scorer = await goals.locator('[data-gsel] option').nth(1).getAttribute('value');
+  const scorerName = await goals.locator('[data-gsel] option').nth(1).innerText();
+  await goals.locator('[data-gsel]').selectOption(scorer); await goals.locator('[data-gadd]').click(); await page.waitForTimeout(100);
+  await page.locator('#hlist .goals[data-team=D] [data-gsel]').selectOption(scorer); await page.locator('#hlist .goals[data-team=D] [data-gadd]').click(); await page.waitForTimeout(100);
+  ok('dos goles', /×2/.test(await page.locator('#hlist .goals[data-team=D] .gchip').innerText()));
+  ok('el marcador sube con los goles', (await page.inputValue('#hlist input[data-s=D]')) === '3');
+  ok('empate', (await page.locator('#hlist .res').innerText()).toLowerCase() === 'empate');
+  await page.locator('#hlist .goals[data-team=D] [data-gdel]').click(); await page.waitForTimeout(100);
+  ok('quitar un gol', !/×2/.test(await page.locator('#hlist .goals[data-team=D] .gchip').innerText()) && (await page.inputValue('#hlist input[data-s=D]')) === '2');
+
+  // Estadísticas
+  await tab(page, 'stats');
+  const cards = page.locator('#stats .scard');
+  ok('tres tarjetas', (await cards.count()) === 3);
+  ok('goleador', (await cards.nth(0).locator('tbody tr').first().innerText()).replace(/\s+/g, ' ').trim() === `1 ${scorerName} 1`);
+  ok('14 con un partido', (await cards.nth(1).locator('tbody tr').count()) === 14);
+  ok('7 ganados', (await cards.nth(2).locator('td.win').allInnerTexts()).filter(x => x === '1').length === 7);
+  ok('nota de partidos con resultado', /\(1 de 1\)/.test(await page.innerText('#stats .hint')));
+
+  // Cargar en la pizarra
+  await tab(page, 'alin');
+  const before = await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join());
+  await page.click('#shuffle'); await page.click('#swap');
+  await tab(page, 'hist');
+  await page.click('#hlist [data-mload]');
+  ok('cargada: vuelve a Alineación', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true');
+  ok('aviso', (await toastText(page)) === 'Alineación cargada en la pizarra.');
+  ok('los mismos blancos', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
+
+  // Al abrir se carga la última guardada
+  await page.click('#swap');
+  await page.reload(); await page.waitForSelector('#board .mag');
+  await page.waitForTimeout(100);
+  ok('al abrir carga la última alineación', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
+
+  // Medias del historial con medias ocultas
+  await tab(page, 'opc'); await page.click('#ratingseg [data-r="0"]');
+  await tab(page, 'hist');
+  ok('medias ocultas en el historial', !(await page.locator('#hlist .mteam small.rc').first().isVisible()));
+  await tab(page, 'opc'); await page.click('#ratingseg [data-r="1"]');
+
+  // Borrar partido
+  await tab(page, 'hist');
+  await page.click('#hlist [data-mdel]');
+  ok('pide confirmación', (await page.innerText('#hlist [data-mdel]')) === '¿Seguro?');
+  await page.click('#hlist [data-mdel]'); await page.waitForTimeout(100);
+  ok('borrado', /Aún no hay partidos/.test(await page.innerText('#hlist')));
+
+  ok('sin errores', !app.errors.length, app.errors.join(' | '));
+  await app.close(); done();
+})().catch(e => { console.log('CRASH ' + e.stack); process.exit(1); });
