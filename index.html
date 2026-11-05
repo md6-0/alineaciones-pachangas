@@ -273,7 +273,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 .optrow h3{margin:0 0 4px;font-size:.95rem;font-weight:700}
 .optrow .hint{margin:0}
 .backup.optrow{padding-top:16px}
-.appver{margin:14px 0 2px;text-align:center;font-size:.75rem;color:var(--muted);opacity:.8}
+.appver{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin:14px 0 2px;font-size:.75rem;color:var(--muted)}.appver .btn{padding:4px 11px;font-size:.78rem}.upd{position:fixed;top:0;left:0;right:0;z-index:96;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 10px 10px 16px;background:var(--surface);color:var(--fg);border-bottom:2px solid var(--fg);box-shadow:0 6px 18px rgba(0,0,0,.45);font-size:.92rem;font-weight:600;animation:updIn .32s ease-out}.upd span{flex:1;line-height:1.2}.upd .btn{flex:none}.updx{flex:none;width:32px;height:32px;border:0;background:none;color:var(--muted);font-size:14px;cursor:pointer}@keyframes updIn{from{transform:translateY(-100%)}to{transform:none}}@media (prefers-reduced-motion:reduce){.upd{animation:none}}
 .tab-opc .ti,.tab .ts{display:none}
 @media (max-width:520px){#t-stats .tl{display:none}#t-stats .ts{display:inline}}
 @media (max-width:520px){.tab-opc{flex:0 0 32px}.tab-opc .tl{display:none}.tab-opc .ti{display:inline;font-size:.74rem;font-family:system-ui,sans-serif}}
@@ -327,6 +327,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
     </div>
   </header>
 
+  <div class="upd" id="upd" role="status" aria-live="polite" hidden><span>Hay una versión nueva</span><button type="button" class="btn" id="updGo">Actualizar</button><button type="button" class="updx" id="updX" aria-label="Cerrar aviso">✕</button></div>
   <p class="toast" id="toast" role="status" hidden></p>
   <nav class="tabs" role="tablist" aria-label="Secciones">
     <button class="tab" role="tab" id="t-alin" data-tab="alin" type="button">Alineación</button>
@@ -408,7 +409,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <p class="appver" id="appver">Mi pachanga · versión 1.5.0</p>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 1.6.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>
@@ -479,7 +480,45 @@ const localDownloads={save:async({filename,data})=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);return {status:'saved'};
 }};
-if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+/* New versions. The service worker does not activate by itself: a banner appears at the top and you decide
+   when to update, so the app never reloads while you are typing. */
+let swReg=null, swPending=null, swReloading=false;
+const updEl=()=>document.getElementById('upd');
+function placeUpd(){const u=updEl(); document.body.style.paddingTop=u.hidden?'':u.offsetHeight+'px'}
+function offerUpdate(w){swPending=w; updEl().hidden=false; placeUpd()}
+function hideUpd(){updEl().hidden=true; placeUpd()}
+const editing=()=>{const a=document.activeElement; return !!a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='file'};
+if('serviceWorker' in navigator) window.addEventListener('load',()=>{
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    swReg=reg;
+    if(reg.waiting&&navigator.serviceWorker.controller) offerUpdate(reg.waiting);
+    reg.addEventListener('updatefound',()=>{
+      const w=reg.installing; if(!w) return;
+      w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller) offerUpdate(w)});
+    });
+    // Look for a new version when coming back to the app and every half hour
+    const check=()=>reg.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') check()});
+    setInterval(check,30*60*1000);
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swReloading) location.reload()});
+  document.getElementById('updGo').addEventListener('mousedown',e=>e.preventDefault()); // keep focus where it was
+  document.getElementById('updGo').addEventListener('click',()=>{
+    if(editing()){toast('Termina de editar y vuelve a pulsar Actualizar.');return}
+    const w=swPending||(swReg&&swReg.waiting);
+    if(!w){hideUpd();return}
+    swReloading=true; w.postMessage({type:'SKIP_WAITING'});
+  });
+  document.getElementById('updX').addEventListener('click',hideUpd);
+  window.addEventListener('resize',placeUpd);
+  document.getElementById('chk').addEventListener('click',async()=>{
+    if(!swReg){toast('Las actualizaciones no están disponibles aquí.');return}
+    try{await swReg.update()}catch(_){toast('No se pudo comprobar. ¿Sin conexión?');return}
+    if(swReg.waiting) offerUpdate(swReg.waiting);
+    else if(swReg.installing) toast('Descargando la versión nueva…');
+    else toast('Ya tienes la última versión.');
+  });
+});
 </script>
 <script>
 const tier=r=>r>=75?'gold':r>=65?'silver':'bronze';
