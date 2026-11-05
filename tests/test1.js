@@ -7,8 +7,6 @@ const { ok, done } = checker();
   const mags = sel => page.locator(sel + ' .mag').count();
   const boardIds = () => page.locator('#board .mag').evaluateAll(els => els.map(e => e.dataset.n).sort().join(','));
 
-  await page.waitForSelector('#splash', { state: 'detached', timeout: 2000 }).catch(() => {});
-  ok('el balón de inicio se va al cargar', (await page.locator('#splash').count()) === 0);
   ok('5 pestañas', (await page.locator('.tabs .tab').count()) === 5);
   ok('empieza en Alineación', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true' && !(await page.isHidden('#p-alin')));
   ok('título con la fecha de hoy', /^Alineación · \S+ \d+ \w+$/.test(await page.textContent('#h1')), await page.textContent('#h1'));

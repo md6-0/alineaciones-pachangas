@@ -24,7 +24,6 @@ function onPlayers(snap) {
     if (gone || before !== st.sel.length) { save(); rebuild(); }
   }
   render(); renderPlayers(); if (histLoaded) renderStats(); autoLoadLatest();
-  hideSplash();
 }
 
 function onMatches(snap) {
@@ -41,7 +40,7 @@ function onSettings(snap) {
 
 db.collection("settings").onSnapshot(onSettings, () => {});
 db.collection("matches").onSnapshot(onMatches, () => { if (!histLoaded) { failed = true; renderHistory(); renderStats(); } });
-db.collection("players").onSnapshot(onPlayers, () => { if (!loaded) { failed = true; render(); renderPlayers(); hideSplash(); } else toast("Se perdió la conexión con los datos. Recarga la página."); });
+db.collection("players").onSnapshot(onPlayers, () => { if (!loaded) { failed = true; render(); renderPlayers(); } else toast("Se perdió la conexión con los datos. Recarga la página."); });
 
 paintGroup(); applyRatings(); showTab(); render(); renderPlayers(); renderHistory();
 window.addEventListener("load", initServiceWorker);

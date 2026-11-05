@@ -99,7 +99,6 @@ css/players.css        pestaña Jugadores
 css/history.css        pestaña Historial
 css/stats.css          pestaña Estadísticas
 css/options.css        pestaña Opciones
-css/splash.css         pantalla de inicio: el balón girando
 
 js/util.js             utilidades generales: DOM, texto, fechas y descargas
 js/sample-squad.js     plantilla de ejemplo de la primera visita
@@ -115,7 +114,6 @@ js/matches.js          historial: guardar la alineación, resultado, goles y vol
 js/stats.js            cálculo de las estadísticas
 js/backup.js           copia de seguridad y borrar todo
 js/ui.js               piezas de interfaz reutilizables: avisos, confirmaciones, imagen a pantalla completa
-js/splash.js           quita la pantalla de inicio en cuanto la pizarra está lista
 js/views.js            pestañas y repintado
 js/pitch.js            dibujo del campo en SVG
 js/tab-lineup.js       pestaña Alineación
