@@ -1,7 +1,7 @@
 /* Service worker: la app funciona sin conexión.
    Al publicar una versión nueva hay que cambiar VERSION (y la de Opciones, en index.html): así el navegador detecta el cambio y la app avisa.
    Cada archivo nuevo de css/ o js/ tiene que estar también en SHELL. */
-const VERSION = "1.7.0";
+const VERSION = "1.7.1";
 const CACHE = "mipachanga-" + VERSION;
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png",
@@ -34,7 +34,10 @@ self.addEventListener("message", e => {
   if (msg.type === "GET_VERSION" && e.ports[0]) e.ports[0].postMessage(VERSION);
 });
 
-// Red primero (para recibir cambios) y caché si no hay conexión.
+/* La app: caché primero. Cada versión guarda todos sus archivos al instalarse (SHELL), así que al abrir
+   no hace falta preguntar al servidor por cada uno: la app abre al momento, con o sin conexión.
+   Los cambios llegan con la versión nueva (VERSION), que se instala aparte y se activa con el aviso.
+   Así tampoco se mezclan archivos de dos versiones. */
 self.addEventListener("fetch", e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== "GET") return;
@@ -48,9 +51,9 @@ self.addEventListener("fetch", e => {
   }
   if (url.origin !== location.origin) return;
   e.respondWith(
-    fetch(req).then(res => {
+    caches.open(CACHE).then(c => c.match(req, { ignoreSearch: true })).then(hit => hit || fetch(req).then(res => {
       if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
       return res;
-    }).catch(() => caches.match(req, { ignoreSearch: true }).then(m => m || caches.match("./index.html")))
+    }).catch(() => caches.match("./index.html")))
   );
 });

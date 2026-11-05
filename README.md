@@ -144,6 +144,8 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 **`db` imita a una base de datos de documentos.** Hoy guarda todo en `localStorage`, pero el resto de la app solo usa `collection().onSnapshot()` y `doc().set/update/delete()`. Para pasar a una base de datos en la nube bastaría con cambiar `db.js`.
 
+**La app abre desde la caché.** Cada versión guarda todos sus archivos en el dispositivo al instalarse, y al abrir la app se leen de ahí sin preguntar al servidor por cada uno. Por eso abre al momento, con o sin conexión, y por eso los cambios solo llegan al subir `VERSION`.
+
 **El reparto es determinista.** La misma convocatoria da siempre las mismas opciones; **Otra opción** pasa a la siguiente de las seis mejores. Hasta 16 convocados se prueban todos los repartos; con más, se buscan con un generador aleatorio con semilla.
 
 ### Cómo se guardan los datos
