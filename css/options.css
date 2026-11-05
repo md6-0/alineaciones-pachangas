@@ -1,0 +1,37 @@
+/* Pestaña Opciones: una fila por ajuste, la copia de seguridad, el borrado y la versión. */
+
+.opts{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.optrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 18px;border-top:1px solid var(--line);margin:0}
+.optrow:first-child{border-top:0}
+.optrow h3{margin:0 0 4px;font-size:.95rem;font-weight:700}
+.optrow .hint{margin:0}
+
+/* Copia de seguridad */
+.backup.optrow{padding-top:16px}
+.bk-msg{width:100%;color:var(--fg)!important}
+
+/* Día del partido y nombre del grupo */
+.datepick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.datepick input{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.datepick input:focus{outline:2px solid var(--accent);border-color:transparent}
+.textopt{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;min-width:0;width:min(320px,100%)}
+.textopt:focus{outline:2px solid var(--accent);border-color:transparent}
+
+/* Borrar todo */
+.btn.danger{color:#f3a59b;border-color:rgba(243,165,155,.45)}
+.btn.danger.arm{background:#c0453a;border-color:#c0453a;color:#fff}
+
+/* Versión y buscar actualizaciones */
+.appver{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin:14px 0 2px;font-size:.75rem;color:var(--muted)}
+.appver .btn{padding:4px 11px;font-size:.78rem}
+
+/* Más compacto en el móvil */
+@media (max-width:520px){
+  .optrow{padding:11px 13px;gap:8px}
+  .optrow h3{font-size:.88rem;margin-bottom:2px}
+  .optrow .hint{font-size:.74rem;line-height:1.35}
+  .optrow .seg button{padding:4px 11px;font-size:.8rem}
+  .optrow .btn{padding:5px 11px;font-size:.8rem}
+  .datepick input,.textopt{padding:5px 10px;font-size:.85rem}
+  .backup .btns{gap:6px}
+}

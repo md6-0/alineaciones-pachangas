@@ -1,0 +1,52 @@
+/* Pizarra: el campo, los imanes de los jugadores y los huecos libres de cada formación. */
+
+.board{position:relative;aspect-ratio:44/64;max-width:100%;border-radius:6px;
+  overflow:visible;   /* los porteros se apoyan en la línea de gol sin cortarse */
+  background:repeating-linear-gradient(180deg,var(--board) 0 10%,var(--board2) 10% 20%);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px -18px rgba(0,0,0,.55)}
+.board.over{box-shadow:0 0 0 2px var(--gk),0 18px 40px -18px rgba(0,0,0,.55)}
+.board svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.board .tag-top{top:4.5%}.board .tag-bot{bottom:4.5%}
+.board .tag{position:absolute;right:6.5%;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-soft);pointer-events:none}
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--chalk);font-weight:600;font-size:.9rem;pointer-events:none}
+
+/* Imán: disco con la media (o las iniciales) y etiqueta con el nombre y las posiciones */
+.mag{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;
+  touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;z-index:2}
+.disc{position:relative;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-stretch:85%;font-size:1rem;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  box-shadow:0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45)}
+.mag.W .disc{background:var(--w-mag);color:#16191a;--ring-bg:var(--w-mag)}
+.mag.D .disc{background:var(--d-mag);color:#f1f1ee;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45);--ring-bg:var(--d-mag)}
+/* Aro de color según la media: oro, plata o bronce */
+.mag.gold{--tier:var(--gold)} .mag.silver{--tier:var(--silver)} .mag.bronze{--tier:var(--bronze)}
+.mag.gold .disc,.mag.silver .disc,.mag.bronze .disc{box-shadow:0 0 0 3px var(--tier),0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45)}
+.lab{font-size:.7rem;font-weight:600;line-height:1;color:#fff;white-space:nowrap;padding:3px 6px;border-radius:3px;background:rgba(0,0,0,.42);display:flex;gap:5px;align-items:baseline}
+.role{font-size:.56rem;font-weight:600;letter-spacing:.12em;color:rgba(255,255,255,.55)}
+.mag.dragging{position:fixed!important;z-index:60;cursor:grabbing;transform:translate(-50%,-50%) scale(1.1);pointer-events:none}
+.labrow{display:flex;flex-direction:row;align-items:center;gap:2px}
+/* Letras de posición (P, D, M, A) */
+.ptags{display:inline-flex;gap:1px;pointer-events:none}
+.ptags i{min-width:9px;text-align:center;font-style:normal;font-size:.5rem;font-weight:800;letter-spacing:.04em;line-height:1;padding:2px 3px;border-radius:2px;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.ptags .pt-POR{background:#c99a1e;color:#1d1708}.ptags .pt-DEF{background:#3b78c4}.ptags .pt-MED{background:#2f9558}.ptags .pt-ATQ{background:#cf4a3f}
+
+/* En el campo, cada imán se ancla por el disco para que todos los de una línea queden a la misma altura */
+.board .mag{transform:translate(-50%,-20px)}
+.board .mag.dragging{transform:translate(-50%,-20px) scale(1.1)}
+.board .lab{background:#15211a}
+
+/* Hueco libre de la formación */
+.slot{position:absolute;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;border:1px dashed var(--chalk-soft);
+  display:flex;align-items:center;justify-content:center;font-size:.56rem;font-weight:600;letter-spacing:.12em;color:var(--chalk-soft);pointer-events:none}
+
+/* Imanes más pequeños en el móvil */
+@media (max-width:520px){
+  .board .disc{width:28px;height:28px;font-size:.76rem}
+  .board .mag.gold .disc,.board .mag.silver .disc,.board .mag.bronze .disc{box-shadow:0 0 0 2px var(--tier),0 2px 4px rgba(0,0,0,.4)}
+  .board .lab{font-size:.56rem;padding:2px 4px;max-width:62px;overflow:hidden;text-overflow:ellipsis;display:block}
+  .board .labrow{gap:1px}
+  .board .ptags i{font-size:.42rem;padding:1px 2px;min-width:7px}
+  .slot{width:26px;height:26px;font-size:.45rem}
+  .board .mag{transform:translate(-50%,-14px)}
+  .board .mag.dragging{transform:translate(-50%,-14px) scale(1.1)}
+}

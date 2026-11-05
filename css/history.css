@@ -1,0 +1,45 @@
+/* Pestaña Historial: una tarjeta por partido con el resultado, los dos equipos y los goles. */
+
+.hlist{display:flex;flex-direction:column;gap:14px}
+.match{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.mhead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.mdate{margin:0;font-weight:800;font-stretch:78%;font-size:1.35rem;text-transform:uppercase;letter-spacing:.01em}
+.msub{margin:2px 0 0;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.mfoot{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* Marcador */
+.score{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-weight:600;font-size:.85rem;color:var(--muted)}
+.score input{font:inherit;font-weight:800;font-size:1.3rem;font-stretch:80%;width:54px;text-align:center;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 0;font-variant-numeric:tabular-nums}
+.score input:focus{outline:2px solid var(--accent);border-color:transparent}
+.score .dash{color:var(--fg);font-weight:800}
+.res{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.res.W{background:var(--w-mag);color:#16191a;border-color:var(--w-mag)}
+.res.D{background:var(--d-mag);color:#f1f1ee;border-color:rgba(255,255,255,.2)}
+
+/* Los dos equipos */
+.mteams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.mteams{grid-template-columns:1fr}}
+.mteam{border:2px solid var(--tb);border-radius:5px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.mteam.W{--tb:var(--w-border)} .mteam.D{--tb:var(--d-border)}
+.mteam h3{margin:0 0 4px;font-size:.95rem;font-weight:700;font-stretch:85%;text-transform:uppercase;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.mteam h3 span.l{display:flex;align-items:center;gap:8px}
+.mteam h3 small{font-weight:600;font-size:.75rem;color:var(--muted);text-transform:none;font-stretch:100%}
+.mline{display:flex;gap:10px;font-size:.88rem;line-height:1.4}
+.mline .r{flex:0 0 34px;font-size:.62rem;font-weight:700;letter-spacing:.12em;color:var(--faint);padding-top:3px}
+
+/* Goles */
+.goals{border-top:1px dashed var(--line);margin-top:6px;padding-top:8px;display:flex;flex-direction:column;gap:8px}
+.goals .gl{font-size:.62rem;font-weight:700;letter-spacing:.12em;color:var(--faint)}
+.gchips{display:flex;flex-wrap:wrap;gap:6px}
+.gchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 10px;font-size:.84rem;font-weight:600;background:var(--bg)}
+.gchip b{font-variant-numeric:tabular-nums;color:var(--accent)}
+.gchip button{border:0;background:transparent;color:var(--muted);width:22px;height:22px;border-radius:999px;font-weight:700;line-height:1}
+.gchip button:hover{color:var(--fg);background:var(--line)}
+.gadd{display:flex;gap:6px;align-items:center}
+.gadd select{font:inherit;font-size:.84rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 6px;min-width:0;flex:1}
+.gadd button{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:4px 12px;font-size:.82rem;font-weight:600;white-space:nowrap}
+
+@media (max-width:520px){
+  .match{padding:14px}
+  .mhead{gap:8px}
+}
