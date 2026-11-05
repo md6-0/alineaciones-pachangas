@@ -1,0 +1,65 @@
+/* Pestaña Alineación: la columna de control (convocatoria y equipos), los banquillos y el menú Compartir de la cabecera.
+   La pizarra tiene su propia hoja (board.css), que se carga antes. */
+
+.main{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:880px){.main{grid-template-columns:1fr}}
+
+/* Columna de control */
+.side{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
+.sec{padding:18px 20px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line)}
+.sec:first-child{border-top:0}
+.sec h2{margin:0;font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8rem}
+
+/* Convocatoria */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;display:inline-flex;gap:7px;align-items:center;font-size:.86rem;font-weight:500}
+.chip .r{font-variant-numeric:tabular-nums;font-weight:700;font-size:.78rem;color:var(--faint)}
+.chip[aria-pressed="true"]{border-color:var(--fg);color:var(--fg);background:var(--bg)}
+.chip[aria-pressed="true"] .r{color:var(--fg)}
+
+/* Cada equipo: nombre, media, formaciones y banquillo */
+#teams{display:flex;flex-direction:column;gap:12px;padding:0 12px 12px}
+.sec.team{border:2px solid var(--tb);border-radius:5px;padding:16px}
+.sec.team.W{--tb:var(--w-border)} .sec.team.D{--tb:var(--d-border)}
+.thead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tname{font-weight:700;font-stretch:80%;font-size:1.3rem;text-transform:uppercase;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+.tmeta{display:flex;align-items:baseline;gap:6px;color:var(--muted);font-size:.8rem}
+.tmeta b{font-weight:800;font-stretch:75%;font-size:1.6rem;color:var(--fg);font-variant-numeric:tabular-nums;line-height:1}
+.tsub{font-size:.8rem;color:var(--muted);margin:-6px 0 0}
+.forms{display:flex;flex-wrap:wrap;gap:6px}
+.form{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.84rem;font-weight:600;font-variant-numeric:tabular-nums}
+.form:hover{color:var(--fg)}
+.form[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+/* Banquillo: los imanes se vuelven pastillas en fila */
+.bench{min-height:58px;border-radius:4px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px dashed var(--line);background:var(--bg)}
+.bench.over{border-color:var(--gk);border-style:solid}
+.bench .mag.gold .disc,.bench .mag.silver .disc,.bench .mag.bronze .disc{box-shadow:0 0 0 2px var(--tier)}
+.bench .ptags{margin-top:0}
+.bench .mag{position:static;transform:none;flex-direction:row;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px}
+.bench .disc{width:28px;height:28px;font-size:.78rem;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.bench .mag.W .disc{box-shadow:0 0 0 1px #d4d3cb inset}
+.bench .lab{background:none;color:var(--fg);padding:0;font-size:.8rem}
+.bench .empty{font-size:.8rem;color:var(--faint);padding:0 6px}
+
+/* Cabecera: Guardar y el menú Compartir */
+.hctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.share{position:relative}
+.smenu{position:absolute;right:0;top:calc(100% + 6px);z-index:40;min-width:210px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px;
+  display:flex;flex-direction:column;box-shadow:0 14px 30px -10px rgba(0,0,0,.6)}
+.smenu a,.smenu button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:0;background:transparent;color:var(--fg);
+  text-decoration:none;font:inherit;font-weight:600;font-size:.92rem;padding:8px 10px;border-radius:5px;cursor:pointer}
+.smenu a:hover,.smenu button:hover,.smenu a:focus-visible,.smenu button:focus-visible{background:var(--line)}
+.smenu small{font-size:.74rem;font-weight:500;color:var(--muted)}
+@media (max-width:520px){.smenu{left:0;right:auto}}
+
+@media (max-width:520px){
+  .tname{font-size:1.05rem}
+  .tmeta b{font-size:1.3rem}
+  .sec.team{padding:12px}
+  #teams{padding:0 8px 8px}
+  .sec{padding:14px}
+  .hctl{width:100%}
+}

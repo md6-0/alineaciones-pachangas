@@ -1,0 +1,98 @@
+/* Base: colores, tipografía, botones, pestañas tipo carpeta y piezas comunes (avisos, superposición, banda de versión nueva).
+   El resto de hojas, una por pantalla, se apoyan en estas variables. */
+
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#1d3327; --surface:#254031; --fg:#eef3ef; --muted:#b4c6ba; --faint:#87a090; --line:#36533f;
+  --board:#2f5e44; --board2:#346649; --chalk:rgba(255,255,255,.7); --chalk-soft:rgba(255,255,255,.34);
+  --w-mag:#f5f4ef; --d-mag:#1b1e21; --gk:#c9a24a; --accent:#9ad6b0;
+  --w-border:#f5f4ef; --d-border:#101412;
+  --folder:#2b4b39; --folder-line:#3e604c; --tab-off:#21392c;
+  --gold:#c9a24a; --silver:#a9b0b5; --bronze:#a8714a; --warn:#f0b27a;
+  --sans:"Archivo",system-ui,sans-serif; color-scheme:dark;
+}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Cabecera */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px}
+h1{font-weight:800;font-stretch:72%;font-size:2.6rem;letter-spacing:-.01em;line-height:.95;margin:0;text-transform:uppercase;text-wrap:balance}
+
+/* Botones */
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-weight:600;font-size:.86rem;border:1px solid var(--fg);border-radius:999px;padding:7px 15px;background:var(--fg);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn.arm{background:var(--warn);border-color:var(--warn);color:#1d1408}
+/* Botón pequeño de quitar o borrar, que pide confirmación (clase arm) */
+.del{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:600;white-space:nowrap}
+.del.arm{border-color:var(--warn);color:var(--warn)}
+
+/* Selector segmentado (formato, medias, orden) */
+.seg{display:inline-flex;padding:3px;border-radius:999px;background:var(--line);gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);padding:5px 14px;border-radius:999px;font-weight:600;font-size:.88rem;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+/* Textos */
+.status{font-size:.86rem;color:var(--muted);margin:0}
+.status.warn{color:var(--warn)}
+.hint{font-size:.82rem;color:var(--muted);margin:0;max-width:72ch}
+
+/* Muestra de color de cada equipo */
+.sw{width:14px;height:14px;border-radius:50%;display:inline-block}
+.sw.W{background:var(--w-mag);box-shadow:0 0 0 1px #c9c8c0 inset}.sw.D{background:var(--d-mag);box-shadow:0 0 0 1px rgba(255,255,255,.2) inset}
+
+/* Medias ocultas en toda la app (Opciones → Medias) */
+.no-ratings .rc,.no-ratings #s-media{display:none!important}
+
+/* Aviso breve arriba */
+.toast{position:fixed;z-index:95;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,0);margin:0;
+  max-width:min(440px,calc(100% - 32px));box-sizing:border-box;padding:10px 16px;border-radius:10px;
+  background:var(--surface);color:var(--fg);border:1px solid var(--line);
+  font-size:.88rem;font-weight:600;line-height:1.35;box-shadow:0 12px 30px -8px rgba(0,0,0,.6);
+  animation:toastIn .22s ease-out;pointer-events:auto;cursor:pointer}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-12px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){.toast{animation:none}}
+
+/* Superposición para ver la imagen de la alineación */
+.overlay{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.ovbox{background:var(--surface);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;max-width:520px;max-height:100%;overflow:auto}
+.ovbox img{max-width:100%;max-height:70vh;border-radius:4px}
+.ovbox p{margin:0;font-size:.86rem;color:var(--muted);text-align:center}
+
+/* Banda de versión nueva */
+.upd{position:fixed;top:0;left:0;right:0;z-index:96;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 10px 10px 16px;
+  background:var(--surface);color:var(--fg);border-bottom:2px solid var(--fg);box-shadow:0 6px 18px rgba(0,0,0,.45);font-size:.92rem;font-weight:600;animation:updIn .32s ease-out}
+.upd span{flex:1;line-height:1.2}
+.upd .btn{flex:none}
+.updx{flex:none;width:32px;height:32px;border:0;background:none;color:var(--muted);font-size:14px;cursor:pointer}
+@keyframes updIn{from{transform:translateY(-100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.upd{animation:none}}
+
+/* Pestañas: carpetas de archivador */
+.tabs{display:flex;align-items:flex-end;gap:6px;padding-left:18px;margin-bottom:-22px;position:relative;z-index:1}
+.tab{border:1px solid var(--folder-line);border-bottom:0;background:var(--tab-off);color:var(--muted);font-weight:600;font-size:.95rem;
+  padding:9px 22px 10px;border-radius:6px 6px 0 0;margin-bottom:1px;box-shadow:inset 0 -6px 8px -6px rgba(0,0,0,.35)}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{background:var(--folder);color:var(--fg);padding:12px 26px 12px;margin-bottom:-1px;box-shadow:none}
+.folder{background:var(--folder);border:1px solid var(--folder-line);border-radius:0 6px 6px 6px;padding:20px;box-shadow:0 18px 40px -24px rgba(0,0,0,.6)}
+@media (max-width:520px){
+  .folder{padding:12px}
+  .tabs{gap:3px;padding-left:4px}
+  .tab{flex:1 1 0;min-width:0;padding:8px 2px 9px;font-size:.74rem;letter-spacing:-.01em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tab[aria-selected="true"]{padding:10px 2px 10px}
+}
+/* En el móvil, «Estadísticas» se acorta a «Stats» y Opciones queda solo con el engranaje */
+.tab-opc .ti,.tab .ts{display:none}
+@media (max-width:520px){
+  #t-stats .tl{display:none}#t-stats .ts{display:inline}
+  .tab-opc{flex:0 0 32px}.tab-opc .tl{display:none}.tab-opc .ti{display:inline;font-size:.74rem;font-family:system-ui,sans-serif}
+}
