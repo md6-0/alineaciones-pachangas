@@ -20,7 +20,7 @@ function renderStats() {
   const { scorers, played, record, withResult } = computeStats(matches);
   const noResult = "Todavía no hay partidos con resultado.";
   box.innerHTML = `<div class="sgrid">
-    ${statCard("Goleadores", scorers, r => r.avg + "/" + r.g, [["PJ", "", r => r.apps], ["Goles", "", r => r.g], ["Media", "big", r => fmtAvg(r.avg)]], "Todavía no hay goles apuntados.")}
+    ${statCard("Goleadores", scorers, r => r.avg + "/" + r.g, [["Goles", "big", r => r.g], ["PJ", "soft", r => r.apps], ["Goles por partido", "soft", r => fmtAvg(r.avg)]], "Todavía no hay goles apuntados.")}
     ${statCard("Partidos jugados", played, r => r.pj, [["PJ", "big", r => r.pj]], noResult)}
     ${statCard("Ganados, empatados y perdidos", record, r => r.w + "/" + r.l + "/" + r.d, [["G", "win", r => r.w], ["E", "", r => r.d], ["P", "", r => r.l]], noResult)}
   </div>

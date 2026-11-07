@@ -12,23 +12,32 @@ const scorersSub = () => `${groupName()} · ${cnt(matches.length, "partido", "pa
 function scorersText() {
   const rows = scorers(), rk = scoreRanks(rows);
   return [`⚽ Goleadores · ${scorersSub()}`, "",
-    ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${fmtAvg(r.avg)} por partido (${cnt(r.g, "gol", "goles")} en ${cnt(r.apps, "partido", "partidos")})`)].join("\n");
+    ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${cnt(r.g, "gol", "goles")} (${r.apps} PJ · ${fmtAvg(r.avg)} por partido)`)].join("\n");
 }
 
-/** Dibuja la imagen de los goleadores y devuelve el canvas. */
+/** Dibuja la imagen de los goleadores y devuelve el canvas: los goles destacados; PJ y goles por partido, más pequeños y apagados. */
 async function drawScorersImage() {
   try { await document.fonts.ready; } catch {}
   const rows = scorers(), rk = scoreRanks(rows);
-  const W = 1080, M = 40, top = 205, rowH = 78, H = top + rows.length * rowH + 70;
+  const W = 1080, M = 40, top = 222, rowH = 78, H = top + rows.length * rowH + 60;
+  const nameX = M + 92, avgR = W - M - 28, pjR = avgR - 260, golR = pjR - 120;   // columnas (alineadas a la derecha)
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif";
+  const MUTED = "#9fb5a7";
 
   // Fondo y título (como las otras imágenes)
   c.fillStyle = "#1d3327"; c.fillRect(0, 0, W, H);
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   c.fillStyle = "#87a090"; c.font = `600 22px ${F}`; c.fillText(scorersSub().toUpperCase(), M, 72);
   c.fillStyle = "#eef3ef"; c.font = `800 56px ${F}`; c.fillText("GOLEADORES", M, 150);
-  c.textAlign = "right"; c.fillStyle = "#87a090"; c.font = `600 20px ${F}`; c.fillText("GOLES POR PARTIDO", W - M - 28, 188); c.textAlign = "left";
+
+  // Cabecera de la tabla
+  c.fillStyle = "#87a090"; c.font = `700 18px ${F}`;
+  if ("letterSpacing" in c) c.letterSpacing = "2px";
+  c.fillText("JUGADOR", nameX, 200);
+  c.textAlign = "right";
+  c.fillText("GOLES", golR, 200); c.fillText("PJ", pjR, 200); c.fillText("GOLES POR PARTIDO", avgR, 200);
+  if ("letterSpacing" in c) c.letterSpacing = "0px";
 
   rows.forEach((r, i) => {
     const y = top + i * rowH, h = rowH - 12, mid = y + h / 2, podium = rk[i] <= 3;
@@ -40,14 +49,14 @@ async function drawScorersImage() {
       c.fillStyle = "#16191a"; c.font = `800 24px ${F}`;
     } else { c.fillStyle = "#87a090"; c.font = `700 24px ${F}`; }
     c.fillText(String(rk[i]), M + 48, mid + 1);
-    // Media a la derecha, goles y partidos a su lado, y el nombre en el espacio que quede
-    c.textAlign = "right"; c.fillStyle = "#eef3ef"; c.font = `800 38px ${F}`;
-    const ax = W - M - 28; c.fillText(fmtAvg(r.avg), ax, mid + 1);
-    const dx = ax - 120; c.fillStyle = "#b4c6ba"; c.font = `600 22px ${F}`;
-    c.fillText(`${cnt(r.g, "gol", "goles")} · ${r.apps} PJ`, dx, mid + 1);
-    const dw = c.measureText(`${cnt(r.g, "gol", "goles")} · ${r.apps} PJ`).width;
+    // Goles en grande; PJ y goles por partido, pequeños y apagados
+    c.textAlign = "right";
+    c.fillStyle = "#eef3ef"; c.font = `800 40px ${F}`; c.fillText(String(r.g), golR, mid + 1);
+    c.fillStyle = MUTED; c.font = `600 26px ${F}`;
+    c.fillText(String(r.apps), pjR, mid + 1); c.fillText(fmtAvg(r.avg), avgR, mid + 1);
+    // Nombre en el espacio que queda hasta los goles
     c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `${podium ? 700 : 600} 30px ${F}`;
-    c.fillText(fitText(c, r.name, dx - dw - 30 - (M + 92)), M + 92, mid + 1);
+    c.fillText(fitText(c, r.name, golR - 90 - nameX), nameX, mid + 1);
   });
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   return cv;

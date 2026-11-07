@@ -65,7 +65,7 @@ const { ok, done } = checker();
   await page.click('#scbtn');
   ok('abre el menú de goleadores', await page.isVisible('#scmenu'));
   const sw = decodeURIComponent((await page.getAttribute('#scmenu .s-wa', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('texto de goleadores', /^⚽ Goleadores · .+ · 1 partido$/.test(sw[0]) && sw[2] === `🥇 ${scorerName}: 1,00 por partido (1 gol en 1 partido)`, sw.join(' / '));
+  ok('texto de goleadores', /^⚽ Goleadores · .+ · 1 partido$/.test(sw[0]) && sw[2] === `🥇 ${scorerName}: 1 gol (1 PJ · 1,00 por partido)`, sw.join(' / '));
   ok('Telegram de goleadores', (await page.getAttribute('#scmenu .s-tg', 'href')).startsWith('https://t.me/share/url?url=' + encodeURIComponent(sw[0])));
   const [sdl] = await Promise.all([page.waitForEvent('download'), page.click('#scmenu .s-dl')]);
   ok('descarga la imagen de goleadores', sdl.suggestedFilename() === 'pachanga-goleadores.png' && await page.isHidden('#scmenu'));

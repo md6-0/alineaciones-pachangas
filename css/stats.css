@@ -12,6 +12,7 @@ table.st{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 .st td.n{text-align:left;font-weight:600}
 .st td.pos{color:var(--faint);width:28px;font-size:.8rem}
 .st td.big{font-weight:800;font-stretch:80%;font-size:1.05rem}
+.st td.soft{color:var(--muted);font-size:.8rem}
 .st td.win{color:var(--accent);font-weight:700}
 .st td.none{font-weight:400;color:var(--muted)}
 .stats-note{margin-top:12px}
