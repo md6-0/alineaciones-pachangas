@@ -25,7 +25,7 @@ Cada jugador tiene nota de ataque, defensa y portero (de 1 a 99) y una o varias 
 
 ### 🏆 Historial y estadísticas
 
-En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores, partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o Telegram, o en imagen para descargarla o compartirla.
+En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores (con sus partidos jugados y la media de goles por partido, ordenados por esa media), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o Telegram, o en imagen para descargarla o compartirla.
 
 ### ⚙️ Opciones
 
