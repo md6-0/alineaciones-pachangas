@@ -1,8 +1,7 @@
 "use strict";
 /* Reglas de las estadísticas: goles, partidos jugados y ganados, empatados y perdidos de cada jugador. No tocan la pantalla.
    Partidos y G/E/P cuentan solo los partidos con el resultado de los dos equipos (los suplentes cuentan como jugadores);
-   los goles cuentan siempre. Por eso la media de goles se calcula sobre todos los partidos en que estuvo convocado (apps),
-   tengan resultado o no. */
+   los goles cuentan siempre. Por eso, en goleadores, los partidos (apps) son todos en los que estuvo convocado, tengan resultado o no. */
 
 function computeStats(list) {
   const S = {};
@@ -25,19 +24,16 @@ function computeStats(list) {
     });
   });
   // El nombre actual si el jugador sigue en la lista; si no, el del partido
-  const rows = Object.values(S).map(r => Object.assign(r, { name: BY[r.id] ? BY[r.id].n : r.name, avg: r.g / Math.max(r.apps, 1) }));
+  const rows = Object.values(S).map(r => Object.assign(r, { name: BY[r.id] ? BY[r.id].n : r.name }));
   const byName = (a, b) => a.name.localeCompare(b.name);
   return {
     withResult,
-    // Goleadores: por media de goles por partido; a igual media, más goles y luego el nombre
-    scorers: rows.filter(r => r.g > 0).sort((a, b) => b.avg - a.avg || b.g - a.g || byName(a, b)),
+    // Goleadores: por goles; a igualdad de goles, gana quien ha jugado menos partidos; luego el nombre
+    scorers: rows.filter(r => r.g > 0).sort((a, b) => b.g - a.g || a.apps - b.apps || byName(a, b)),
     played: rows.filter(r => r.pj > 0).sort((a, b) => b.pj - a.pj || byName(a, b)),
     record: rows.filter(r => r.pj > 0).sort((a, b) => b.w - a.w || a.l - b.l || b.d - a.d || byName(a, b))
   };
 }
 
-/** Puesto de cada goleador (lista ya ordenada): los empatados en media y goles comparten puesto (1, 2, 2, 4…). */
-const scoreRanks = rows => rows.map(r => rows.findIndex(x => x.avg === r.avg && x.g === r.g) + 1);
-
-/** Media con dos decimales y coma: 1,50. */
-const fmtAvg = v => v.toFixed(2).replace(".", ",");
+/** Puesto de cada goleador (lista ya ordenada): los empatados en goles y partidos comparten puesto (1, 2, 2, 4…). */
+const scoreRanks = rows => rows.map(r => rows.findIndex(x => x.g === r.g && x.apps === r.apps) + 1);

@@ -8,19 +8,19 @@ const scorers = () => computeStats(matches).scorers;
 /** Subtítulo: el grupo y cuántos partidos hay en el historial. */
 const scorersSub = () => `${groupName()} · ${cnt(matches.length, "partido", "partidos")}`;
 
-/** Goleadores en texto: puesto (medalla para los tres primeros puestos), goles, partidos y media por partido. */
+/** Goleadores en texto: puesto (medalla para los tres primeros puestos), goles y partidos jugados. */
 function scorersText() {
   const rows = scorers(), rk = scoreRanks(rows);
   return [`⚽ Goleadores · ${scorersSub()}`, "",
-    ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${cnt(r.g, "gol", "goles")} (${r.apps} PJ · ${fmtAvg(r.avg)} por partido)`)].join("\n");
+    ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${cnt(r.g, "gol", "goles")} (${r.apps} PJ)`)].join("\n");
 }
 
-/** Dibuja la imagen de los goleadores y devuelve el canvas: los goles destacados; PJ y goles por partido, más pequeños y apagados. */
+/** Dibuja la imagen de los goleadores y devuelve el canvas: los goles destacados; los partidos jugados, más pequeños y apagados. */
 async function drawScorersImage() {
   try { await document.fonts.ready; } catch {}
   const rows = scorers(), rk = scoreRanks(rows);
   const W = 1080, M = 40, top = 222, rowH = 78, H = top + rows.length * rowH + 60;
-  const nameX = M + 92, avgR = W - M - 28, pjR = avgR - 260, golR = pjR - 120;   // columnas (alineadas a la derecha)
+  const nameX = M + 92, pjC = W - M - 90, golC = pjC - 160;   // centro de cada columna de números
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif";
   const MUTED = "#9fb5a7";
@@ -35,8 +35,8 @@ async function drawScorersImage() {
   c.fillStyle = "#87a090"; c.font = `700 18px ${F}`;
   if ("letterSpacing" in c) c.letterSpacing = "2px";
   c.fillText("JUGADOR", nameX, 200);
-  c.textAlign = "right";
-  c.fillText("GOLES", golR, 200); c.fillText("PJ", pjR, 200); c.fillText("GOLES POR PARTIDO", avgR, 200);
+  c.textAlign = "center";
+  c.fillText("GOLES", golC, 200); c.fillText("PJ", pjC, 200);
   if ("letterSpacing" in c) c.letterSpacing = "0px";
 
   rows.forEach((r, i) => {
@@ -49,14 +49,14 @@ async function drawScorersImage() {
       c.fillStyle = "#16191a"; c.font = `800 24px ${F}`;
     } else { c.fillStyle = "#87a090"; c.font = `700 24px ${F}`; }
     c.fillText(String(rk[i]), M + 48, mid + 1);
-    // Goles en grande; PJ y goles por partido, pequeños y apagados
-    c.textAlign = "right";
-    c.fillStyle = "#eef3ef"; c.font = `800 40px ${F}`; c.fillText(String(r.g), golR, mid + 1);
+    // Goles en grande; partidos jugados, pequeños y apagados
+    c.textAlign = "center";
+    c.fillStyle = "#eef3ef"; c.font = `800 40px ${F}`; c.fillText(String(r.g), golC, mid + 1);
     c.fillStyle = MUTED; c.font = `600 26px ${F}`;
-    c.fillText(String(r.apps), pjR, mid + 1); c.fillText(fmtAvg(r.avg), avgR, mid + 1);
+    c.fillText(String(r.apps), pjC, mid + 1);
     // Nombre en el espacio que queda hasta los goles
     c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `${podium ? 700 : 600} 30px ${F}`;
-    c.fillText(fitText(c, r.name, golR - 90 - nameX), nameX, mid + 1);
+    c.fillText(fitText(c, r.name, golC - 60 - nameX), nameX, mid + 1);
   });
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   return cv;
