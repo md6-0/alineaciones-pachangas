@@ -61,6 +61,18 @@ const { ok, done } = checker();
   ok('7 ganados', (await cards.nth(2).locator('td.win').allInnerTexts()).filter(x => x === '1').length === 7);
   ok('nota de partidos con resultado', /\(1 de 1\)/.test(await page.innerText('#stats .hint')));
 
+  // Un partido sin resultado no cuenta como jugado (tampoco en Goleadores)
+  const pjs = await page.evaluate(() => {
+    const pl = [{ id: 'a', name: 'A' }], rival = [{ id: 'b', name: 'B' }];
+    const st = computeStats([
+      { id: '2026-01-01', W: pl, D: rival, score: { W: 2, D: 1 }, goals: { W: { a: 2 } } },
+      { id: '2026-01-08', W: pl, D: rival, goals: { W: { a: 1 } } }
+    ]);
+    const a = list => (list.find(r => r.id === 'a') || {}).pj;
+    return [a(st.scorers), a(st.played), st.scorers.find(r => r.id === 'a').g];
+  });
+  ok('sin resultado no suma PJ', pjs[0] === 1 && pjs[1] === 1 && pjs[2] === 3, pjs.join(' '));
+
   // Compartir goleadores
   await page.click('#scbtn');
   ok('abre el menú de goleadores', await page.isVisible('#scmenu'));

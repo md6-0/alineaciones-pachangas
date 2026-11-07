@@ -12,7 +12,7 @@ const scorersSub = () => `${groupName()} · ${cnt(matches.length, "partido", "pa
 function scorersText() {
   const rows = scorers(), rk = scoreRanks(rows);
   return [`⚽ Goleadores · ${scorersSub()}`, "",
-    ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${cnt(r.g, "gol", "goles")} (${r.apps} PJ)`)].join("\n");
+    ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${cnt(r.g, "gol", "goles")} (${r.pj} PJ)`)].join("\n");
 }
 
 /** Dibuja la imagen de los goleadores y devuelve el canvas: los goles destacados; los partidos jugados, más pequeños y apagados. */
@@ -53,7 +53,7 @@ async function drawScorersImage() {
     c.textAlign = "center";
     c.fillStyle = "#eef3ef"; c.font = `800 40px ${F}`; c.fillText(String(r.g), golC, mid + 1);
     c.fillStyle = MUTED; c.font = `600 26px ${F}`;
-    c.fillText(String(r.apps), pjC, mid + 1);
+    c.fillText(String(r.pj), pjC, mid + 1);
     // Nombre en el espacio que queda hasta los goles
     c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `${podium ? 700 : 600} 30px ${F}`;
     c.fillText(fitText(c, r.name, golC - 60 - nameX), nameX, mid + 1);

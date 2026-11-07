@@ -20,9 +20,9 @@ function renderStats() {
   const { scorers, played, record, withResult } = computeStats(matches);
   const noResult = "Todavía no hay partidos con resultado.";
   box.innerHTML = `<div class="sgrid">
-    ${statCard("Goleadores", scorers, r => r.g + "/" + r.apps, [["Goles", "big c", r => r.g], ["PJ", "soft c", r => r.apps]], "Todavía no hay goles apuntados.")}
+    ${statCard("Goleadores", scorers, r => r.g + "/" + r.pj, [["Goles", "big c", r => r.g], ["PJ", "soft c", r => r.pj]], "Todavía no hay goles apuntados.")}
     ${statCard("Partidos jugados", played, r => r.pj, [["PJ", "big", r => r.pj]], noResult)}
     ${statCard("Ganados, empatados y perdidos", record, r => r.w + "/" + r.l + "/" + r.d, [["G", "win", r => r.w], ["E", "", r => r.d], ["P", "", r => r.l]], noResult)}
   </div>
-  <p class="hint stats-note">Partidos jugados y G/E/P cuentan solo los partidos con el resultado de los dos equipos apuntado (${withResult} de ${matches.length}); los suplentes de ese día cuentan como jugadores. Los goles cuentan siempre, y en Goleadores, PJ cuenta todos los partidos en que estuvo convocado.</p>`;
+  <p class="hint stats-note">Partidos jugados y G/E/P cuentan solo los partidos con el resultado de los dos equipos apuntado (${withResult} de ${matches.length}); los suplentes de ese día cuentan como jugadores. Los goles cuentan siempre.</p>`;
 }
