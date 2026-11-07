@@ -33,6 +33,21 @@ const { ok, done } = checker();
   await page.click('#ovclose');
   ok('cerrar', await page.isHidden('#overlay'));
 
+  // Imagen de los equipos (sin alineación)
+  await page.click('#sharebtn'); await page.click('#imgseg [data-img=teams]');
+  ok('el selector no cierra el menú', await page.isVisible('#smenu'));
+  ok('selector marcado', (await page.getAttribute('#imgseg [data-img=teams]', 'aria-pressed')) === 'true');
+  const [dl2] = await Promise.all([page.waitForEvent('download'), page.click('#export')]);
+  ok('descarga la imagen de equipos', dl2.suggestedFilename() === 'pachanga-equipos.png');
+  await page.click('#sharebtn'); await page.click('#viewimg');
+  await page.waitForFunction(w => { const i = document.getElementById('ovimg'); return i.complete && i.naturalWidth && i.naturalHeight !== w; }, dims[1]);
+  const dims2 = await page.evaluate(() => { const i = document.getElementById('ovimg'); return [i.naturalWidth, i.naturalHeight]; });
+  ok('imagen de equipos más corta que la del campo', dims2[0] === 1080 && dims2[1] < dims[1], dims2.join('x'));
+  await page.click('#ovclose');
+  await page.reload(); await page.click('#sharebtn');
+  ok('recuerda la imagen elegida', (await page.getAttribute('#imgseg [data-img=teams]', 'aria-pressed')) === 'true');
+  await page.click('#imgseg [data-img=lineup]'); await page.keyboard.press('Escape');
+
   // Clic fuera cierra el menú
   await page.click('#sharebtn'); await page.click('h1');
   ok('clic fuera cierra', await page.isHidden('#smenu'));

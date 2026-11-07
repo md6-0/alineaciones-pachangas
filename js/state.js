@@ -10,7 +10,8 @@ let st = {
   mode: "7",          // formato: "7", "8" u "11"
   form: { W: { "7": "2-3-1", "8": "3-3-1" }, D: { "7": "2-3-1", "8": "3-3-1" } },   // formación de cada equipo en cada formato
   tab: "alin",        // pestaña abierta
-  sort: "list"        // orden de la tabla de jugadores: "list" o "media"
+  sort: "list",       // orden de la tabla de jugadores: "list" o "media"
+  img: "lineup"       // imagen que se comparte: "lineup" (campo con la alineación) o "teams" (solo los jugadores de cada equipo)
 };
 try { const s = JSON.parse(localStorage.getItem(PREFS_KEY) || "null"); if (s && typeof s === "object") st = Object.assign(st, s); } catch {}
 // Una fecha pasada que vino de cargar un partido del historial solo dura hasta que se vuelve a abrir la app
