@@ -25,7 +25,7 @@ Cada jugador tiene nota de ataque, defensa y portero (de 1 a 99) y una o varias 
 
 ### 🏆 Historial y estadísticas
 
-En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores, partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten.
+En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores, partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o Telegram, o en imagen para descargarla o compartirla.
 
 ### ⚙️ Opciones
 
@@ -120,10 +120,12 @@ js/tab-lineup.js       pestaña Alineación
 js/drag.js             arrastrar imanes
 js/share-image.js      imagen de la alineación para compartir
 js/share-teams-image.js imagen de los equipos (solo jugadores) para compartir
-js/share.js            menú Compartir
+js/share-menu.js       piezas comunes de los menús Compartir (abrir, cerrar, enlaces, botones de imagen)
+js/share.js            menú Compartir de la Alineación
 js/tab-players.js      pestaña Jugadores
 js/tab-history.js      pestaña Historial
 js/tab-stats.js        pestaña Estadísticas
+js/share-scorers.js    goleadores para compartir: texto, imagen y su menú
 js/tab-options.js      pestaña Opciones
 js/updates.js          aviso de versión nueva
 js/main.js             arranque

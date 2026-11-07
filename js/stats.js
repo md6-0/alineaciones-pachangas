@@ -32,3 +32,6 @@ function computeStats(list) {
     record: rows.filter(r => r.pj > 0).sort((a, b) => b.w - a.w || a.l - b.l || b.d - a.d || byName(a, b))
   };
 }
+
+/** Puesto de cada goleador (lista ya ordenada por goles): los empatados comparten puesto (1, 2, 2, 4…). */
+const scoreRanks = rows => rows.map(r => rows.findIndex(x => x.g === r.g) + 1);

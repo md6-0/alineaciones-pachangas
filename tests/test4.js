@@ -8,6 +8,8 @@ const { ok, done } = checker();
   ok('historial vacío', /Aún no hay partidos/.test(await page.innerText('#hlist')));
   await tab(page, 'stats');
   ok('estadísticas vacías', /Aún no hay partidos/.test(await page.innerText('#stats')));
+  await page.click('#scbtn');
+  ok('sin goles no comparte', (await toastText(page)) === 'Todavía no hay goles apuntados.' && await page.isHidden('#scmenu'));
 
   // Guardar con fecha elegida
   await tab(page, 'opc');
@@ -58,6 +60,19 @@ const { ok, done } = checker();
   ok('14 con un partido', (await cards.nth(1).locator('tbody tr').count()) === 14);
   ok('7 ganados', (await cards.nth(2).locator('td.win').allInnerTexts()).filter(x => x === '1').length === 7);
   ok('nota de partidos con resultado', /\(1 de 1\)/.test(await page.innerText('#stats .hint')));
+
+  // Compartir goleadores
+  await page.click('#scbtn');
+  ok('abre el menú de goleadores', await page.isVisible('#scmenu'));
+  const sw = decodeURIComponent((await page.getAttribute('#scmenu .s-wa', 'href')).replace('https://wa.me/?text=', '')).split('\n');
+  ok('texto de goleadores', /^⚽ Goleadores · .+ · 1 partido$/.test(sw[0]) && sw[2] === `🥇 ${scorerName}: 1 gol`, sw.join(' / '));
+  ok('Telegram de goleadores', (await page.getAttribute('#scmenu .s-tg', 'href')).startsWith('https://t.me/share/url?url=' + encodeURIComponent(sw[0])));
+  const [sdl] = await Promise.all([page.waitForEvent('download'), page.click('#scmenu .s-dl')]);
+  ok('descarga la imagen de goleadores', sdl.suggestedFilename() === 'pachanga-goleadores.png' && await page.isHidden('#scmenu'));
+  await page.click('#scbtn'); await page.click('#scmenu .s-view');
+  await page.waitForFunction(() => { const i = document.getElementById('ovimg'); return (i.src || '').startsWith('data:image/png') && i.complete && i.naturalWidth; });
+  ok('imagen de goleadores', (await page.evaluate(() => document.getElementById('ovimg').naturalWidth)) === 1080);
+  await page.click('#ovclose');
 
   // Cargar en la pizarra
   await tab(page, 'alin');

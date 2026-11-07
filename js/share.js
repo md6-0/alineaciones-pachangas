@@ -1,5 +1,5 @@
 "use strict";
-/* Menú Compartir: en texto (WhatsApp, Telegram) o en imagen (descargar, compartir o ver).
+/* Menú Compartir de la Alineación: en texto (WhatsApp, Telegram) o en imagen (descargar, compartir o ver).
    El selector «Qué compartes» elige entre la alineación (posiciones y banquillo) o solo los jugadores de cada equipo. */
 
 /** Alineación en texto, por equipos y líneas. */
@@ -21,74 +21,28 @@ function teamsText() {
   return out.join("\n");
 }
 
-const smenu = $("#smenu"), sbtn = $("#sharebtn");
-/** Mete el menú dentro de la pantalla si se sale por un lado (según dónde haya quedado el botón al ajustarse la cabecera). */
-function fitMenu() {
-  smenu.style.transform = "";
-  const r = smenu.getBoundingClientRect(), W = document.documentElement.clientWidth, m = 8;
-  let dx = 0;
-  if (r.right > W - m) dx = W - m - r.right;
-  if (r.left + dx < m) dx = m - r.left;
-  if (dx) smenu.style.transform = `translateX(${Math.round(dx)}px)`;
-}
-function closeMenu() { smenu.hidden = true; sbtn.setAttribute("aria-expanded", "false"); }
-/** Avisa y devuelve false si todavía no hay alineación. */
-function needLineup(msg = "Marca jugadores antes de compartir.") { if (hasLineup()) return true; toast(msg); return false; }
-
-sbtn.addEventListener("click", e => {
-  e.stopPropagation();
-  if (!smenu.hidden) { closeMenu(); return; }
-  if (!needLineup()) return;
-  paintWhat();
-  smenu.hidden = false; sbtn.setAttribute("aria-expanded", "true"); fitMenu();
-});
-smenu.addEventListener("click", e => { if (e.target.closest("a,button") && !e.target.closest("#whatseg")) setTimeout(closeMenu, 0); });
-
 /* ---------- Qué compartes: alineación o equipos ---------- */
 const WHAT = {
   lineup: { text: lineupText, draw: () => drawImage(), file: "pachanga-alineaciones.png", title: "Alineación", sub: "Alineación en texto" },
   teams: { text: teamsText, draw: () => drawTeamsImage(), file: "pachanga-equipos.png", title: "Equipos", sub: "Equipos en texto" }
 };
-const image = () => WHAT[st.img] || WHAT.lineup;
+const smenu = $("#smenu");
+const what = () => WHAT[st.img] || WHAT.lineup;
+/** Avisa y devuelve false si todavía no hay alineación. */
+function needLineup() { if (hasLineup()) return true; toast("Marca jugadores antes de compartir."); return false; }
+
 /** Marca la opción elegida y prepara los enlaces de WhatsApp y Telegram con su texto. */
 function paintWhat() {
-  const w = image();
+  const w = what();
   $$("#whatseg button").forEach(b => b.setAttribute("aria-pressed", String(WHAT[b.dataset.what] === w)));
   $$("#smenu .wtxt").forEach(s => { s.textContent = w.sub; });
-  if (!hasLineup()) return;
-  const t = w.text(), [first, ...rest] = t.split("\n");
-  $("#s-wa").href = "https://wa.me/?text=" + encodeURIComponent(t);
-  $("#s-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(first) + "&text=" + encodeURIComponent(rest.join("\n"));
+  if (hasLineup()) setTextLinks(smenu, w.text());
 }
 $("#whatseg").addEventListener("click", e => {
   const b = e.target.closest("button[data-what]"); if (!b) return;
   st.img = b.dataset.what; save(); paintWhat();
 });
 paintWhat();
-document.addEventListener("click", e => { if (!smenu.hidden && !e.target.closest(".share")) closeMenu(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !smenu.hidden) closeMenu(); });
 
-// «Compartir imagen» solo aparece si el navegador puede compartir archivos
-try {
-  const f = new File([new Blob(["x"], { type: "image/png" })], "x.png", { type: "image/png" });
-  if (navigator.canShare && navigator.canShare({ files: [f] })) $("#shareimg").hidden = false;
-} catch {}
-
-$("#shareimg").addEventListener("click", async () => {
-  if (!needLineup()) return;
-  const img = image(), file = new File([await imageBlob(await img.draw())], img.file, { type: "image/png" });
-  try { await navigator.share({ files: [file], title: img.title }); }
-  catch (e) { if (e && e.name !== "AbortError") toast("No se pudo compartir la imagen."); }
-});
-
-$("#viewimg").addEventListener("click", async () => {
-  if (!needLineup()) return;
-  showImage((await image().draw()).toDataURL("image/png"));
-});
-
-$("#export").addEventListener("click", async () => {
-  if (!needLineup("Marca jugadores antes de exportar.")) return;
-  const img = image();
-  saveFile(img.file, await imageBlob(await img.draw()));
-  toast("Imagen guardada.");
-});
+dropMenu($("#sharebtn"), smenu, { open: () => { if (!needLineup()) return false; paintWhat(); }, keep: "#whatseg" });
+imageButtons(smenu, what, needLineup);
