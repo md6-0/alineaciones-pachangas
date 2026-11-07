@@ -37,9 +37,15 @@ const { ok, done } = checker();
   ok('cerrar', await page.isHidden('#overlay'));
 
   // Imagen de los equipos (sin alineación)
-  await page.click('#sharebtn'); await page.click('#imgseg [data-img=teams]');
+  await page.click('#sharebtn'); await page.click('#whatseg [data-what=teams]');
   ok('el selector no cierra el menú', await page.isVisible('#smenu'));
-  ok('selector marcado', (await page.getAttribute('#imgseg [data-img=teams]', 'aria-pressed')) === 'true');
+  const wa2 = decodeURIComponent((await page.getAttribute('#s-wa', 'href')).replace('https://wa.me/?text=', '')).split('\n');
+  ok('texto de equipos', /^⚽ Equipos · /.test(wa2[0]) && wa2.includes('⚪ Equipo Blanco') && wa2.includes('⚫ Equipo Oscuro'), wa2[0]);
+  ok('equipos: un jugador por línea, sin posiciones', wa2.filter(l => /^Jugador \d+$/.test(l)).length === 14 && !wa2.some(l => /Portero|Banquillo|:/.test(l)));
+  const tg2 = await page.getAttribute('#s-tg', 'href');
+  ok('Telegram con el texto de equipos', tg2.startsWith('https://t.me/share/url?url=' + encodeURIComponent(wa2[0])));
+  ok('subtítulo cambia', (await page.innerText('#s-wa small')) === 'Equipos en texto');
+  ok('selector marcado', (await page.getAttribute('#whatseg [data-what=teams]', 'aria-pressed')) === 'true');
   const [dl2] = await Promise.all([page.waitForEvent('download'), page.click('#export')]);
   ok('descarga la imagen de equipos', dl2.suggestedFilename() === 'pachanga-equipos.png');
   await page.click('#sharebtn'); await page.click('#viewimg');
@@ -48,8 +54,8 @@ const { ok, done } = checker();
   ok('imagen de equipos más corta que la del campo', dims2[0] === 1080 && dims2[1] < dims[1], dims2.join('x'));
   await page.click('#ovclose');
   await page.reload(); await page.click('#sharebtn');
-  ok('recuerda la imagen elegida', (await page.getAttribute('#imgseg [data-img=teams]', 'aria-pressed')) === 'true');
-  await page.click('#imgseg [data-img=lineup]'); await page.keyboard.press('Escape');
+  ok('recuerda la imagen elegida', (await page.getAttribute('#whatseg [data-what=teams]', 'aria-pressed')) === 'true');
+  await page.click('#whatseg [data-what=lineup]'); await page.keyboard.press('Escape');
 
   // Clic fuera cierra el menú
   await page.click('#sharebtn'); await page.click('h1');

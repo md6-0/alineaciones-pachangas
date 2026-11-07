@@ -63,11 +63,11 @@
       <div class="share">
         <button class="btn" id="sharebtn" type="button" aria-haspopup="true" aria-expanded="false">Compartir ▾</button>
         <div class="smenu" id="smenu" hidden>
-          <a id="s-wa" href="#" target="_blank" rel="noopener">WhatsApp<small>Alineación en texto</small></a>
-          <a id="s-tg" href="#" target="_blank" rel="noopener">Telegram<small>Alineación en texto</small></a>
-          <div class="simg"><span>Imagen</span><div class="seg" id="imgseg" role="group" aria-label="Qué imagen">
-            <button type="button" data-img="lineup" aria-pressed="true">Alineación</button><button type="button" data-img="teams" aria-pressed="false">Equipos</button>
+          <div class="swhat"><span>Qué compartes</span><div class="seg" id="whatseg" role="group" aria-label="Qué compartes">
+            <button type="button" data-what="lineup" aria-pressed="true">Alineación</button><button type="button" data-what="teams" aria-pressed="false">Equipos</button>
           </div></div>
+          <a id="s-wa" href="#" target="_blank" rel="noopener">WhatsApp<small class="wtxt">Alineación en texto</small></a>
+          <a id="s-tg" href="#" target="_blank" rel="noopener">Telegram<small class="wtxt">Alineación en texto</small></a>
           <button type="button" id="export">Descargar imagen<small>PNG sin medias</small></button>
           <button type="button" id="shareimg" hidden>Compartir imagen<small>WhatsApp, Telegram…</small></button>
           <button type="button" id="viewimg">Ver imagen<small>Mantén pulsada para compartir</small></button>
@@ -157,7 +157,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 1.9.1</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 1.10.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>

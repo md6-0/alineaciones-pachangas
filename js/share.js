@@ -1,6 +1,6 @@
 "use strict";
-/* Menú Compartir: la alineación en texto (WhatsApp, Telegram) o en imagen (descargar, compartir o ver).
-   La imagen puede ser la alineación en el campo o solo los jugadores de cada equipo (selector «Imagen»). */
+/* Menú Compartir: en texto (WhatsApp, Telegram) o en imagen (descargar, compartir o ver).
+   El selector «Qué compartes» elige entre la alineación (posiciones y banquillo) o solo los jugadores de cada equipo. */
 
 /** Alineación en texto, por equipos y líneas. */
 function lineupText() {
@@ -11,6 +11,13 @@ function lineupText() {
     [["POR", "Portero"], ["DEF", "Defensas"], ["MED", "Medios"], ["ATQ", "Delanteros"]].forEach(([r, l]) => { const n = by(r); if (n.length) out.push(`${l}: ${n.join(", ")}`); });
     const b = benchIds(team).map(nameOf); if (b.length) out.push(`Banquillo: ${b.join(", ")}`);
   });
+  return out.join("\n");
+}
+
+/** Equipos en texto: los jugadores de cada uno, sin posiciones (teamNames, en share-teams-image.js). */
+function teamsText() {
+  const out = [`⚽ Equipos · ${matchDayLabel()} (${st.mode} vs ${st.mode})`];
+  [["W", "⚪ Equipo Blanco"], ["D", "⚫ Equipo Oscuro"]].forEach(([team, label]) => out.push("", label, ...teamNames(team)));
   return out.join("\n");
 }
 
@@ -32,25 +39,32 @@ sbtn.addEventListener("click", e => {
   e.stopPropagation();
   if (!smenu.hidden) { closeMenu(); return; }
   if (!needLineup()) return;
-  const t = lineupText(), [first, ...rest] = t.split("\n");
-  $("#s-wa").href = "https://wa.me/?text=" + encodeURIComponent(t);
-  $("#s-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(first) + "&text=" + encodeURIComponent(rest.join("\n"));
+  paintWhat();
   smenu.hidden = false; sbtn.setAttribute("aria-expanded", "true"); fitMenu();
 });
-smenu.addEventListener("click", e => { if (e.target.closest("a,button") && !e.target.closest("#imgseg")) setTimeout(closeMenu, 0); });
+smenu.addEventListener("click", e => { if (e.target.closest("a,button") && !e.target.closest("#whatseg")) setTimeout(closeMenu, 0); });
 
-/* ---------- Qué imagen: alineación o equipos ---------- */
-const IMAGES = {
-  lineup: { draw: () => drawImage(), file: "pachanga-alineaciones.png", title: "Alineación" },
-  teams: { draw: () => drawTeamsImage(), file: "pachanga-equipos.png", title: "Equipos" }
+/* ---------- Qué compartes: alineación o equipos ---------- */
+const WHAT = {
+  lineup: { text: lineupText, draw: () => drawImage(), file: "pachanga-alineaciones.png", title: "Alineación", sub: "Alineación en texto" },
+  teams: { text: teamsText, draw: () => drawTeamsImage(), file: "pachanga-equipos.png", title: "Equipos", sub: "Equipos en texto" }
 };
-const image = () => IMAGES[st.img] || IMAGES.lineup;
-function paintImgSeg() { $$("#imgseg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.img === (IMAGES[st.img] ? st.img : "lineup")))); }
-$("#imgseg").addEventListener("click", e => {
-  const b = e.target.closest("button[data-img]"); if (!b) return;
-  st.img = b.dataset.img; save(); paintImgSeg();
+const image = () => WHAT[st.img] || WHAT.lineup;
+/** Marca la opción elegida y prepara los enlaces de WhatsApp y Telegram con su texto. */
+function paintWhat() {
+  const w = image();
+  $$("#whatseg button").forEach(b => b.setAttribute("aria-pressed", String(WHAT[b.dataset.what] === w)));
+  $$("#smenu .wtxt").forEach(s => { s.textContent = w.sub; });
+  if (!hasLineup()) return;
+  const t = w.text(), [first, ...rest] = t.split("\n");
+  $("#s-wa").href = "https://wa.me/?text=" + encodeURIComponent(t);
+  $("#s-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(first) + "&text=" + encodeURIComponent(rest.join("\n"));
+}
+$("#whatseg").addEventListener("click", e => {
+  const b = e.target.closest("button[data-what]"); if (!b) return;
+  st.img = b.dataset.what; save(); paintWhat();
 });
-paintImgSeg();
+paintWhat();
 document.addEventListener("click", e => { if (!smenu.hidden && !e.target.closest(".share")) closeMenu(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !smenu.hidden) closeMenu(); });
 

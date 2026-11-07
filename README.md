@@ -17,7 +17,7 @@ Es una aplicación web que se instala en el móvil como cualquier otra app. Func
 - **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio.
 - El portero cuenta en la media de su equipo con su nota de portero, y su imán la muestra.
 - **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, la de hoy). Al abrir la app, la pizarra carga la última alineación guardada.
-- **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla. Así nadie se pica al ver su nota. La imagen puede ser la **alineación** (el campo con los imanes y los banquillos) o solo los **equipos** (los jugadores de cada uno en dos columnas, sin posiciones); se elige en el propio menú y la app recuerda la última.
+- **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla. Así nadie se pica al ver su nota. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
 
 ### 👟 Jugadores
 
@@ -154,7 +154,7 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 Todo está en el `localStorage` del navegador, en dos claves:
 
 - **`pachangas-db-v1`**: los datos, en tres colecciones. `players` (cada jugador: `name`, `atq`, `def`, `por` de 1 a 99, `pos` con sus posiciones y `order` en la lista), `matches` (cada partido, con la fecha como id: formato, formaciones, los jugadores de cada equipo con su posición, `score` y `goals`) y `settings` (el nombre del grupo). Es lo que va en la copia de seguridad.
-- **`pach-v4`**: las preferencias de este dispositivo: convocatoria, formato, formaciones, medias, fecha elegida, pestaña abierta, orden de la tabla de jugadores e imagen elegida para compartir.
+- **`pach-v4`**: las preferencias de este dispositivo: convocatoria, formato, formaciones, medias, fecha elegida, pestaña abierta, orden de la tabla de jugadores y qué se comparte (alineación o equipos).
 
 ### Ampliar la app
 

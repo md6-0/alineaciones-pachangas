@@ -52,7 +52,7 @@
 .smenu a,.smenu button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:0;background:transparent;color:var(--fg);
   text-decoration:none;font:inherit;font-weight:600;font-size:.92rem;padding:8px 10px;border-radius:5px;cursor:pointer}
 .smenu a:hover,.smenu button:hover,.smenu a:focus-visible,.smenu button:focus-visible{background:var(--line)}
-.smenu .simg{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:8px 10px 4px;border-top:1px solid var(--line);margin-top:4px;
+.smenu .swhat{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:6px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px;
   font-size:.74rem;font-weight:600;color:var(--muted)}
 .smenu .seg button{display:inline-block;padding:4px 11px;font-size:.8rem;border-radius:999px;color:var(--muted)}
 .smenu .seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg)}
