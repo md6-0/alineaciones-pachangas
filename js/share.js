@@ -15,6 +15,15 @@ function lineupText() {
 }
 
 const smenu = $("#smenu"), sbtn = $("#sharebtn");
+/** Mete el menú dentro de la pantalla si se sale por un lado (según dónde haya quedado el botón al ajustarse la cabecera). */
+function fitMenu() {
+  smenu.style.transform = "";
+  const r = smenu.getBoundingClientRect(), W = document.documentElement.clientWidth, m = 8;
+  let dx = 0;
+  if (r.right > W - m) dx = W - m - r.right;
+  if (r.left + dx < m) dx = m - r.left;
+  if (dx) smenu.style.transform = `translateX(${Math.round(dx)}px)`;
+}
 function closeMenu() { smenu.hidden = true; sbtn.setAttribute("aria-expanded", "false"); }
 /** Avisa y devuelve false si todavía no hay alineación. */
 function needLineup(msg = "Marca jugadores antes de compartir.") { if (hasLineup()) return true; toast(msg); return false; }
@@ -26,7 +35,7 @@ sbtn.addEventListener("click", e => {
   const t = lineupText(), [first, ...rest] = t.split("\n");
   $("#s-wa").href = "https://wa.me/?text=" + encodeURIComponent(t);
   $("#s-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(first) + "&text=" + encodeURIComponent(rest.join("\n"));
-  smenu.hidden = false; sbtn.setAttribute("aria-expanded", "true");
+  smenu.hidden = false; sbtn.setAttribute("aria-expanded", "true"); fitMenu();
 });
 smenu.addEventListener("click", e => { if (e.target.closest("a,button") && !e.target.closest("#imgseg")) setTimeout(closeMenu, 0); });
 
