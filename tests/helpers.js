@@ -36,7 +36,9 @@ async function open({ viewport, offline = false, mode = "7", cloud = null, waitF
   const opts = viewport ? { viewport, acceptDownloads: true } : { ...devices['Pixel 7'], acceptDownloads: true };
   if (cloud) opts.serviceWorkers = 'block';   // que no guarde en caché la configuración ni el Firebase de verdad
   const ctx = await browser.newContext(opts);
+  // Sin servidor (las pruebas en el dispositivo) o con el Firebase simulado; nunca el servidor de verdad
   if (cloud) await useFakeCloud(ctx, cloud);
+  else await ctx.route(/\/js\/firebase-config\.js$/, r => r.fulfill({ contentType: 'text/javascript', body: 'const FIREBASE_CONFIG = null;' }));
   // Sin internet: la tipografía de Google Fonts no se descarga (cae a la del sistema) y las pruebas no dependen de la red
   await ctx.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   if (mode) await ctx.addInitScript(m => { try { if (!localStorage.getItem('pach-v4')) localStorage.setItem('pach-v4', JSON.stringify({ mode: m })); } catch {} }, mode);
