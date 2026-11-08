@@ -1,7 +1,7 @@
 "use strict";
-/* Pestaña Partido: arriba la lista de apuntados (con «Soy…» y Apuntarme / Borrarme), debajo la pizarra con los imanes
-   y los dos equipos con su banquillo. Quien organiza además elige día y hora, apunta y quita a cualquiera, vacía la lista,
-   retoca la alineación y, después de jugar, pulsa «Partido jugado». El arrastre está en drag.js y Compartir en share.js. */
+/* Pestaña Partido: arriba la lista de apuntados, debajo la pizarra con los imanes y los dos equipos con su banquillo.
+   Todos la ven; solo quien organiza elige día y hora, apunta y quita jugadores, vacía la lista, retoca la alineación
+   y, después de jugar, pulsa «Partido jugado». El arrastre está en drag.js y Compartir en share.js. */
 
 /** Lo que lleva el imán: el número si el nombre acaba en uno («Jugador 12» → 12), las iniciales de las dos
     primeras palabras («Juan Pérez» → JP) o las dos primeras letras («Mario» → MA). */
@@ -17,30 +17,14 @@ const posTags = p => POSITIONS.filter(r => p.pos.includes(r));
 
 /* ---------- Lista de apuntados ---------- */
 
-/** Quién eres en este dispositivo (el jugador elegido en «Soy…»), si sigue en la lista de jugadores. */
-const me = () => BY[st.me] ? st.me : null;
-
-/** «Soy…» y el botón para apuntarse o borrarse. */
-function meHTML() {
-  const id = me();
-  if (!id) return `<label class="mesel">Para apuntarte, di quién eres:
-      <select id="mesel"><option value="">Soy…</option>${[...P].sort(byName).map(p => `<option value="${esc(p.id)}">${esc(p.n)}</option>`).join("")}</select></label>`;
-  const inList = isSignedUp(id);
-  const action = !inList ? `<button class="btn" id="mebtn" type="button" data-act="in">Apuntarme</button>`
-    : canRemove(id) ? `<button class="btn ghost" id="mebtn" type="button" data-act="out">Borrarme</button>`
-    : `<span class="hint">Te apuntó quien organiza: si no puedes ir, avísale.</span>`;
-  return `<div class="meline"><span>Eres <b>${esc(BY[id].n)}</b> · <button class="linkbtn" id="mechange" type="button">cambiar</button></span>${action}</div>`;
-}
-
 function renderSignups() {
   const need = NEED[st.mode] || 16, ids = signupIds();
   const c = $("#count");
   c.innerHTML = signupsLoaded ? `<b>${ids.length}</b> de ${need}` : "";
   c.classList.toggle("full", signupsLoaded && ids.length >= need);
-  $("#me").innerHTML = loaded ? meHTML() : "";
   $("#slist").innerHTML = ids.map((id, i) => {
     const p = BY[id];   // sin las posiciones: ya salen en los imanes, y así caben los nombres en el móvil
-    return `<li class="${id === me() ? "mine" : ""}${i >= need ? " extra" : ""}"><span class="sn">${i + 1}.</span><span class="sname">${esc(p.n)}${id === me() ? " <small>(tú)</small>" : ""}</span>`
+    return `<li class="${i >= need ? "extra" : ""}"><span class="sn">${i + 1}.</span><span class="sname">${esc(p.n)}</span>`
       + `${canEdit() ? `<button type="button" class="sdel" data-sdel="${esc(id)}" aria-label="Quitar a ${esc(p.n)} de la lista">✕</button>` : ""}</li>`;
   }).join("") || `<li class="sempty">${!signupsLoaded ? "Cargando la lista…" : "Todavía no se ha apuntado nadie."}</li>`;
   if (canEdit()) {
@@ -90,24 +74,9 @@ function renderLineup() {
 
 /* ---------- Acciones ---------- */
 
-const listFail = e => toast(e && e.code === "invalid_argument" ? "No tienes permiso para cambiar a ese jugador de la lista."
-  : e && /auth\/(operation-not-allowed|admin-restricted-operation)/.test(e.code) ? "Para apuntarse falta activar el acceso anónimo en Firebase."
-  : "No se pudo guardar el cambio en la lista.");
+const listFail = e => toast(e && e.code === "invalid_argument" ? "No tienes permiso para cambiar la lista." : "No se pudo guardar el cambio en la lista.");
 
-// «Soy…», Apuntarme / Borrarme
-$("#me").addEventListener("change", e => {
-  if (e.target.id !== "mesel" || !e.target.value) return;
-  st.me = e.target.value; save(); render();
-});
-$("#me").addEventListener("click", e => {
-  if (e.target.id === "mechange") { st.me = null; save(); render(); return; }
-  const b = e.target.closest("#mebtn"), id = me(); if (!b || !id) return;
-  b.disabled = true;
-  (b.dataset.act === "in" ? signUp(id).then(() => toast("Apuntado. ¡Nos vemos en el campo!")) : signOff(id).then(() => toast("Te has borrado de la lista.")))
-    .catch(listFail).finally(() => { b.disabled = false; });
-});
-
-// Quien organiza: apuntar a cualquiera, quitar y vaciar la lista
+// Quien organiza: apuntar, quitar y vaciar la lista
 $("#saddform").addEventListener("submit", e => {
   e.preventDefault();
   const id = $("#saddsel").value; if (!id) return;

@@ -3,11 +3,9 @@
    Las dos imitan a una base de datos de documentos, así que el resto de la app no sabe cuál se usa:
      db.collection("players").onSnapshot(fn, fallo)   avisa con todos los documentos al empezar y después de cada cambio
      db.doc("players/id").set(v) | .update(cambios) | .delete()   (update mezcla los objetos por dentro)
-     db.cloud, db.user, db.onAuth(fn)   si hay servidor y quién ha entrado (en el dispositivo, cualquiera edita)
-     db.ensureUser()   uid de quien usa la app (con servidor, si no ha entrado, uno anónimo para apuntarse) */
+     db.cloud, db.user, db.onAuth(fn)   si hay servidor y quién ha entrado (en el dispositivo, cualquiera edita) */
 
 const db = FIREBASE_CONFIG ? cloudDb(FIREBASE_CONFIG) : localDb();
 
-/** Si quien usa la app puede cambiar datos: sin servidor, siempre; con servidor, solo quien ha entrado con su cuenta
-    (un usuario anónimo solo puede apuntarse y borrarse). */
-const canEdit = () => !db.cloud || (!!db.user && !db.user.anon);
+/** Si quien usa la app puede cambiar datos: sin servidor, siempre; con servidor, solo quien ha entrado con su cuenta. */
+const canEdit = () => !db.cloud || !!db.user;

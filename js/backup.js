@@ -45,5 +45,4 @@ async function wipeAll() {
   for (const m of matches) await db.doc("matches/" + m.id).delete();
   await db.doc("settings/general").delete();
   await db.doc("next/current").delete();
-  st.me = null; save();
 }

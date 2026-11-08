@@ -12,7 +12,7 @@ function paintAccount() {
     ? "Elimina jugadores, historial y ajustes del servidor, para todo el mundo. No se puede deshacer: descarga antes una copia."
     : "Elimina jugadores, historial y ajustes de este dispositivo. No se puede deshacer: descarga antes una copia.";
   if (!db.cloud) return;
-  const u = canEdit() ? db.user : null;   // un usuario anónimo (de apuntarse) cuenta como no haber entrado
+  const u = db.user;
   $("#loginform").hidden = !!u; $("#logged").hidden = !u;
   $("#acchint").textContent = u ? `Has entrado como ${u.email}: puedes cambiar los datos. Los demás solo los ven.`
     : "Solo quien organiza cambia los datos. Los demás ven la app sin poder tocar nada.";

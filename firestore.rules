@@ -1,9 +1,7 @@
 rules_version = '2';
 // Reglas de Cloud Firestore para Mi pachanga.
 // - Cualquiera con el enlace puede leerlo todo.
-// - Quien organiza (su UID) puede escribirlo todo.
-// - Los demás entran sin darse cuenta con un usuario anónimo y solo pueden apuntarse a sí mismos
-//   a la lista del próximo partido (signups) y borrar lo que apuntaron ellos.
+// - Solo quien organiza (su UID) puede escribir.
 // Cambia PON_AQUI_TU_UID por tu UID (Authentication → Usuarios) y pégalas en Firestore Database → Reglas → Publicar.
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -26,15 +24,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if esQuienOrganiza();
     }
-    match /signups/{playerId} {
+    match /signups/{id} {
       allow read: if true;
-      // Apuntarse: solo a un jugador que existe, solo una vez, y con su propio uid
-      allow create: if esQuienOrganiza() || (request.auth != null
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.keys().hasOnly(["at", "uid"])
-        && exists(/databases/$(database)/documents/players/$(playerId)));
-      allow update: if esQuienOrganiza();
-      allow delete: if esQuienOrganiza() || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow write: if esQuienOrganiza();
     }
   }
 }

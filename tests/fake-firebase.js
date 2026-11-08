@@ -2,8 +2,7 @@
    Imita lo que usa db-cloud.js: initializeApp, firestore() con collection().onSnapshot y doc().set/update/delete,
    FieldPath y auth() con correo y contraseña. Los datos van en localStorage («fake-firestore»), así que las páginas de
    una misma prueba comparten «servidor»; la sesión va en sessionStorage, así que cada página entra por su cuenta.
-   Reglas como las de firestore.rules: lee cualquiera; escribe el usuario admin-uid; en signups, cualquiera que haya entrado
-   (también anónimo) puede apuntarse a sí mismo (uid suyo) si ese jugador no estaba, y borrar lo que apuntó él. */
+   Reglas como las de firestore.rules: lee cualquiera; escribe solo el usuario admin-uid. */
 (function () {
   const KEY = "fake-firestore", ADMIN = { uid: "admin-uid", email: "mario@example.com", isAnonymous: false }, PASS = "secreta";
   const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; } };
@@ -17,14 +16,7 @@
   const emitAll = () => subs.forEach(s => s.cb(snapOf(s.c)));
   window.addEventListener("storage", e => { if (e.key === KEY) emitAll(); });
   const isAdmin = () => !!user && user.uid === ADMIN.uid;
-  /** Reglas: c = colección, op = set|update|delete, before = documento actual, after = el nuevo (en set). */
-  const allowed = (c, op, before, after) => {
-    if (isAdmin()) return true;
-    if (c !== "signups" || !user) return false;
-    if (op === "set") return !before && after && after.uid === user.uid;
-    if (op === "delete") return !!before && before.uid === user.uid;
-    return false;
-  };
+  const allowed = () => isAdmin();
   const change = (c, id, op, after, fn) => {
     const d = read(), before = d[c] && d[c][id];
     if (!allowed(c, op, before, after)) return fail("permission-denied");
@@ -61,7 +53,6 @@
     get currentUser() { return user; },
     onAuthStateChanged(cb) { authSubs.push(cb); setTimeout(() => cb(user), 0); },
     signInWithEmailAndPassword: (email, pass) => email === ADMIN.email && pass === PASS ? (setUser(ADMIN), Promise.resolve({ user: ADMIN })) : fail("auth/invalid-credential"),
-    signInAnonymously: () => { const u = { uid: "anon-" + Math.random().toString(36).slice(2, 8), email: null, isAnonymous: true }; setUser(u); return Promise.resolve({ user: u }); },
     signOut: () => { setUser(null); return Promise.resolve(); }
   });
 

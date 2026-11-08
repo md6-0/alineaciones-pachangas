@@ -1,5 +1,5 @@
-/* Servidor (Firebase simulado): quien abre el enlace ve el próximo partido, se apunta y se borra él solo, y ve historial y
-   estadísticas sin poder cambiarlos; quien organiza entra y edita todo; los cambios llegan en directo a los demás;
+/* Servidor (Firebase simulado): quien abre el enlace ve el próximo partido, el historial y las estadísticas sin poder
+   cambiar nada; quien organiza entra y edita todo; los cambios llegan en directo a los demás;
    los datos antiguos del dispositivo se suben sin las medias. */
 const { open, checker, tab, toastText } = require('./helpers');
 const { ok, done } = checker();
@@ -8,7 +8,7 @@ const { ok, done } = checker();
 const players = {};
 for (let i = 1; i <= 17; i++) players['p' + i] = { name: 'Amigo ' + i, pos: i === 1 || i === 9 ? ['POR'] : ['MED'], order: i, atq: 80 };
 const signups = {};
-for (let i = 1; i <= 14; i++) signups['p' + i] = { at: `2026-11-09T10:00:${String(i).padStart(2, '0')}.000Z`, uid: i === 5 ? 'anon-otro' : 'admin-uid' };
+for (let i = 1; i <= 14; i++) signups['p' + i] = { at: `2026-11-09T10:00:${String(i).padStart(2, '0')}.000Z` };
 const snap = ids => ids.map((i, j) => ({ id: 'p' + i, name: 'Amigo ' + i, ovr: 77, role: j === 0 ? 'POR' : 'MED', x: j === 0 ? 50 : 20 + j * 8, y: null }));
 const W = snap([1, 2, 3, 4, 5, 6, 7, 8]).map((p, j) => Object.assign(p, { y: j === 0 ? 94 : 69.5 }));
 const D = snap([9, 10, 11, 12, 13, 14, 15, 16]).map((p, j) => Object.assign(p, { y: j === 0 ? 6 : 30.5 }));
@@ -37,20 +37,10 @@ const positions = page => page.locator('#board .mag').evaluateAll(els => Object.
   ok('no se puede arrastrar', (await page.locator('#board .mag.W').nth(3).getAttribute('style')) === before);
   ok('sin medias en ningún sitio', !(await page.innerText('body')).includes('77') && !(await page.innerText('body')).includes('80'));
 
-  // Apuntarse y borrarse uno mismo
-  await page.selectOption('#mesel', 'p16');
-  await page.click('#mebtn'); await page.waitForTimeout(150);
-  ok('se apunta', (await toastText(page)) === 'Apuntado. ¡Nos vemos en el campo!' && (await page.innerText('#count')) === '15 de 16');
-  const s1 = await stored(page);
-  ok('con un usuario anónimo suyo', /^anon-/.test(s1.signups.p16.uid));
-  ok('sigue sin poder editar', await page.evaluate(() => document.body.classList.contains('viewer')) && await page.isVisible('#loginform') === false);
-  ok('entra en la alineación', (await page.locator('.mag[data-n="p16"]').count()) === 1);
-  await page.click('#mebtn'); await page.waitForTimeout(150);
-  ok('se borra', (await toastText(page)) === 'Te has borrado de la lista.' && (await page.innerText('#count')) === '14 de 16');
-  await page.click('#mechange'); await page.selectOption('#mesel', 'p1');
-  ok('si le apuntó quien organiza, no puede borrarse', /Te apuntó quien organiza/.test(await page.innerText('#me')) && (await page.locator('#mebtn').count()) === 0);
-  ok('no puede apuntar a otro', await page.evaluate(() => db.doc('signups/p17').set({ at: 'x', uid: 'otra-persona' }).then(() => false, e => e.code === 'invalid_argument')));
-  ok('ni borrar a otro', await page.evaluate(() => db.doc('signups/p5').delete().then(() => false, e => e.code === 'invalid_argument')));
+  // No puede apuntarse ni tocar la lista (solo la ve)
+  ok('sin «Soy…» ni Apuntarme', (await page.locator('#me, #mesel, #mebtn').count()) === 0);
+  ok('no puede apuntar', await page.evaluate(() => db.doc('signups/p17').set({ at: 'x' }).then(() => false, e => e.code === 'invalid_argument')));
+  ok('ni borrar', await page.evaluate(() => db.doc('signups/p5').delete().then(() => false, e => e.code === 'invalid_argument')));
   ok('ni cambiar jugadores', await page.evaluate(() => db.doc('players/p1').update({ name: 'X' }).then(() => false, e => e.code === 'invalid_argument')));
 
   await tab(page, 'hist');

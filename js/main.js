@@ -8,7 +8,7 @@ function firstRunSignups() {
   if (firstSignups || !db.firstRun || !loaded || !signupsLoaded || Object.keys(signups).length) return;
   firstSignups = true;
   const t = Date.now();
-  P.slice(0, NEED[st.mode]).forEach((p, i) => db.doc("signups/" + p.id).set({ at: new Date(t + i).toISOString(), uid: "local" }));
+  P.slice(0, NEED[st.mode]).forEach((p, i) => db.doc("signups/" + p.id).set({ at: new Date(t + i).toISOString() }));
 }
 
 function onPlayers(snap) {
@@ -42,7 +42,7 @@ function onSettings(snap) {
   paintGroup();
 }
 
-/** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver (y apuntarse). */
+/** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver. */
 function applyRole() {
   document.body.classList.toggle("viewer", !canEdit());
   paintAccount(); showTab(); renderAll();

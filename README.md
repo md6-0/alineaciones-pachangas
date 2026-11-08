@@ -1,10 +1,10 @@
 # ⚽ Mi pachanga
 
-La pizarra del míster para la pachanga del fin de semana: cada uno se apunta al próximo partido, la app reparte a los apuntados en dos equipos equilibrados por posiciones y tú los retocas arrastrando los imanes.
+La pizarra del míster para la pachanga del fin de semana: apuntas a quien viene al próximo partido, la app los reparte en dos equipos equilibrados por posiciones y tú los retocas arrastrando los imanes.
 
 Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
 
-Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Guarda los datos en un servidor (Firebase) para compartirla con el grupo: quien organiza entra con su cuenta y lo cambia todo, y los demás abren el enlace, lo ven todo y solo pueden apuntarse o borrarse. Sin servidor configurado, todo se guarda en el dispositivo.
+Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Guarda los datos en un servidor (Firebase) para compartirla con el grupo: quien organiza entra con su cuenta y lo cambia todo, y los demás abren el enlace y lo ven todo sin poder tocar nada. Sin servidor configurado, todo se guarda en el dispositivo.
 
 ---
 
@@ -14,10 +14,10 @@ Es una aplicación web que se instala en el móvil como cualquier otra app y fun
 
 La primera pestaña es el **próximo partido**: arriba, quién va; debajo, cómo quedan los equipos.
 
-- **Apuntados**: la lista por orden de llegada, con el día, la hora y el formato en el título. La primera vez cada uno dice quién es (**Soy…**, de la lista de jugadores; el móvil lo recuerda) y después tiene su botón **Apuntarme** / **Borrarme**. Si se apuntan más de los que pide el formato, entran igual y los últimos van al banquillo.
+- **Apuntados**: la lista por orden de llegada, con el día, la hora y el formato en el título y el número de apuntados bien grande. Los apunta quien organiza. Si hay más de los que pide el formato, entran igual y los últimos van al banquillo.
 - **La alineación sale sola** con los apuntados: Equipo Blanco y Equipo Oscuro equilibrando porteros, defensas, medios y delanteros.
-- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada formato juega con una **formación fija**: 3-2-1 en fútbol 7, 3-3-1 en fútbol 8 y 4-2-3-1 en fútbol 11. Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Lo que retocas lo ve todo el mundo, y quien se apunte después entra en un hueco libre sin deshacerlo.
-- Quien organiza elige arriba el **día y la hora** (por defecto, hoy y sin hora; cuando el día pasa, vuelve solo a hoy), **apunta y quita a cualquiera**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
+- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada formato juega con una **formación fija**: 3-2-1 en fútbol 7, 3-3-1 en fútbol 8 y 4-2-3-1 en fútbol 11. Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Lo que retocas lo ve todo el mundo, y quien apuntes después entra en un hueco libre sin deshacerlo.
+- Quien organiza elige arriba el **día y la hora** (por defecto, hoy y sin hora; cuando el día pasa, vuelve solo a hoy), **apunta y quita jugadores**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
 - **Partido jugado**, después de jugar: guarda la alineación en el historial con su fecha, vacía la lista para el próximo y te lleva al historial para apuntar el resultado y los goles.
 - **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen para compartirla o descargarla. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
 
@@ -33,7 +33,7 @@ En el historial, quien organiza apunta el resultado y quién marcó cada gol. La
 
 Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con pasar el enlace de la app:
 
-- **Quien abre el enlace** ve el próximo partido (la lista y la alineación), el historial con resultados y goles, y las estadísticas, y puede **apuntarse y borrarse él mismo**. No puede cambiar nada más: ni la alineación, ni el historial, ni los goles; la pestaña Jugadores no aparece. Si a alguien lo apunta quien organiza, solo quien organiza puede quitarlo.
+- **Quien abre el enlace** ve el próximo partido (la lista y la alineación), el historial con resultados y goles, y las estadísticas, sin poder cambiar nada; la pestaña Jugadores no aparece. Para apuntarse, se lo dice a quien organiza.
 - **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces lo cambia todo. Lo que guarda llega al momento a todos los demás.
 - **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor y se suben sin las notas de las antiguas medias).
 
@@ -52,7 +52,7 @@ Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con
 
 1. Abre [md6-0.github.io/alineaciones-pachangas](https://md6-0.github.io/alineaciones-pachangas/) en el navegador del móvil.
 2. Instálala: en Android, menú del navegador → *Añadir a pantalla de inicio*; en iPhone, botón *Compartir* → *Añadir a pantalla de inicio*.
-3. Con el servidor ya configurado (como la versión publicada), la app abre con los datos del grupo: elige «Soy…» y apúntate. Sin servidor, la primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, con los primeros apuntados y ya colocados en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las posiciones en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
+3. Con el servidor ya configurado (como la versión publicada), la app abre con los datos del grupo. Sin servidor, la primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, con los primeros apuntados y ya colocados en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las posiciones en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
 
 Cuando hay una versión nueva, la app la busca sola al volver a ella y cada media hora, y te avisa arriba con un botón **Actualizar**: tú decides cuándo, para que no se recargue mientras escribes.
 
@@ -78,12 +78,12 @@ Para compartir la app con el grupo, los datos van a un proyecto de Firebase en e
 
 1. En [console.firebase.google.com](https://console.firebase.google.com), **Crear proyecto** (Google Analytics no hace falta).
 2. **Compilación → Firestore Database → Crear base de datos**, en una ubicación de Europa y en modo de producción.
-3. **Compilación → Authentication → Comenzar → Método de acceso**: activa **Correo electrónico/contraseña** y **Anónimo** (el anónimo es para que los demás se apunten sin cuenta). En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
+3. **Compilación → Authentication → Comenzar → Método de acceso**: activa **Correo electrónico/contraseña**. En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
 4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**.
 5. **Configuración del proyecto → Tus apps → Web (`</>`)**: registra la app (sin Hosting) y copia el objeto `firebaseConfig` en `js/firebase-config.js` (`const FIREBASE_CONFIG = { … };`). No es secreto: lo que protege los datos son las reglas.
 6. Publica una versión nueva. Quien organiza entra en **Opciones → Administrar** y, si tenía datos en el móvil, pulsa **Subir los datos de este dispositivo**.
 
-Nadie más puede crear cuentas que escriban: aunque alguien se registrara con la clave pública del proyecto, las reglas solo dejan escribir al UID de quien organiza; cualquier otro usuario, anónimo o no, solo puede apuntarse a sí mismo y borrar lo que apuntó él.
+Nadie más puede crear cuentas que escriban: aunque alguien se registrara con la clave pública del proyecto, las reglas solo dejan escribir al UID de quien organiza.
 
 ### Pruebas
 
@@ -96,7 +96,7 @@ npx playwright install chromium
 npm test                 # todas; también: node run.js 2 5 para elegir algunas
 ```
 
-Cada prueba levanta su propio servidor local y no necesita internet. Las del servidor (`test8.js`) usan un Firebase simulado (`tests/fake-firebase.js`) con las mismas reglas que `firestore.rules`: quien no ha entrado puede leer y apuntarse o borrarse a sí mismo, pero nada más. Si cambias algo de la interfaz y una prueba falla, suele ser porque el texto o el comportamiento que comprobaba ha cambiado a propósito: se actualiza la prueba.
+Cada prueba levanta su propio servidor local y no necesita internet. Las del servidor (`test8.js`) usan un Firebase simulado (`tests/fake-firebase.js`) con las mismas reglas que `firestore.rules`: quien no ha entrado puede leer pero no escribir. Si cambias algo de la interfaz y una prueba falla, suele ser porque el texto o el comportamiento que comprobaba ha cambiado a propósito: se actualiza la prueba.
 
 ### Publicar una versión nueva
 
@@ -143,7 +143,7 @@ js/backup.js           copia de seguridad, subir datos al servidor (sin las medi
 js/ui.js               piezas de interfaz reutilizables: avisos, confirmaciones, imagen a pantalla completa
 js/views.js            pestañas y repintado
 js/pitch.js            dibujo del campo en SVG
-js/tab-lineup.js       pestaña Partido: lista de apuntados, «Soy…», pizarra y equipos
+js/tab-lineup.js       pestaña Partido: lista de apuntados, pizarra y equipos
 js/drag.js             arrastrar imanes
 js/share-image.js      imagen de la alineación para compartir
 js/share-teams-image.js imagen de los equipos (solo jugadores) para compartir
@@ -185,10 +185,10 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 ### Cómo se guardan los datos
 
-Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó, y `uid`, quién lo apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
+Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
 - **`pachangas-db-v1`** (sin servidor): las cinco colecciones. Cada partido de `matches` lleva la fecha como id, el formato, la formación, los jugadores de cada equipo con su puesto y su sitio, `score` y `goals`. La copia de seguridad lleva `players`, `matches` y `settings`.
-- **`pach-v4`**: las preferencias de este dispositivo: quién eres (para apuntarte), pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.
+- **`pach-v4`**: las preferencias de este dispositivo: pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.
 - **`pach-subido`**: ya se subieron al servidor los datos que había en este dispositivo.
 
 ### Ampliar la app

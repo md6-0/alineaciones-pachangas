@@ -1,4 +1,4 @@
-/* Primera visita y pestaña Partido: plantilla de ejemplo, lista de apuntados, «Soy…», reparto, formación de cada formato. */
+/* Primera visita y pestaña Partido: plantilla de ejemplo, lista de apuntados, reparto y formación de cada formato. */
 const { open, checker, tab, toastText } = require('./helpers');
 const { ok, done } = checker();
 
@@ -29,25 +29,16 @@ const { ok, done } = checker();
   await page.reload(); await page.waitForSelector('#board .mag');
   ok('el reparto es siempre el mismo', (await boardIds()) === first);
 
-  // «Soy…» y apuntarse
-  ok('pide quién eres', await page.isVisible('#mesel'));
-  await page.selectOption('#mesel', 'jugador-20');
-  ok('Eres…', /Eres Jugador 20/.test(await page.innerText('#me')) && (await page.innerText('#mebtn')) === 'Apuntarme');
-  await page.click('#mebtn'); await page.waitForTimeout(100);
-  ok('apuntado: aviso', (await toastText(page)) === 'Apuntado. ¡Nos vemos en el campo!');
+  // Apuntar (al final de la lista) y quitar
+  ok('sin «Soy…»', (await page.locator('#me, #mesel, #mebtn').count()) === 0);
+  await page.selectOption('#saddsel', 'jugador-20'); await page.click('#saddform button'); await page.waitForTimeout(100);
   ok('15 apuntados', (await page.innerText('#count')) === '15 de 14', await page.innerText('#count'));
-  ok('el último de la lista es él, marcado', (await page.locator('#slist li').last().innerText()).includes('Jugador 20') && (await page.locator('#slist li.mine.extra').count()) === 1);
+  ok('el último de la lista, marcado como de más', (await page.locator('#slist li').last().innerText()).includes('Jugador 20') && (await page.locator('#slist li.extra').count()) === 1);
   ok('entra en la pizarra (al banquillo)', (await page.locator('.mag[data-n="jugador-20"]').count()) === 1 && (await mags('#teams .bench')) === 1);
-  ok('ahora puede borrarse', (await page.innerText('#mebtn')) === 'Borrarme');
-  await page.click('#mebtn'); await page.waitForTimeout(100);
-  ok('borrado', (await page.locator('#slist li').count()) === 14 && (await toastText(page)) === 'Te has borrado de la lista.');
-  await page.click('#mechange');
-  ok('cambiar quién eres', await page.isVisible('#mesel'));
-
-  // Quien organiza: apuntar y quitar a cualquiera
-  await page.selectOption('#saddsel', 'jugador-15'); await page.click('#saddform button'); await page.waitForTimeout(100);
-  ok('apuntar a otro', (await page.locator('#slist li').count()) === 15);
-  for (let i = 0; i < 3; i++) { await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(60); }
+  ok('ya no se puede volver a apuntar', (await page.locator('#saddsel option[value="jugador-20"]').count()) === 0);
+  await page.locator('#slist li').last().locator('.sdel').click(); await page.waitForTimeout(100);
+  ok('quitado', (await page.locator('#slist li').count()) === 14);
+  for (let i = 0; i < 2; i++) { await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(60); }
   ok('12 apuntados', (await page.innerText('#count')) === '12 de 14' && !(await page.evaluate(() => document.getElementById('count').classList.contains('full'))));
   ok('huecos vacíos en el campo', (await page.locator('#board .slot').count()) === 2);
 

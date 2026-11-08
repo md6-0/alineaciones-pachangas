@@ -1,7 +1,7 @@
 /* Service worker: la app funciona sin conexión.
    Al publicar una versión nueva hay que cambiar VERSION (y la de Opciones, en index.html): así el navegador detecta el cambio y la app avisa.
    Cada archivo nuevo de css/ o js/ tiene que estar también en SHELL. */
-const VERSION = "2.3.3";
+const VERSION = "2.4.0";
 const CACHE = "mipachanga-" + VERSION;
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png",

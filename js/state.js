@@ -4,7 +4,6 @@
 /* ---------- Preferencias (localStorage, clave pach-v4) ---------- */
 const PREFS_KEY = "pach-v4";
 let st = {
-  me: null,           // quién eres (id del jugador), para apuntarte desde este dispositivo
   // Lo siguiente es del próximo partido y llega del servidor (next/current, ver next-match.js); aquí queda lo último que llegó
   date: null,         // día del partido (2026-11-05) o null para hoy
   time: null,         // hora del partido ("12:00") o null
@@ -13,7 +12,7 @@ let st = {
   img: "lineup"       // qué se comparte (texto e imagen): "lineup" (la alineación) o "teams" (solo los jugadores de cada equipo)
 };
 try { const s = JSON.parse(localStorage.getItem(PREFS_KEY) || "null"); if (s && typeof s === "object") st = Object.assign(st, s); } catch {}
-["ratings", "sort", "sel", "myName", "datePast", "form"].forEach(k => delete st[k]);   // preferencias de versiones anteriores
+["ratings", "sort", "sel", "myName", "datePast", "form", "me"].forEach(k => delete st[k]);   // preferencias de versiones anteriores
 if (!FORMS[st.mode]) st.mode = "8";
 // Las direcciones #jugadores, #historial… abren esa pestaña
 const HASH_TABS = { "#jugadores": "jug", "#historial": "hist", "#estadisticas": "stats", "#opciones": "opc" };

@@ -1,7 +1,6 @@
 "use strict";
 /* Próximo partido: la lista de apuntados y la alineación que ve todo el mundo. No toca la pantalla.
-   signups/{id del jugador} = { at: cuándo se apuntó (ISO), uid: quién lo apuntó }
-     Cada uno se apunta y se borra a sí mismo; quien organiza apunta y quita a cualquiera. La lista va por orden de llegada.
+   signups/{id del jugador} = { at: cuándo se apuntó (ISO) }   (solo lo cambia quien organiza; la lista va por orden de llegada)
    next/current = { date, time, mode, layout }   (solo lo cambia quien organiza)
      Día, hora y formato del partido y, si quien organiza ha retocado la alineación, su colocación (layout).
      Sin retocar, layout es null y la alineación sale sola a partir de los apuntados. */
@@ -64,12 +63,9 @@ function setMatchTime(t) { st.time = /^\d\d:\d\d$/.test(t || "") ? t : null; ret
 
 /* ---------- Lista ---------- */
 
-/** Apunta a un jugador (en el servidor, como quien usa la app; si no ha entrado, con un usuario anónimo). */
-const signUp = id => db.ensureUser().then(uid => db.doc("signups/" + id).set({ at: new Date().toISOString(), uid }));
+/** Apunta a un jugador al final de la lista, o lo quita. */
+const signUp = id => db.doc("signups/" + id).set({ at: new Date().toISOString() });
 const signOff = id => db.doc("signups/" + id).delete();
-
-/** Si quien usa la app puede borrar a este apuntado: quien organiza, a cualquiera; los demás, solo si se apuntaron ellos. */
-const canRemove = id => canEdit() || (!!signups[id] && !!db.user && signups[id].uid === db.user.uid);
 
 /** Vacía la lista para el siguiente partido (y la alineación vuelve a salir sola). */
 async function clearSignups() {
