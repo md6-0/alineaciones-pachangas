@@ -16,7 +16,7 @@ const { ok, done } = checker();
   ok('día y hora arriba en Partido, en un solo campo', await page.isVisible('#matchwhen') && (await page.locator('#matchdate, #matchtime').count()) === 0);
   await page.fill('#matchwhen', '2099-03-07T19:30'); await page.dispatchEvent('#matchwhen', 'change');
   ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));
-  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Partido · Sábado 7 mar · 19:30', await page.textContent('#h1'));
+  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Sábado 7 mar · 19:30', await page.textContent('#h1'));
   const apuntados = await page.evaluate(() => signupIds());
   await page.click('#fix');
   ok('Partido jugado pide confirmación', (await page.innerText('#fix')) === 'Guardar y vaciar la lista');
@@ -60,6 +60,11 @@ const { ok, done } = checker();
   ok('empate', (await page.locator('#hlist .res').innerText()).toLowerCase() === 'empate');
   await page.locator('#hlist .goals[data-team=D] [data-gdel]').click(); await page.waitForTimeout(100);
   ok('quitar un gol', !/×2/.test(await page.locator('#hlist .goals[data-team=D] .gchip').innerText()) && (await page.inputValue('#hlist input[data-s=D]')) === '2');
+  await page.locator('#hlist .goals[data-team=D] [data-ginc]').click(); await page.waitForTimeout(100);
+  await page.locator('#hlist .goals[data-team=D] [data-ginc]').click(); await page.waitForTimeout(100);
+  ok('el + suma otro gol al mismo jugador', /×3/.test(await page.locator('#hlist .goals[data-team=D] .gchip').innerText()) && (await page.inputValue('#hlist input[data-s=D]')) === '4');
+  await page.locator('#hlist .goals[data-team=D] [data-gdel]').click(); await page.waitForTimeout(100);
+  await page.locator('#hlist .goals[data-team=D] [data-gdel]').click(); await page.waitForTimeout(100);
 
   // Estadísticas
   await tab(page, 'stats');

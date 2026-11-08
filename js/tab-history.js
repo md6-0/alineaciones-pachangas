@@ -9,7 +9,7 @@ function goalsHTML(m, team, list) {
   const scorers = Object.keys(g).filter(k => g[k] > 0).sort((a, b) => g[b] - g[a]);
   const nm = id => { const pl = list.find(p => p.id === id); return pl ? pl.name : nameOf(id); };
   const ed = canEdit();
-  const chips = scorers.map(id => `<span class="gchip">⚽ ${esc(nm(id))}${g[id] > 1 ? ` <b>×${g[id]}</b>` : ""}${ed ? `<button type="button" data-gdel="${esc(id)}" aria-label="Quitar un gol de ${esc(nm(id))}">−</button>` : ""}</span>`).join("");
+  const chips = scorers.map(id => `<span class="gchip">⚽ ${esc(nm(id))}${g[id] > 1 ? ` <b>×${g[id]}</b>` : ""}${ed ? `<button type="button" data-gdel="${esc(id)}" aria-label="Quitar un gol de ${esc(nm(id))}">−</button><button type="button" data-ginc="${esc(id)}" aria-label="Otro gol de ${esc(nm(id))}">+</button>` : ""}</span>`).join("");
   if (!ed && !scorers.length) return "";
   return `<div class="goals" data-team="${team}"><span class="gl">GOLES</span>
     ${scorers.length ? `<div class="gchips">${chips}</div>` : ""}
@@ -68,7 +68,12 @@ hlist.addEventListener("focusout", () => {
   setTimeout(() => { if (!hlist.contains(document.activeElement)) renderHistory(); }, 50);
 });
 hlist.addEventListener("click", e => {
-  const ga = e.target.closest("[data-gadd]"), gd = e.target.closest("[data-gdel]");
+  const ga = e.target.closest("[data-gadd]"), gd = e.target.closest("[data-gdel]"), gi = e.target.closest("[data-ginc]");
+  if (gi) {
+    const box = gi.closest(".goals");
+    changeGoal(box.closest(".match").dataset.id, box.dataset.team, gi.dataset.ginc, 1).catch(() => toast("No se pudo guardar el gol."));
+    return;
+  }
   if (ga || gd) {
     const box = (ga || gd).closest(".goals"), team = box.dataset.team, mid = box.closest(".match").dataset.id;
     const pid = ga ? box.querySelector("[data-gsel]").value : gd.dataset.gdel;

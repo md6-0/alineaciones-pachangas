@@ -21,8 +21,9 @@ body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;
 
 /* Cabecera */
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+header > div:first-child{min-width:0;max-width:100%}
 .eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px}
-h1{font-weight:800;font-stretch:72%;font-size:2.6rem;letter-spacing:-.01em;line-height:.95;margin:0;text-transform:uppercase;text-wrap:balance}
+h1{font-weight:800;font-stretch:72%;font-size:clamp(1.3rem,6.8vw,2.6rem);letter-spacing:-.01em;line-height:.95;margin:0;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* siempre en una línea */
 
 /* Botones */
 button{font:inherit;cursor:pointer;color:inherit}

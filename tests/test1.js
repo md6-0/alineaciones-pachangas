@@ -9,7 +9,10 @@ const { ok, done } = checker();
 
   ok('5 pestañas', (await page.locator('.tabs .tab').count()) === 5);
   ok('empieza en Partido', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true' && !(await page.isHidden('#p-alin')));
-  ok('título con la fecha de hoy', /^Partido · \S+ \d+ \w+$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
+  ok('título con la fecha de hoy', /^\S+ \d+ \w+$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
+  await page.evaluate(() => { const i = document.getElementById('matchwhen'); i.value = '2099-12-30T12:00'; i.dispatchEvent(new Event('change')); });
+  ok('el título más largo cabe en una línea', await page.evaluate(() => { const h = document.getElementById('h1'); return h.textContent === 'Miércoles 30 dic · 12:00' && h.scrollWidth <= h.clientWidth && h.getBoundingClientRect().height < 40 && document.documentElement.scrollWidth <= innerWidth; }));
+  await page.click('#datereset');
   ok('grupo por defecto', (await page.textContent('#eyebrow')) === 'Mi pachanga ⚽');
   ok('primera vez: 14 apuntados (los que pide el formato)', (await page.locator('#slist li').count()) === 14);
   ok('por orden de llegada', (await page.locator('#slist li .sname').first().innerText()) === 'Jugador 1');

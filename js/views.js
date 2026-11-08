@@ -16,8 +16,8 @@ function showTab() {
   $("#hctl").hidden = st.tab !== "alin";   // Guardar y Compartir solo en Partido
   paintTitle();
 }
-/** Título de la pestaña (el de Partido lleva el día y la hora del partido, que puede cambiar al llegar los datos). */
-const paintTitle = () => { $("#h1").textContent = st.tab === "alin" ? `Partido · ${matchWhen()}` : TITLES[st.tab]; };
+/** Título de la pestaña (el de Partido es el día y la hora del partido, que puede cambiar al llegar los datos). */
+const paintTitle = () => { $("#h1").textContent = st.tab === "alin" ? matchWhen() : TITLES[st.tab]; };
 
 /** Repinta la pizarra y lo que depende de ella en Opciones (formato y fecha). */
 function render() { paintOptions(); paintTitle(); renderLineup(); }

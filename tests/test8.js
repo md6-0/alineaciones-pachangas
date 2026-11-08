@@ -26,7 +26,7 @@ const positions = page => page.locator('#board .mag').evaluateAll(els => Object.
   const app = await open({ cloud: server, mode: null }), { page, ctx } = app;
   ok('no puede editar', await page.evaluate(() => document.body.classList.contains('viewer')));
   ok('nombre del grupo del servidor', (await page.textContent('#eyebrow')) === 'Los del domingo');
-  ok('título con día y hora del partido', /^Partido · \S+ 15 nov · 12:00$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
+  ok('título con día y hora del partido', /^\S+ 15 nov · 12:00$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
   ok('lista de apuntados', (await page.locator('#slist .sname').count()) === 14 && (await page.innerText('#count')) === '14 de 16');
   ok('alineación de los apuntados', (await page.locator('#board .mag').count()) === 14);
   ok('sin quitar, apuntar a otros, retocar ni guardar', (await page.locator('#slist .sdel').count()) === 0 && await page.isHidden('#saddform')
