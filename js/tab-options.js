@@ -1,5 +1,5 @@
 "use strict";
-/* Pestaña Opciones: nombre del grupo, día del partido, formato, medias, copia de seguridad y borrar todo.
+/* Pestaña Opciones: nombre del grupo, día y hora del partido, tu nombre, formato, medias, copia de seguridad y borrar todo.
    La versión y «Buscar actualizaciones» están en updates.js. */
 
 /** Pinta el nombre del grupo encima del título y en su casilla (salvo mientras se escribe). */
@@ -15,6 +15,8 @@ function paintOptions() {
   if (document.activeElement !== mdi) mdi.value = isoDate(matchDay());
   mdi.min = st.datePast ? "" : todayIso();
   $("#datereset").hidden = !customDate();
+  const ti = $("#matchtime"); if (document.activeElement !== ti) ti.value = st.time || "";
+  const ni = $("#myname"); if (document.activeElement !== ni) ni.value = st.myName || "";
 }
 
 /** Muestra u oculta las medias en toda la app. */
@@ -33,6 +35,9 @@ $("#groupname").addEventListener("change", async e => {
 
 $("#matchdate").addEventListener("change", e => { setMatchDate(e.target.value); showTab(); render(); });
 $("#datereset").addEventListener("click", () => { setMatchDate(null); showTab(); render(); });
+
+$("#matchtime").addEventListener("change", e => { st.time = /^\d\d:\d\d$/.test(e.target.value) ? e.target.value : null; save(); });
+$("#myname").addEventListener("change", e => { st.myName = e.target.value.trim().slice(0, 40); e.target.value = st.myName; save(); });
 
 $("#modeseg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || !loaded) return;

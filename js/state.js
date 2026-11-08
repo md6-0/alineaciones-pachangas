@@ -7,6 +7,8 @@ let st = {
   sel: null,          // ids convocados (null hasta la primera carga: entonces se convoca a los primeros que pide el formato)
   ratings: true,      // mostrar las medias
   date: null,         // día del partido elegido (2026-11-05) o null para hoy; datePast: viene de cargar un partido pasado
+  time: null,         // hora del partido ("12:00") o null; sale en la lista para apuntarse
+  myName: "",         // tu nombre: sale el primero en la lista para apuntarse
   mode: "8",          // formato: "7", "8" u "11" (por defecto, 8 vs 8)
   form: { W: { "7": "2-3-1", "8": "3-3-1" }, D: { "7": "2-3-1", "8": "3-3-1" } },   // formación de cada equipo en cada formato
   tab: "alin",        // pestaña abierta

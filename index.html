@@ -130,6 +130,14 @@
         </div>
       </div>
       <div class="optrow">
+        <div><h3>Hora del partido</h3><p class="hint">Sale en la lista para apuntarse. Vacía, no sale.</p></div>
+        <div class="datepick"><input type="time" id="matchtime" aria-label="Hora del partido"></div>
+      </div>
+      <div class="optrow">
+        <div><h3>Tu nombre</h3><p class="hint">Sales el primero en la lista para apuntarse. Vacío, la lista empieza sin nombres.</p></div>
+        <input type="text" id="myname" class="textopt" maxlength="40" aria-label="Tu nombre">
+      </div>
+      <div class="optrow">
         <div><h3>Formato</h3><p class="hint">Al cambiarlo se rehace el reparto.</p></div>
         <div class="seg" id="modeseg" role="group" aria-label="Formato">
           <button type="button" id="m7" data-mode="7">7 vs 7</button>
@@ -161,7 +169,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 1.14.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 1.15.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>

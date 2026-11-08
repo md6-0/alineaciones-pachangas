@@ -61,7 +61,14 @@ const { ok, done } = checker();
   await page.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
   await page.click('#signup');
   const su = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('lista para apuntarse', /^⚽ Pachanga · .+ \(7 vs 7\)$/.test(su[0]) && su[1] === '' && su.includes('14. ') && !su.includes('15. ') && su.includes('Reservas') && su[su.length - 1] === '3. ', su[0]);
+  ok('lista para apuntarse', /^⚽ Pachanga · [^·]+$/.test(su[0]) && su[1] === '' && su[2] === '' && su[3] === '1.' && su[su.length - 1] === '14.' && su.length === 17 && !su.includes('Reservas'), su.join('|'));
+  // Con hora y tu nombre (Opciones)
+  await page.evaluate(() => { const set = (id, v) => { const i = document.getElementById(id); i.value = v; i.dispatchEvent(new Event('change')); }; set('matchtime', '12:00'); set('myname', ' Mario '); });
+  await page.click('#signup');
+  const su2 = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
+  ok('lista con hora y tu nombre', / · 12:00$/.test(su2[0]) && su2[3] === '1. Mario' && su2[4] === '2.', su2.slice(0, 5).join('|'));
+  await page.evaluate(() => { const i = document.getElementById('matchtime'); i.value = ''; i.dispatchEvent(new Event('change')); });
+  ok('sin hora no sale', (await page.evaluate(() => [st.time, signupText().split('\n')[0].split(' · ').length])).join() === ',2');
 
   // Clic fuera cierra el menú
   await page.click('#sharebtn'); await page.click('h1');
@@ -84,7 +91,7 @@ const { ok, done } = checker();
   await p2.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
   await p2.click('#signup');
   const su8 = decodeURIComponent((await p2.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('lista de 16', /\(8 vs 8\)$/.test(su8[0]) && su8.includes('16. ') && !su8.includes('17. '), su8[0]);
+  ok('lista de 16', su8[su8.length - 1] === '16.' && su8.length === 19, su8.join('|'));
   ok('sin errores (8 vs 8)', !fresh.errors.length, fresh.errors.join(' | '));
   await fresh.close(); done();
 })().catch(e => { console.log('CRASH ' + e.stack); process.exit(1); });

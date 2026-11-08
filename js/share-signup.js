@@ -1,17 +1,16 @@
 "use strict";
-/* Lista para apuntarse por WhatsApp: el día del partido y huecos numerados (los jugadores del formato y unas reservas). */
+/* Lista para apuntarse por WhatsApp: día y hora del partido y un hueco numerado por cada jugador del formato.
+   Si has puesto tu nombre en Opciones, sales ya apuntado en el primero. */
 
-const SIGNUP_RESERVES = 3;
-
-/** Mensaje para apuntarse, con huecos vacíos. */
+/** Mensaje para apuntarse. */
 function signupText() {
-  const n = st.mode * 2, slots = k => Array.from({ length: k }, (_, i) => `${i + 1}. `);
-  return [`⚽ Pachanga · ${matchDayLabel()} (${st.mode} vs ${st.mode})`,
-    "",
-    ...slots(n), "", "Reservas", ...slots(SIGNUP_RESERVES)].join("\n");
+  const head = ["⚽ Pachanga", matchDayLabel(), st.time].filter(Boolean).join(" · ");
+  const me = (st.myName || "").trim();
+  const slots = Array.from({ length: st.mode * 2 }, (_, i) => `${i + 1}. ${i === 0 ? me : ""}`.trimEnd());
+  return [head, "", "", ...slots].join("\n");
 }
 
-// El enlace se prepara al pulsarlo, con el día y el formato de ese momento
+// El enlace se prepara al pulsarlo, con el día, la hora y el formato de ese momento
 $("#signup").addEventListener("click", e => {
   e.currentTarget.href = "https://wa.me/?text=" + encodeURIComponent(signupText());
 });
