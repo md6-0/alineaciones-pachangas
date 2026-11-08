@@ -1,10 +1,8 @@
 # ⚽ Mi pachanga
 
-La pizarra del míster para la pachanga del fin de semana: apuntas a quien viene al próximo partido, la app los reparte en dos equipos equilibrados por posiciones y tú los retocas arrastrando los imanes.
+La app de la pachanga del grupo: quien organiza apunta a quien viene al próximo partido, la app reparte dos equipos equilibrados por posiciones y los coloca en una pizarra que se retoca arrastrando los imanes. El resto del grupo abre el enlace y ve la lista, la alineación, el historial con resultados y goleadores, las estadísticas y, a final de año, el **Rewind**.
 
-Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
-
-Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Guarda los datos en un servidor (Firebase) para compartirla con el grupo: quien organiza entra con su cuenta y lo cambia todo, y los demás abren el enlace y lo ven todo sin poder tocar nada. Sin servidor configurado, todo se guarda en el dispositivo.
+Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Los datos están en un servidor (Firebase): solo quien organiza puede cambiarlos, entrando con su cuenta, y los demás solo los ven. Sin servidor configurado, todo se guarda en el dispositivo.
 
 ---
 
@@ -21,9 +19,17 @@ La primera pestaña es el **próximo partido**: arriba, quién va; debajo, cómo
 - **Partido jugado**, después de jugar: guarda la alineación en el historial con su fecha, vacía la lista para el próximo y te lleva al historial para apuntar el resultado y los goles.
 - **Compartir** manda la alineación en texto por WhatsApp o, con **Compartir imagen**, como imagen por el menú de compartir del móvil (en el ordenador, la descarga). Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
 
+### 👀 El grupo
+
+Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con pasar el enlace de la app:
+
+- **Quien abre el enlace** ve el próximo partido (la lista y la alineación), el historial con resultados y goles, y las estadísticas, sin poder cambiar nada; la pestaña Jugadores no aparece. Para apuntarse, se lo dice a quien organiza.
+- **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces lo cambia todo. Lo que guarda llega al momento a todos los demás.
+- **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor y se suben sin las notas de las antiguas medias).
+
 ### 👟 Jugadores
 
-Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). No hay medias: los equipos se equilibran por posiciones, y en cada equipo va a la portería quien tenga la posición POR.
+Solo para quien organiza. Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). No hay medias: los equipos se equilibran por posiciones, y en cada equipo va a la portería quien tenga la posición POR.
 
 ### 🏆 Historial y estadísticas
 
@@ -33,20 +39,12 @@ En el historial, quien organiza apunta el resultado y quién marcó cada gol (co
 
 En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote y números para cada uno que haya jugado al menos 4 partidos. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
 
-### 👀 Compartir la app con el grupo
-
-Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con pasar el enlace de la app:
-
-- **Quien abre el enlace** ve el próximo partido (la lista y la alineación), el historial con resultados y goles, y las estadísticas, sin poder cambiar nada; la pestaña Jugadores no aparece. Para apuntarse, se lo dice a quien organiza.
-- **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces lo cambia todo. Lo que guarda llega al momento a todos los demás.
-- **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor y se suben sin las notas de las antiguas medias).
-
 ### ⚙️ Opciones
 
 - **Administrar** (solo con servidor): entrar para editar o salir.
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
 - **Formato**: 7 vs 7, 8 vs 8 (por defecto) u 11 vs 11. Al cambiarlo, la alineación vuelve a salir sola.
-- **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
+- **Copia de seguridad** (como todo lo de Opciones salvo Administrar, solo para quien organiza): descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
 - **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.
 - **Versión**: al final de la pestaña, con un botón para buscar actualizaciones.
 
