@@ -70,7 +70,7 @@ function teamHTML(team) {
     <div class="thead">
       <div class="tname"><span class="sw ${team}"></span>${TEAMS[team]}</div>
     </div>
-    <p class="tsub">${pitchIds(team).length} en el campo · ${st.form[team][st.mode]}</p>
+    <p class="tsub">${pitchIds(team).length} en el campo</p>
     <div class="bench" data-team="${team}">${bench.length ? bench.map(magHTML).join("") : `<span class="empty">Banquillo vacío${canEdit() ? " · suelta aquí un imán" : ""}</span>`}</div>
   </section>`;
 }
