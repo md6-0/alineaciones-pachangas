@@ -1,6 +1,6 @@
 # ⚽ Mi pachanga
 
-La app de la pachanga del grupo: quien organiza apunta a quien viene al próximo partido, la app reparte dos equipos equilibrados por posiciones y los coloca en una pizarra que se retoca arrastrando los imanes. El resto del grupo abre el enlace y ve la lista, la alineación, el historial con resultados y goleadores, las estadísticas y, a final de año, el **Rewind**.
+La uso para organizar la pachanga del finde con mis colegas. Quien organiza apunta a quien viene al próximo partido, la app reparte dos equipos equilibrados por posiciones y los coloca en una pizarra que se retoca arrastrando los imanes. El resto del grupo abre el enlace y ve la lista, la alineación, el historial con resultados y goleadores, las estadísticas y, a final de año, el **Rewind**.
 
 Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Los datos están en un servidor (Firebase): solo quien organiza puede cambiarlos, entrando con su cuenta, y los demás solo los ven. Sin servidor configurado, todo se guarda en el dispositivo.
 
