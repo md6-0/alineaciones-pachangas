@@ -1,10 +1,10 @@
-/* Pestaña Alineación: la columna de control (convocatoria y equipos), los banquillos y el menú Compartir de la cabecera.
+/* Pestaña Partido: la lista de apuntados, los equipos con sus banquillos y el menú Compartir de la cabecera.
    La pizarra tiene su propia hoja (board.css), que se carga antes. */
 
 .main{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:28px;align-items:start}
 @media (max-width:880px){.main{grid-template-columns:1fr}}
 
-/* Columna de control */
+/* Columna de los equipos */
 .side{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
 .sec{padding:18px 20px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line)}
 .sec:first-child{border-top:0}
@@ -12,13 +12,7 @@
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8rem}
 
-/* Convocatoria */
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;display:inline-flex;gap:7px;align-items:center;font-size:.86rem;font-weight:500}
-.chip[aria-pressed="true"]{border-color:var(--fg);color:var(--fg);background:var(--bg)}
-.chip[aria-pressed="true"] .r{color:var(--fg)}
-
-/* Cada equipo: nombre, media, formaciones y banquillo */
+/* Cada equipo: nombre, jugadores en el campo y banquillo */
 #teams{display:flex;flex-direction:column;gap:12px;padding:0 12px 12px}
 .sec.team{border:2px solid var(--tb);border-radius:5px;padding:16px}
 .sec.team.W{--tb:var(--w-border)} .sec.team.D{--tb:var(--d-border)}

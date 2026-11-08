@@ -95,9 +95,6 @@ const { ok, done } = checker();
   ok('imagen de goleadores', (await page.evaluate(() => document.getElementById('ovimg').naturalWidth)) === 1080);
   await page.click('#ovclose');
 
-  // Ya no se carga un partido en la pizarra: la pizarra es siempre la del próximo partido
-  await tab(page, 'hist');
-  ok('sin «Cargar en la pizarra»', (await page.locator('#hlist [data-mload]').count()) === 0);
   await tab(page, 'alin');
 
   // Vaciar la lista para el siguiente partido
@@ -108,10 +105,9 @@ const { ok, done } = checker();
   await tab(page, 'hist');
   ok('el historial sigue', (await page.locator('#hlist .match').count()) === 1);
 
-  // Sin medias en el historial ni en lo guardado
+  // Cada jugador del partido se guarda con nombre, puesto y sitio (sin nada más)
   await tab(page, 'hist');
-  ok('historial sin medias', (await page.locator('#hlist .mteam small').count()) === 0
-    && await page.evaluate(() => matches.every(m => ['W', 'D'].every(t => m[t].every(p => !('ovr' in p) && !('por' in p))))));
+  ok('partido guardado sin datos de más', await page.evaluate(() => matches.every(m => ['W', 'D'].every(t => m[t].every(p => Object.keys(p).sort().join() === 'id,name,role,x,y')))));
 
   // Borrar partido
   await tab(page, 'hist');

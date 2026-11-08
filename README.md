@@ -1,10 +1,10 @@
 # ⚽ Mi pachanga
 
-La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos equilibrados por posiciones y tú colocas a cada uno en su sitio arrastrando los imanes.
+La pizarra del míster para la pachanga del fin de semana: cada uno se apunta al próximo partido, la app reparte a los apuntados en dos equipos equilibrados por posiciones y tú los retocas arrastrando los imanes.
 
 Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
 
-Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Puede guardar los datos en un servidor (Firebase) para compartirla con el grupo: quien organiza entra con su cuenta y edita, y los demás abren el enlace y lo ven todo sin poder tocar nada. Sin servidor configurado, todo se guarda en el dispositivo.
+Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Guarda los datos en un servidor (Firebase) para compartirla con el grupo: quien organiza entra con su cuenta y lo cambia todo, y los demás abren el enlace, lo ven todo y solo pueden apuntarse o borrarse. Sin servidor configurado, todo se guarda en el dispositivo.
 
 ---
 
@@ -27,7 +27,7 @@ Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). No hay
 
 ### 🏆 Historial y estadísticas
 
-En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o Telegram, o en imagen para descargarla o compartirla.
+En el historial, quien organiza apunta el resultado y quién marcó cada gol. La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o Telegram, o en imagen para descargarla o compartirla.
 
 ### 👀 Compartir la app con el grupo
 
@@ -52,7 +52,7 @@ Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con
 
 1. Abre [md6-0.github.io/alineaciones-pachangas](https://md6-0.github.io/alineaciones-pachangas/) en el navegador del móvil.
 2. Instálala: en Android, menú del navegador → *Añadir a pantalla de inicio*; en iPhone, botón *Compartir* → *Añadir a pantalla de inicio*.
-3. Sin servidor, la primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, ya colocada en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las posiciones en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
+3. Con el servidor ya configurado (como la versión publicada), la app abre con los datos del grupo: elige «Soy…» y apúntate. Sin servidor, la primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, con los primeros apuntados y ya colocados en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las posiciones en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
 
 Cuando hay una versión nueva, la app la busca sola al volver a ella y cada media hora, y te avisa arriba con un botón **Actualizar**: tú decides cuándo, para que no se recargue mientras escribes.
 
@@ -96,7 +96,7 @@ npx playwright install chromium
 npm test                 # todas; también: node run.js 2 5 para elegir algunas
 ```
 
-Cada prueba levanta su propio servidor local y no necesita internet. Las del servidor (`test8.js`) usan un Firebase simulado (`tests/fake-firebase.js`) con las mismas reglas que `firestore.rules`: quien no ha entrado puede leer pero no escribir. Si cambias algo de la interfaz y una prueba falla, suele ser porque el texto o el comportamiento que comprobaba ha cambiado a propósito: se actualiza la prueba.
+Cada prueba levanta su propio servidor local y no necesita internet. Las del servidor (`test8.js`) usan un Firebase simulado (`tests/fake-firebase.js`) con las mismas reglas que `firestore.rules`: quien no ha entrado puede leer y apuntarse o borrarse a sí mismo, pero nada más. Si cambias algo de la interfaz y una prueba falla, suele ser porque el texto o el comportamiento que comprobaba ha cambiado a propósito: se actualiza la prueba.
 
 ### Publicar una versión nueva
 
@@ -135,7 +135,7 @@ js/settings.js         ajustes que viajan con los datos (nombre del grupo)
 js/dates.js            día del partido
 js/players.js          jugadores: lectura, añadir, cambiar y quitar
 js/teams.js            reparto en dos equipos equilibrados por posiciones
-js/formation.js        colocación en la pizarra: huecos, portero, soltar imanes, invertir equipos
+js/formation.js        colocación en la pizarra: huecos, portero y soltar imanes
 js/matches.js          historial: guardar la alineación, resultado y goles
 js/next-match.js       próximo partido: apuntados, día, hora, formato y la alineación (automática o retocada)
 js/stats.js            cálculo de las estadísticas
@@ -181,19 +181,19 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 **La app abre desde la caché.** Cada versión guarda todos sus archivos en el dispositivo al instalarse, y al abrir la app se leen de ahí sin preguntar al servidor por cada uno. Por eso abre al momento, con o sin conexión, y por eso los cambios solo llegan al subir `VERSION`.
 
-**El reparto es determinista.** La misma lista de apuntados da siempre las mismas opciones (en todos los móviles): entre los repartos igual de equilibrados se elige uno con un generador aleatorio con semilla. Hasta 16 apuntados se prueban todos los repartos; con más, se buscan al azar y se mejoran intercambiando parejas.
+**El reparto es determinista.** La misma lista de apuntados da siempre el mismo reparto, en todos los móviles: entre los repartos igual de equilibrados se elige uno con un generador aleatorio cuya semilla sale de los ids de los apuntados. Hasta 16 apuntados se prueban todos los repartos; con más, se buscan al azar y se mejoran intercambiando parejas.
 
 ### Cómo se guardan los datos
 
-Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó, y `uid`, quién lo apuntó) y `next` (un documento, `current`, con el día, la hora, el formato, las formaciones, el reparto que se muestra y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
+Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó, y `uid`, quién lo apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
-- **`pachangas-db-v1`** (sin servidor): los datos, en tres colecciones. `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (cada partido, con la fecha como id: formato, formaciones, los jugadores de cada equipo con su posición, `score` y `goals`) y `settings` (el nombre del grupo). Es lo que va en la copia de seguridad.
+- **`pachangas-db-v1`** (sin servidor): las cinco colecciones. Cada partido de `matches` lleva la fecha como id, el formato, la formación, los jugadores de cada equipo con su puesto y su sitio, `score` y `goals`. La copia de seguridad lleva `players`, `matches` y `settings`.
 - **`pach-v4`**: las preferencias de este dispositivo: quién eres (para apuntarte), pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.
 - **`pach-subido`**: ya se subieron al servidor los datos que había en este dispositivo.
 
 ### Ampliar la app
 
 - **Otra formación:** se cambia en `FORMS` (`config.js`). Las de tres líneas (3-3-1) y cuatro (4-2-3-1) ya tienen sus alturas en `LINES`.
-- **Un formato nuevo:** sus formaciones en `FORMS`, cuántos jugadores necesita en `NEED` y su botón en Opciones (`index.html`). Si necesita otro campo, se dibuja en `pitch.js` y en `drawPitchLines` (`share-image.js`).
+- **Un formato nuevo:** su formación en `FORMS`, cuántos jugadores necesita en `NEED` y su botón en Opciones (`index.html`). Si necesita otro campo, se dibuja en `pitch.js` y en `drawPitchLines` (`share-image.js`).
 - **Una estadística nueva:** se calcula en `computeStats` (`stats.js`) y se añade su tarjeta en `tab-stats.js`.
 - **Un archivo nuevo:** se añade a `index.html` en el lugar que le corresponda según de qué dependa, y a la lista `SHELL` de `sw.js`.

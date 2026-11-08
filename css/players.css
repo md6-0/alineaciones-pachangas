@@ -13,13 +13,10 @@ table.pt{border-collapse:collapse;width:100%;min-width:460px;font-variant-numeri
 .pt th.c,.pt td.c{text-align:center}
 .pt td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 .pt tr:last-child td{border-bottom:0}
-.pt input[type=text],.pt input[type=number],.addrow input{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
+.pt input[type=text],.addrow input{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
 .pt input[type=text]{width:120px;font-weight:600}
-.pt input[type=number]{width:58px;text-align:center}
 .pt input:focus,.addrow input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
-.pt input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
 
-/* Media en un círculo de oro, plata o bronce */
 /* Botones de posición */
 .posb{display:inline-flex;gap:4px}
 .posb button{border:1px solid var(--line);background:transparent;color:var(--faint);border-radius:4px;padding:3px 7px;font-size:.72rem;font-weight:700;letter-spacing:.06em}
@@ -27,6 +24,5 @@ table.pt{border-collapse:collapse;width:100%;min-width:460px;font-variant-numeri
 
 @media (max-width:520px){
   .pt input[type=text]{width:92px}
-  .pt input[type=number]{width:48px}
-  .pt td{padding:6px 5px}
+    .pt td{padding:6px 5px}
 }

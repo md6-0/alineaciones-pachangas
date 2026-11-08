@@ -42,7 +42,7 @@ function onSettings(snap) {
   paintGroup();
 }
 
-/** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver. */
+/** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver (y apuntarse). */
 function applyRole() {
   document.body.classList.toggle("viewer", !canEdit());
   paintAccount(); showTab(); renderAll();

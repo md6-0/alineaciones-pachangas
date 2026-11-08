@@ -33,7 +33,7 @@ $("#loginform").addEventListener("submit", async e => {
   btn.disabled = false;
 });
 $("#logout").addEventListener("click", async () => {
-  try { await db.signOut(); toast("Has salido: la app queda en solo ver."); } catch { toast("No se pudo salir."); }
+  try { await db.signOut(); toast("Has salido: ya no puedes cambiar los datos."); } catch { toast("No se pudo salir."); }
 });
 
 $("#migbtn").addEventListener("click", async e => {

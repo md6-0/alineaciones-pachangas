@@ -10,17 +10,15 @@
 .board .tag{position:absolute;right:6.5%;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-soft);pointer-events:none}
 .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--chalk);font-weight:600;font-size:.9rem;pointer-events:none}
 
-/* Imán: disco con la media (o las iniciales) y etiqueta con el nombre y las posiciones */
+/* Imán: disco con el número o las iniciales y etiqueta con el nombre y las posiciones */
 .mag{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;
   touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;z-index:2}
 .disc{position:relative;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-weight:700;font-stretch:85%;font-size:1rem;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
   box-shadow:0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45)}
-.mag.W .disc{background:var(--w-mag);color:#16191a;--ring-bg:var(--w-mag)}
-.mag.D .disc{background:var(--d-mag);color:#f1f1ee;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45);--ring-bg:var(--d-mag)}
-/* Aro de color según la media: oro, plata o bronce */
+.mag.W .disc{background:var(--w-mag);color:#16191a}
+.mag.D .disc{background:var(--d-mag);color:#f1f1ee;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45)}
 .lab{font-size:.7rem;font-weight:600;line-height:1;color:#fff;white-space:nowrap;padding:3px 6px;border-radius:3px;background:rgba(0,0,0,.42);display:flex;gap:5px;align-items:baseline}
-.role{font-size:.56rem;font-weight:600;letter-spacing:.12em;color:rgba(255,255,255,.55)}
 .mag.dragging{position:fixed!important;z-index:60;cursor:grabbing;transform:translate(-50%,-50%) scale(1.1);pointer-events:none}
 .labrow{display:flex;flex-direction:row;align-items:center;gap:2px}
 /* Letras de posición (P, D, M, A) */

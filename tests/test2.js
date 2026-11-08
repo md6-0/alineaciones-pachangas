@@ -19,7 +19,6 @@ const { ok, done } = checker();
   const row = page.locator('#plist tbody tr').last();
   const id = await row.getAttribute('data-id');
   ok('id a partir del nombre', /^inigo-perez-[a-z0-9]{1,4}$/.test(id), id);
-  ok('sin medias', (await page.locator('#plist input[type=number], #plist .ov').count()) === 0);
   ok('vacío no añade', await (async () => { await page.fill('#newname', '   '); await page.click('#addform button[type=submit]'); return (await page.innerText('#pcount')) === '25 jugadores'; })());
 
   // Posiciones

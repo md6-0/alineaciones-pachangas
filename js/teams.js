@@ -1,6 +1,7 @@
 "use strict";
-/* Reparto de los convocados en dos equipos equilibrados por posiciones (no hay medias). No toca la pantalla.
-   Entre los repartos igual de equilibrados se elige uno al azar, con semilla (igual en todos los móviles). */
+/* Reparto de los apuntados en dos equipos equilibrados por posiciones. No toca la pantalla.
+   Entre los repartos igual de equilibrados se elige uno al azar, con una semilla sacada de los ids:
+   los mismos apuntados dan siempre el mismo reparto, en todos los móviles. */
 
 /** Portero que tendría un equipo: el primero que tenga la posición POR (si no hay, el primero). */
 function pickGK(list) {
@@ -19,10 +20,10 @@ function splitCost(A, B) {
   return cost;
 }
 
-/** Número a partir de los ids (para que la misma convocatoria dé las mismas opciones). */
+/** Número a partir de los ids (la semilla del reparto). */
 const idsHash = list => list.reduce((h, p) => { for (const ch of p.id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h; }, 2166136261) >>> 0;
 
-/** Generador de números aleatorios con semilla: la misma convocatoria da siempre las mismas opciones. */
+/** Generador de números aleatorios con semilla. */
 function rng(seedN) {
   let t = seedN >>> 0;
   return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ t >>> 15, 1 | t); r ^= r + Math.imul(r ^ r >>> 7, 61 | r); return ((r ^ r >>> 14) >>> 0) / 4294967296; };
@@ -64,14 +65,13 @@ function searchSplits(list) {
   return out;
 }
 
-/** Reparto de la lista: uno al azar entre los más equilibrados, según la semilla.
-    null si hay menos de 2. */
-function solve(list, seedN = seed) {
+/** Reparto de la lista: uno al azar entre los más equilibrados (siempre el mismo para la misma lista). null si hay menos de 2. */
+function solve(list) {
   if (list.length < 2) return null;
   const out = list.length <= 16 ? allSplits(list) : searchSplits(list);
   if (!out.length) return null;
   out.sort((a, b) => a.cost - b.cost);
   const best = out.filter(s => s.cost <= out[0].cost + 1e-9);
-  const s = best[Math.floor(rng(idsHash(list) + seedN * 104729)() * best.length)];
+  const s = best[Math.floor(rng(idsHash(list))() * best.length)];
   return { A: s.A, B: s.B };
 }

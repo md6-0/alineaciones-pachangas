@@ -2,9 +2,9 @@
 /* Próximo partido: la lista de apuntados y la alineación que ve todo el mundo. No toca la pantalla.
    signups/{id del jugador} = { at: cuándo se apuntó (ISO), uid: quién lo apuntó }
      Cada uno se apunta y se borra a sí mismo; quien organiza apunta y quita a cualquiera. La lista va por orden de llegada.
-   next/current = { date, time, mode, form: { W, D }, seed, layout }   (solo lo cambia quien organiza)
-     Día, hora, formato y formaciones del partido; qué reparto se muestra (seed) y, si quien organiza ha retocado la
-     alineación, su colocación (layout). Sin retocar, layout es null y la alineación sale sola a partir de los apuntados. */
+   next/current = { date, time, mode, layout }   (solo lo cambia quien organiza)
+     Día, hora y formato del partido y, si quien organiza ha retocado la alineación, su colocación (layout).
+     Sin retocar, layout es null y la alineación sale sola a partir de los apuntados. */
 
 let signups = {};          // id → { at, uid }
 let signupsLoaded = false;
@@ -19,19 +19,14 @@ const isSignedUp = id => !!signups[id] && !!BY[id];
 function applyNext(d) {
   d = d || {};
   if (FORMS[d.mode]) st.mode = d.mode;
-  SIDES.forEach(t => { const f = d.form && d.form[t]; if (f && FORMS[st.mode].includes(f)) st.form[t][st.mode] = f; });
   st.date = typeof d.date === "string" && ISO_DATE.test(d.date) ? d.date : null;
   st.time = /^\d\d:\d\d$/.test(d.time || "") ? d.time : null;
-  seed = Number.isInteger(d.seed) ? d.seed : 0;
   savedLayout = d.layout && typeof d.layout === "object" ? d.layout : null;
 }
 
-/** Guarda el partido (día, hora, formato, formaciones, reparto y colocación) para todos. */
+/** Guarda el partido (día, hora, formato y colocación) para todos. */
 function saveNext() {
-  return db.doc("next/current").set({
-    date: st.date, time: st.time, mode: st.mode, form: { W: st.form.W[st.mode], D: st.form.D[st.mode] },
-    seed, layout: savedLayout ? clone(savedLayout) : null
-  });
+  return db.doc("next/current").set({ date: st.date, time: st.time, mode: st.mode, layout: savedLayout ? clone(savedLayout) : null });
 }
 
 /* ---------- Alineación ---------- */
@@ -79,6 +74,6 @@ const canRemove = id => canEdit() || (!!signups[id] && !!db.user && signups[id].
 /** Vacía la lista para el siguiente partido (y la alineación vuelve a salir sola). */
 async function clearSignups() {
   for (const id of Object.keys(signups)) await signOff(id);
-  seed = 0; savedLayout = null;
+  savedLayout = null;
   await saveNext();
 }

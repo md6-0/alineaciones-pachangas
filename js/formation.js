@@ -9,7 +9,7 @@ const slotX = (j, k) => k === 1 ? 50 : k === 2 ? (j ? 73 : 27) : k >= 5 ? 10 + j
 
 /** Huecos de la formación del equipo: [{ role: "GK"|"DEF"|"MED"|"ATQ", x, y }]. */
 function slotsFor(team, withGK = true) {
-  const parts = st.form[team][st.mode].split("-").map(Number), lines = LINES[parts.length] || LINES[3], out = [];
+  const parts = FORMS[st.mode].split("-").map(Number), lines = LINES[parts.length] || LINES[3], out = [];
   if (withGK) out.push({ role: "GK", x: 50, y: yFor(team, DIST.GK) });
   parts.forEach((k, i) => { const [role, d] = lines[i]; for (let j = 0; j < k; j++) out.push({ role, x: slotX(j, k), y: yFor(team, d) }); });
   return out;
@@ -58,8 +58,6 @@ const onPitch = id => layout[id].zone === "pitch";
 const pitchIds = team => Object.keys(layout).filter(n => onPitch(n) && (!team || layout[n].team === team));
 const benchIds = team => Object.keys(layout).filter(n => !onPitch(n) && layout[n].team === team);
 const hasLineup = () => Object.keys(layout).length > 0;
-/** Id del que está en la portería del equipo, o undefined. */
-const goalkeeperOf = team => idsOf(team).find(n => onPitch(n) && roleAt(team, layout[n].y) === "POR");
 
 /** Huecos de la formación que no tienen a nadie cerca. */
 function freeSlots(team) {

@@ -14,7 +14,6 @@ const { ok, done } = checker();
   ok('primera línea', /^⚽ Alineación · \S+ \d+ \w+ \(7 vs 7\)$/.test(lines[0]), lines[0]);
   ok('equipos', lines.includes('⚪ Equipo Blanco') && lines.includes('⚫ Equipo Oscuro'));
   ok('porteros', lines.filter(l => l.startsWith('Portero: ')).length === 2);
-  ok('sin medias en el texto', !/\b\d{2}\b/.test(lines.slice(1).join(' ').replace(/Jugador \d+/g, '')));
   const tg = await page.getAttribute('#s-tg', 'href');
   ok('Telegram: título en url y resto en text', tg.startsWith('https://t.me/share/url?url=' + encodeURIComponent(lines[0]) + '&text='));
   await page.keyboard.press('Escape');
@@ -87,7 +86,7 @@ const { ok, done } = checker();
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close();
 
-  // Primera vez, con el formato por defecto: 8 vs 8, 16 convocados y 16 huecos en la lista
+  // Primera vez, con el formato por defecto: 8 vs 8, 16 apuntados y 16 huecos en la lista
   const fresh = await open({ mode: null }), p2 = fresh.page;
   ok('8 vs 8 por defecto', (await p2.evaluate(() => [st.mode, signupIds().length])).join() === '8,16');
   await p2.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));

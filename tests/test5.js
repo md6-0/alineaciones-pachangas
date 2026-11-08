@@ -1,4 +1,4 @@
-/* Opciones: nombre del grupo, medias, fecha, copia de seguridad (descargar, restaurar, archivo no válido) y borrar todo. */
+/* Opciones: nombre del grupo, fecha del partido, copia de seguridad (descargar, restaurar, archivo no válido) y borrar todo. */
 const { open, checker, tab, toastText } = require('./helpers');
 const fs = require('fs'), os = require('os'), path = require('path');
 const { ok, done } = checker();
@@ -15,9 +15,6 @@ const { ok, done } = checker();
   await page.fill('#groupname', ''); await page.press('#groupname', 'Tab');
   ok('vacío vuelve al de por defecto', (await page.textContent('#eyebrow')) === 'Mi pachanga ⚽');
   await page.fill('#groupname', 'Los del jueves'); await page.press('#groupname', 'Tab');
-
-  // Ya no hay opción de medias
-  ok('sin opción de medias', (await page.locator('#ratingseg').count()) === 0);
 
   // Fecha (arriba en Partido; ya no está en Opciones)
   ok('día y hora fuera de Opciones', !(await page.locator('#p-opc #matchdate, #p-opc #matchtime').count()));

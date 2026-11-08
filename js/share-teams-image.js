@@ -1,6 +1,6 @@
 "use strict";
 /* Imagen de los equipos para compartir (1080 px de ancho): los jugadores de cada equipo en dos columnas,
-   sin campo, sin posiciones y sin medias. Banquillo incluido, por orden alfabético. Usa roundRect (share-image.js). */
+   sin campo y sin posiciones. Banquillo incluido, por orden alfabético. Usa roundRect (share-image.js). */
 
 /** Recorta un texto con «…» para que quepa en el ancho dado. */
 function fitText(c, s, max) {

@@ -5,8 +5,8 @@ const TEAMS = { W: "Equipo Blanco", D: "Equipo Oscuro" };
 const SIDES = ["W", "D"];
 const other = team => team === "W" ? "D" : "W";
 
-/** Formación fija de cada formato (lista de una, por si algún día se vuelve a poder elegir) y jugadores necesarios. */
-const FORMS = { "7": ["3-2-1"], "8": ["3-3-1"], "11": ["4-2-3-1"] };
+/** Formación fija de cada formato (la misma para los dos equipos) y jugadores necesarios para completarlo. */
+const FORMS = { "7": "3-2-1", "8": "3-3-1", "11": "4-2-3-1" };
 const NEED = { "7": 14, "8": 16, "11": 22 };
 
 /** Posiciones de un jugador, en el orden en que se muestran. SUP es el suplente (banquillo) en el historial. */

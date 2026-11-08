@@ -14,7 +14,7 @@ const W = snap([1, 2, 3, 4, 5, 6, 7, 8]).map((p, j) => Object.assign(p, { y: j =
 const D = snap([9, 10, 11, 12, 13, 14, 15, 16]).map((p, j) => Object.assign(p, { y: j === 0 ? 6 : 30.5 }));
 const server = {
   players, signups,
-  next: { current: { date: '2099-11-15', time: '12:00', mode: '8', form: { W: '3-3-1', D: '3-3-1' }, seed: 0, layout: null } },
+  next: { current: { date: '2099-11-15', time: '12:00', mode: '8', layout: null } },
   matches: { '2026-11-08': { date: '2026-11-08', mode: '8', formation: { W: '3-3-1', D: '3-3-1' }, W, D, score: { W: 3, D: 2 }, goals: { W: { p2: 2, p3: 1 }, D: { p10: 2 } } } },
   settings: { general: { groupName: 'Los del domingo' } }
 };
@@ -31,7 +31,6 @@ const positions = page => page.locator('#board .mag').evaluateAll(els => Object.
   ok('alineación de los apuntados', (await page.locator('#board .mag').count()) === 14);
   ok('sin quitar, apuntar a otros, retocar ni guardar', (await page.locator('#slist .sdel').count()) === 0 && await page.isHidden('#saddform')
     && await page.isHidden('#fix') && await page.isHidden('#t-jug'));
-  ok('sin formaciones', !(await page.locator('#teams .forms').first().isVisible()));
   ok('puede compartir', await page.isVisible('#sharebtn'));
   const mag = page.locator('#board .mag.W').nth(3), before = await mag.getAttribute('style'), box = await mag.boundingBox();
   await page.mouse.move(box.x + 10, box.y + 10); await page.mouse.down(); await page.mouse.move(box.x + 10, box.y - 200, { steps: 5 }); await page.mouse.up();

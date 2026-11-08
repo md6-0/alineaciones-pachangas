@@ -8,7 +8,7 @@
   --w-mag:#f5f4ef; --d-mag:#1b1e21; --gk:#c9a24a; --accent:#9ad6b0;
   --w-border:#f5f4ef; --d-border:#101412;
   --folder:#2b4b39; --folder-line:#3e604c; --tab-off:#21392c;
-  --gold:#c9a24a; --silver:#a9b0b5; --bronze:#a8714a; --warn:#f0b27a;
+  --warn:#f0b27a;
   --sans:"Archivo",system-ui,sans-serif; color-scheme:dark;
 }
 [hidden]{display:none!important}
@@ -38,7 +38,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .del{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:600;white-space:nowrap}
 .del.arm{border-color:var(--warn);color:var(--warn)}
 
-/* Selector segmentado (formato, medias, orden) */
+/* Selector segmentado (formato, qué compartes) */
 .seg{display:inline-flex;padding:3px;border-radius:999px;background:var(--line);gap:2px}
 .seg button{border:0;background:transparent;color:var(--muted);padding:5px 14px;border-radius:999px;font-weight:600;font-size:.88rem;font-variant-numeric:tabular-nums}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
@@ -51,8 +51,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* Muestra de color de cada equipo */
 .sw{width:14px;height:14px;border-radius:50%;display:inline-block}
 .sw.W{background:var(--w-mag);box-shadow:0 0 0 1px #c9c8c0 inset}.sw.D{background:var(--d-mag);box-shadow:0 0 0 1px rgba(255,255,255,.2) inset}
-
-/* Medias ocultas en toda la app (Opciones → Medias) */
 
 /* Aviso breve arriba */
 .toast{position:fixed;z-index:95;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,0);margin:0;

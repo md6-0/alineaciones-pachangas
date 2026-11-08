@@ -23,7 +23,7 @@ const matchOfDay = () => matchById(isoDate(matchDay()));
 function saveLineup() {
   const id = isoDate(matchDay()), prev = matchById(id);
   return db.doc("matches/" + id).set({
-    date: id, mode: st.mode, formation: { W: st.form.W[st.mode], D: st.form.D[st.mode] },
+    date: id, mode: st.mode, formation: { W: FORMS[st.mode], D: FORMS[st.mode] },
     W: teamSnap("W"), D: teamSnap("D"), score: prev && prev.score ? prev.score : { W: null, D: null }, fixedAt: new Date().toISOString()
   });
 }

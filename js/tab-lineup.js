@@ -95,7 +95,6 @@ function renderLineup() {
 const listFail = e => toast(e && e.code === "invalid_argument" ? "No tienes permiso para cambiar a ese jugador de la lista."
   : e && /auth\/(operation-not-allowed|admin-restricted-operation)/.test(e.code) ? "Para apuntarse falta activar el acceso anónimo en Firebase."
   : "No se pudo guardar el cambio en la lista.");
-const boardFail = () => toast("No se pudo guardar la alineación.");
 
 // «Soy…», Apuntarme / Borrarme
 $("#me").addEventListener("change", e => {
