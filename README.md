@@ -25,11 +25,11 @@ Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con
 
 - **Quien abre el enlace** ve el próximo partido (la lista y la alineación), el historial con resultados y goles, y las estadísticas, sin poder cambiar nada; la pestaña Jugadores no aparece. Para apuntarse, se lo dice a quien organiza.
 - **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces lo cambia todo. Lo que guarda llega al momento a todos los demás.
-- **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor y se suben sin las notas de las antiguas medias).
+- **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor).
 
 ### 👟 Jugadores
 
-Solo para quien organiza. Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). No hay medias: los equipos se equilibran por posiciones, y en cada equipo va a la portería quien tenga la posición POR.
+Solo para quien organiza. Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). Los equipos se equilibran por posiciones, y en cada equipo va a la portería quien tenga la posición POR.
 
 ### 🏆 Historial y estadísticas
 
@@ -143,7 +143,7 @@ js/matches.js          historial: guardar la alineación, resultado y goles
 js/next-match.js       próximo partido: apuntados, día, hora, formato y la alineación (automática o retocada)
 js/stats.js            cálculo de las estadísticas
 js/rewind.js           Rewind del año: números, premios, cromos y publicarlo
-js/backup.js           copia de seguridad, subir datos al servidor (sin las medias antiguas) y borrar todo
+js/backup.js           copia de seguridad, subir datos al servidor y borrar todo
 js/ui.js               piezas de interfaz reutilizables: avisos, confirmaciones, imagen a pantalla completa
 js/views.js            pestañas y repintado
 js/pitch.js            dibujo del campo en SVG
