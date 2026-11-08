@@ -4,7 +4,7 @@
 
 /** Al abrir la app, la pizarra carga la última alineación guardada (cuando ya han llegado jugadores e historial). */
 function autoLoadLatest() {
-  if (autoLoaded || !loaded || !histLoaded || !matches.length || !P.length) return;
+  if (!canEdit() || autoLoaded || !loaded || !histLoaded || !matches.length || !P.length) return;
   autoLoaded = true;
   loadMatch(matches[0], true);
 }
@@ -29,7 +29,16 @@ function onPlayers(snap) {
 function onMatches(snap) {
   histLoaded = true;
   matches = snap.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => String(b.date || b.id).localeCompare(String(a.date || a.id)));
+  if (!canEdit()) { viewerBoard(); render(); }   // quien solo ve sigue siempre la última alineación guardada
   renderHistory(); renderStats(); autoLoadLatest();
+}
+
+/** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver. */
+function applyRole() {
+  document.body.classList.toggle("viewer", !canEdit());
+  if (!canEdit() && st.tab === "jug") st.tab = "alin";
+  if (canEdit()) { autoLoaded = false; if (loaded) rebuild(); autoLoadLatest(); } else viewerBoard();
+  paintAccount(); showTab(); renderAll();
 }
 
 function onSettings(snap) {
@@ -42,5 +51,7 @@ db.collection("settings").onSnapshot(onSettings, () => {});
 db.collection("matches").onSnapshot(onMatches, () => { if (!histLoaded) { failed = true; renderHistory(); renderStats(); } });
 db.collection("players").onSnapshot(onPlayers, () => { if (!loaded) { failed = true; render(); renderPlayers(); } else toast("Se perdió la conexión con los datos. Recarga la página."); });
 
-paintGroup(); showTab(); render(); renderPlayers(); renderHistory();
+document.body.classList.toggle("viewer", !canEdit());
+db.onAuth(applyRole);
+paintGroup(); paintAccount(); showTab(); render(); renderPlayers(); renderHistory();
 window.addEventListener("load", initServiceWorker);

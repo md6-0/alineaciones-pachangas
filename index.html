@@ -23,6 +23,9 @@
 <!-- La base -->
 <script defer src="js/util.js"></script>
 <script defer src="js/sample-squad.js"></script>
+<script defer src="js/firebase-config.js"></script>
+<script defer src="js/db-local.js"></script>
+<script defer src="js/db-cloud.js"></script>
 <script defer src="js/db.js"></script>
 <script defer src="js/config.js"></script>
 <script defer src="js/state.js"></script>
@@ -62,7 +65,7 @@
       <h1 id="h1">Alineación</h1>
     </div>
     <div class="hctl" id="hctl">
-      <button class="btn ghost" id="fix" type="button">Guardar alineación en historial</button>
+      <button class="btn ghost edit-only" id="fix" type="button">Guardar alineación en historial</button>
       <div class="share">
         <button class="btn" id="sharebtn" type="button" aria-haspopup="true" aria-expanded="false">Compartir ▾</button>
         <div class="smenu" id="smenu" hidden>
@@ -83,7 +86,7 @@
   <p class="toast" id="toast" role="status" hidden></p>
   <nav class="tabs" role="tablist" aria-label="Secciones">
     <button class="tab" role="tab" id="t-alin" data-tab="alin" type="button">Alineación</button>
-    <button class="tab" role="tab" id="t-jug" data-tab="jug" type="button">Jugadores</button>
+    <button class="tab edit-only" role="tab" id="t-jug" data-tab="jug" type="button">Jugadores</button>
     <button class="tab" role="tab" id="t-hist" data-tab="hist" type="button">Historial</button>
     <button class="tab" role="tab" id="t-stats" data-tab="stats" type="button"><span class="tl">Estadísticas</span><span class="ts">Stats</span></button>
     <button class="tab tab-opc" role="tab" id="t-opc" data-tab="opc" type="button" aria-label="Opciones"><span class="ti">⚙</span><span class="tl">Opciones</span></button>
@@ -101,7 +104,7 @@
     <div class="main">
       <div class="board" id="board"></div>
       <div class="side">
-        <section class="sec">
+        <section class="sec edit-only">
           <div class="row"><h2>Convocatoria</h2><span class="count" id="count"></span></div>
           <p class="status" id="status" hidden></p>
           <div class="chips" id="chips"></div>
@@ -118,26 +121,39 @@
 
   <section id="p-opc" class="folder" role="tabpanel" aria-labelledby="t-opc" hidden>
     <div class="opts">
-      <div class="optrow">
+      <div class="optrow account" id="account" hidden>
+        <div><h3>Administrar</h3><p class="hint" id="acchint">Solo quien organiza cambia los datos. Los demás ven la app sin poder tocar nada.</p></div>
+        <form class="loginform" id="loginform">
+          <input type="email" id="loginmail" class="textopt" autocomplete="username" placeholder="Correo" aria-label="Correo" required>
+          <input type="password" id="loginpass" class="textopt" autocomplete="current-password" placeholder="Contraseña" aria-label="Contraseña" required>
+          <button class="btn" type="submit" id="loginbtn">Entrar</button>
+        </form>
+        <div class="btns" id="logged" hidden><button class="btn ghost" id="logout" type="button">Salir</button></div>
+      </div>
+      <div class="optrow edit-only" id="migrate" hidden>
+        <div><h3>Datos de este dispositivo</h3><p class="hint">Este móvil tiene jugadores e historial guardados de antes de usar el servidor. Súbelos para que los vea todo el mundo: sustituyen a los del servidor (sin las medias, que ya no se usan).</p></div>
+        <button class="btn" id="migbtn" type="button">Subir los datos de este dispositivo</button>
+      </div>
+      <div class="optrow edit-only">
         <div><h3>Nombre del grupo</h3><p class="hint">Sale encima del título y en la imagen.</p></div>
         <input type="text" id="groupname" class="textopt" maxlength="40" aria-label="Nombre del grupo">
       </div>
-      <div class="optrow">
+      <div class="optrow edit-only">
         <div><h3>Día del partido</h3><p class="hint">Por defecto, hoy. Cuando pasa la fecha elegida, vuelve a la de hoy.</p></div>
         <div class="datepick">
           <input type="date" id="matchdate" aria-label="Fecha del partido">
           <button type="button" class="btn ghost" id="datereset">Hoy</button>
         </div>
       </div>
-      <div class="optrow">
+      <div class="optrow edit-only">
         <div><h3>Hora del partido</h3><p class="hint">Sale en la lista para apuntarse. Vacía, no sale.</p></div>
         <div class="datepick"><input type="time" id="matchtime" aria-label="Hora del partido"></div>
       </div>
-      <div class="optrow">
+      <div class="optrow edit-only">
         <div><h3>Tu nombre</h3><p class="hint">Sales el primero en la lista para apuntarse. Vacío, la lista empieza sin nombres.</p></div>
         <input type="text" id="myname" class="textopt" maxlength="40" aria-label="Tu nombre">
       </div>
-      <div class="optrow">
+      <div class="optrow edit-only">
         <div><h3>Formato</h3><p class="hint">Al cambiarlo se rehace el reparto.</p></div>
         <div class="seg" id="modeseg" role="group" aria-label="Formato">
           <button type="button" id="m7" data-mode="7">7 vs 7</button>
@@ -145,7 +161,7 @@
           <button type="button" id="m11" data-mode="11">11 vs 11</button>
         </div>
       </div>
-      <div class="backup optrow">
+      <div class="backup optrow edit-only">
         <div>
           <h3>Copia de seguridad</h3>
           <p class="hint">Jugadores e historial en un archivo, para restaurarlos aquí o en otro dispositivo.</p>
@@ -157,12 +173,12 @@
         </div>
         <p class="hint bk-msg" id="bk-msg" hidden></p>
       </div>
-      <div class="optrow">
+      <div class="optrow edit-only">
         <div><h3>Borrar todos los datos</h3><p class="hint" id="wipehint">Elimina jugadores, historial y ajustes de este dispositivo. No se puede deshacer: descarga antes una copia.</p></div>
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 1.15.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.0.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>

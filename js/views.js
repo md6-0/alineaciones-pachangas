@@ -8,17 +8,19 @@ const TITLES = { jug: "Jugadores", hist: "Historial", stats: "Estadísticas", op
 
 /** Muestra la pestaña de st.tab y pone su título. */
 function showTab() {
-  if (!TABS.includes(st.tab)) st.tab = "alin";
+  if (!TABS.includes(st.tab) || (st.tab === "jug" && !canEdit())) st.tab = "alin";   // Jugadores, solo para quien edita
   TABS.forEach(t => {
     $("#t-" + t).setAttribute("aria-selected", st.tab === t);
     $("#p-" + t).hidden = st.tab !== t;
   });
   $("#hctl").hidden = st.tab !== "alin";   // Guardar y Compartir solo en Alineación
-  $("#h1").textContent = st.tab === "alin" ? `Alineación · ${matchDayLabel()}` : TITLES[st.tab];
+  paintTitle();
 }
+/** Título de la pestaña (el de Alineación lleva el día del partido, que puede cambiar al llegar los datos). */
+const paintTitle = () => { $("#h1").textContent = st.tab === "alin" ? `Alineación · ${matchDayLabel()}` : TITLES[st.tab]; };
 
 /** Repinta la pizarra y lo que depende de ella en Opciones (formato y fecha). */
-function render() { paintOptions(); renderLineup(); }
+function render() { paintOptions(); paintTitle(); renderLineup(); }
 
 /** Repinta todas las pestañas. */
 function renderAll() { render(); renderPlayers(); renderHistory(); renderStats(); }

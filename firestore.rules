@@ -1,0 +1,23 @@
+rules_version = '2';
+// Reglas de Cloud Firestore para Mi pachanga: cualquiera con el enlace puede leer;
+// solo el usuario de quien organiza puede escribir. Cambia PON_AQUI_TU_UID por tu UID
+// (Authentication → Usuarios) y pégalas en Firestore Database → Reglas → Publicar.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function esQuienOrganiza() {
+      return request.auth != null && request.auth.uid == "PON_AQUI_TU_UID";
+    }
+    match /players/{id} {
+      allow read: if true;
+      allow write: if esQuienOrganiza();
+    }
+    match /matches/{id} {
+      allow read: if true;
+      allow write: if esQuienOrganiza();
+    }
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if esQuienOrganiza();
+    }
+  }
+}

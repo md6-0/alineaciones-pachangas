@@ -1,10 +1,10 @@
 # ⚽ Mi pachanga
 
-La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos lo más igualados posible y tú colocas a cada uno en su sitio arrastrando los imanes.
+La pizarra del míster para la pachanga del fin de semana: pasas lista, la app reparte dos equipos equilibrados por posiciones y tú colocas a cada uno en su sitio arrastrando los imanes.
 
 Guarda el historial de partidos con resultado y goleadores, y lleva las estadísticas para saber quién es el pichichi del grupo.
 
-Es una aplicación web que se instala en el móvil como cualquier otra app. Funciona sin conexión, no pide cuenta ni registro y todo se guarda en tu dispositivo: no hay ningún servidor detrás.
+Es una aplicación web que se instala en el móvil como cualquier otra app y funciona sin conexión. Puede guardar los datos en un servidor (Firebase) para compartirla con el grupo: quien organiza entra con su cuenta y edita, y los demás abren el enlace y lo ven todo sin poder tocar nada. Sin servidor configurado, todo se guarda en el dispositivo.
 
 ---
 
@@ -12,28 +12,36 @@ Es una aplicación web que se instala en el móvil como cualquier otra app. Func
 
 ### 📋 Alineación
 
-- Marca en la **convocatoria** quién viene y la app reparte el Equipo Blanco y el Equipo Oscuro igualando sus medias y repartiendo bien las posiciones. Si no te convence el reparto, pulsa **Otra opción**.
+- Marca en la **convocatoria** quién viene y la app reparte el Equipo Blanco y el Equipo Oscuro equilibrando porteros, defensas, medios y delanteros. Si no te convence el reparto, pulsa **Otra opción**.
 - Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada equipo elige su **formación** (2-3-1, 3-3-1, 4-4-2, 4-3-3…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Los fichajes de última hora, en dos segundos.
 - **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio.
-- El portero cuenta en la media de su equipo con su nota de portero, y su imán la muestra.
 - **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, la de hoy). Al abrir la app, la pizarra carga la última alineación guardada.
-- **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla. Así nadie se pica al ver su nota. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
+- **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen para compartirla o descargarla. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
 - **Lista para apuntarse por WhatsApp** (debajo de la convocatoria) prepara un mensaje con el día y la hora del partido y un hueco numerado por jugador del formato (16 en 8 vs 8, el formato por defecto). Si pones tu nombre en Opciones, sales ya apuntado el primero.
 
 ### 👟 Jugadores
 
-Cada jugador tiene nota de ataque, defensa y portero (de 1 a 99) y una o varias posiciones. La media se calcula según la posición: un defensa cuenta más su defensa, un delantero su ataque, y un portero su nota de portero.
+Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). No hay medias: los equipos se equilibran por posiciones, y en cada equipo va a la portería quien tenga la posición POR.
 
 ### 🏆 Historial y estadísticas
 
 En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a cargar cualquier alineación en la pizarra. La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o Telegram, o en imagen para descargarla o compartirla.
 
+### 👀 Compartir la app con el grupo
+
+Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con pasar el enlace de la app:
+
+- **Quien abre el enlace solo ve**: la última alineación guardada (con su fecha), el historial con resultados y goles, y las estadísticas. Puede compartir la alineación y los goleadores, pero no cambiar nada; la pestaña Jugadores no aparece.
+- **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces la app funciona como siempre. Lo que guarda llega al momento a todos los demás.
+- **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor y se suben sin las notas de las antiguas medias).
+
 ### ⚙️ Opciones
 
+- **Administrar** (solo con servidor): entrar para editar o salir.
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
 - **Día del partido**: por defecto, hoy, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve sola a la de hoy.
 - **Formato**: 7 vs 7, 8 vs 8 (por defecto) u 11 vs 11.
-- **Medias**: puedes ocultarlas en toda la app sin perder las notas.
+- **Hora del partido** y **Tu nombre**: salen en la lista para apuntarse.
 - **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
 - **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.
 - **Versión**: al final de la pestaña, con un botón para buscar actualizaciones.
@@ -44,11 +52,11 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 1. Abre [md6-0.github.io/alineaciones-pachangas](https://md6-0.github.io/alineaciones-pachangas/) en el navegador del móvil.
 2. Instálala: en Android, menú del navegador → *Añadir a pantalla de inicio*; en iPhone, botón *Compartir* → *Añadir a pantalla de inicio*.
-3. La primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, ya colocada en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las notas en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
+3. Sin servidor, la primera vez la app trae una plantilla de ejemplo de 24 jugadores (Jugador 1, Jugador 2…), suficientes para cualquier formato, ya colocada en la pizarra, para que pruebes sin preparar nada. Cámbiales el nombre y las posiciones en **Jugadores**, o restaura tu copia en **Opciones** (⚙) si ya tenías datos: la copia sustituye a la plantilla de ejemplo.
 
 Cuando hay una versión nueva, la app la busca sola al volver a ella y cada media hora, y te avisa arriba con un botón **Actualizar**: tú decides cuándo, para que no se recargue mientras escribes.
 
-Los datos se guardan en el navegador de cada dispositivo. Si borras los datos del navegador se pierden, así que descarga una copia de vez en cuando, mejor después de cada partido.
+Sin servidor, los datos se guardan en el navegador de cada dispositivo y, si borras los datos del navegador, se pierden: descarga una copia de vez en cuando, mejor después de cada partido. Con servidor, los datos están en Firebase y el móvil guarda una copia para funcionar sin conexión.
 
 ## Para desarrolladores
 
@@ -64,9 +72,22 @@ y abrir `http://localhost:8000`. La parte que permite usarla sin conexión (el *
 
 Se publica con GitHub Pages desde la rama `main`, carpeta raíz.
 
+### Servidor (Firebase)
+
+Para compartir la app con el grupo, los datos van a un proyecto de Firebase en el plan gratuito (Spark, sin tarjeta):
+
+1. En [console.firebase.google.com](https://console.firebase.google.com), **Crear proyecto** (Google Analytics no hace falta).
+2. **Compilación → Firestore Database → Crear base de datos**, en una ubicación de Europa y en modo de producción.
+3. **Compilación → Authentication → Comenzar → Correo electrónico/contraseña**: actívalo. En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
+4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**.
+5. **Configuración del proyecto → Tus apps → Web (`</>`)**: registra la app (sin Hosting) y copia el objeto `firebaseConfig` en `js/firebase-config.js` (`const FIREBASE_CONFIG = { … };`). No es secreto: lo que protege los datos son las reglas.
+6. Publica una versión nueva. Quien organiza entra en **Opciones → Administrar** y, si tenía datos en el móvil, pulsa **Subir los datos de este dispositivo**.
+
+Nadie más puede crear cuentas que escriban: aunque alguien se registrara con la clave pública del proyecto, las reglas solo dejan escribir al UID de quien organiza.
+
 ### Pruebas
 
-La carpeta `tests/` tiene pruebas que abren la app en un navegador real (con [Playwright](https://playwright.dev)) y hacen lo que haría una persona: repartir equipos, arrastrar imanes, editar jugadores, guardar partidos con resultado y goles, hacer y restaurar copias, compartir, usarla sin conexión… No forman parte de la app publicada. Para ejecutarlas:
+La carpeta `tests/` tiene pruebas que abren la app en un navegador real (con [Playwright](https://playwright.dev)) y hacen lo que haría una persona: repartir equipos, arrastrar imanes, editar jugadores, guardar partidos con resultado y goles, hacer y restaurar copias, compartir, usarla sin conexión, verla sin poder editar con el servidor… No forman parte de la app publicada. Para ejecutarlas:
 
 ```bash
 cd tests
@@ -75,7 +96,7 @@ npx playwright install chromium
 npm test                 # todas; también: node run.js 2 5 para elegir algunas
 ```
 
-Cada prueba levanta su propio servidor local y no necesita internet. Si cambias algo de la interfaz y una prueba falla, suele ser porque el texto o el comportamiento que comprobaba ha cambiado a propósito: se actualiza la prueba.
+Cada prueba levanta su propio servidor local y no necesita internet. Las del servidor (`test8.js`) usan un Firebase simulado (`tests/fake-firebase.js`) con las mismas reglas que `firestore.rules`: quien no ha entrado puede leer pero no escribir. Si cambias algo de la interfaz y una prueba falla, suele ser porque el texto o el comportamiento que comprobaba ha cambiado a propósito: se actualiza la prueba.
 
 ### Publicar una versión nueva
 
@@ -102,18 +123,22 @@ css/stats.css          pestaña Estadísticas
 css/options.css        pestaña Opciones
 
 js/util.js             utilidades generales: DOM, texto, fechas y descargas
-js/sample-squad.js     plantilla de ejemplo de la primera visita
-js/db.js               almacenamiento en el dispositivo (localStorage)
-js/config.js           constantes: equipos, formatos, formaciones, posiciones y pesos de la media
+js/sample-squad.js     plantilla de ejemplo de la primera visita (sin servidor)
+js/firebase-config.js  configuración del servidor (null: sin servidor)
+js/db-local.js         datos en el dispositivo (localStorage)
+js/db-cloud.js         datos en el servidor (Firebase: Firestore y Authentication)
+js/db.js               elige dónde se guardan los datos; canEdit() dice si quien usa la app puede cambiarlos
+js/vendor/             librería de Firebase (solo se carga con servidor)
+js/config.js           constantes: equipos, formatos, formaciones y posiciones
 js/state.js            estado en memoria y preferencias de este dispositivo
 js/settings.js         ajustes que viajan con los datos (nombre del grupo)
 js/dates.js            día del partido
-js/players.js          jugadores: lectura, media según la posición, añadir, cambiar y quitar
-js/teams.js            reparto en dos equipos igualados
+js/players.js          jugadores: lectura, añadir, cambiar y quitar
+js/teams.js            reparto en dos equipos equilibrados por posiciones
 js/formation.js        colocación en la pizarra: huecos, portero, soltar imanes, invertir equipos
 js/matches.js          historial: guardar la alineación, resultado, goles y volver a cargarla
 js/stats.js            cálculo de las estadísticas
-js/backup.js           copia de seguridad y borrar todo
+js/backup.js           copia de seguridad, subir datos al servidor (sin las medias antiguas) y borrar todo
 js/ui.js               piezas de interfaz reutilizables: avisos, confirmaciones, imagen a pantalla completa
 js/views.js            pestañas y repintado
 js/pitch.js            dibujo del campo en SVG
@@ -128,15 +153,15 @@ js/tab-players.js      pestaña Jugadores
 js/tab-history.js      pestaña Historial
 js/tab-stats.js        pestaña Estadísticas
 js/share-scorers.js    goleadores para compartir: texto, imagen y su menú
-js/tab-options.js      pestaña Opciones
+js/tab-options.js      pestaña Opciones (también entrar y salir, y subir los datos del dispositivo)
 js/updates.js          aviso de versión nueva
 js/main.js             arranque
 ```
 
 Los archivos de `js/` se cargan en ese orden y cada uno se apoya en los anteriores. Forman tres capas:
 
-- **La base** (`util`, `sample-squad`, `db`, `config`, `state`) no sabe nada de la interfaz.
-- **Las reglas** (de `settings` a `backup`) no tocan la pantalla. Todo lo que decide cómo se reparten los equipos, dónde va cada jugador, cómo se calcula una media o qué se guarda en un partido está ahí, en un único sitio. El resto de la app llama a esas funciones (`solve`, `rebuild`, `dropOnPitch`, `saveLineup`, `changeGoal`, `computeStats`…) en lugar de repetir la lógica.
+- **La base** (`util`, `sample-squad`, `firebase-config`, `db-local`, `db-cloud`, `db`, `config`, `state`) no sabe nada de la interfaz.
+- **Las reglas** (de `settings` a `backup`) no tocan la pantalla. Todo lo que decide cómo se reparten los equipos, dónde va cada jugador, qué se guarda en un partido está ahí, en un único sitio. El resto de la app llama a esas funciones (`solve`, `rebuild`, `dropOnPitch`, `saveLineup`, `changeGoal`, `computeStats`…) en lugar de repetir la lógica.
 - **La interfaz** (`ui`, `views` y un archivo por pestaña o funcionalidad) pinta la pantalla a partir del estado y responde a lo que hace el usuario.
 
 El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vuelve a pintar a partir del estado. Los cambios de los datos (jugadores, partidos, ajustes) se guardan con `db`, que avisa a `main.js`; este recalcula el estado y repinta lo que depende de él. Los cambios de la pizarra (convocatoria, formaciones, arrastrar) no se guardan en `db`: cambian `layout` y llaman a `render()`.
@@ -147,18 +172,23 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 **Scripts normales en lugar de módulos de JavaScript.** Los archivos comparten el mismo espacio de nombres y se cargan en el orden de `index.html`. Es lo que permite prescindir de herramientas, pero obliga a que cada nombre global sea único. Si la app creciera mucho, el paso natural sería convertirlos en módulos (`import`/`export`).
 
-**`db` imita a una base de datos de documentos.** Hoy guarda todo en `localStorage`, pero el resto de la app solo usa `collection().onSnapshot()` y `doc().set/update/delete()`. Para pasar a una base de datos en la nube bastaría con cambiar `db.js`.
+**`db` imita a una base de datos de documentos.** El resto de la app solo usa `collection().onSnapshot()` y `doc().set/update/delete()`, así que da igual si los datos están en el dispositivo (`db-local.js`) o en Firestore (`db-cloud.js`). Una diferencia que tapa `db-cloud.js`: en Firestore, `update()` sustituye los objetos enteros, y la app manda cambios anidados (`{ score: { W: 3 } }`) que solo deben tocar lo que traen; se convierten en rutas de campo (`score.W`).
+
+**Solo ver se decide en la interfaz y se garantiza en el servidor.** Sin entrar, la app esconde todo lo que cambia datos (clase `viewer` en `body` y `.edit-only`), pero lo que de verdad impide escribir son las reglas de `firestore.rules`.
+
+**Sin medias.** La app las tuvo y se quitaron para poder compartirla. Los datos antiguos pueden traer `atq`, `def` y `por` en los jugadores, y `ovr` y `por` en los partidos: se ignoran, y al restaurar una copia o subir los datos al servidor se borran, para que nadie pueda leerlos.
 
 **La app abre desde la caché.** Cada versión guarda todos sus archivos en el dispositivo al instalarse, y al abrir la app se leen de ahí sin preguntar al servidor por cada uno. Por eso abre al momento, con o sin conexión, y por eso los cambios solo llegan al subir `VERSION`.
 
-**El reparto es determinista.** La misma convocatoria da siempre las mismas opciones; **Otra opción** pasa a la siguiente de las seis mejores. Hasta 16 convocados se prueban todos los repartos; con más, se buscan con un generador aleatorio con semilla.
+**El reparto es determinista.** La misma convocatoria da siempre las mismas opciones: entre los repartos igual de equilibrados se elige uno con un generador aleatorio con semilla, y **Otra opción** cambia la semilla. Hasta 16 convocados se prueban todos los repartos; con más, se buscan al azar y se mejoran intercambiando parejas.
 
 ### Cómo se guardan los datos
 
-Todo está en el `localStorage` del navegador, en dos claves:
+Los datos son tres colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` y `settings`. Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
-- **`pachangas-db-v1`**: los datos, en tres colecciones. `players` (cada jugador: `name`, `atq`, `def`, `por` de 1 a 99, `pos` con sus posiciones y `order` en la lista), `matches` (cada partido, con la fecha como id: formato, formaciones, los jugadores de cada equipo con su posición, `score` y `goals`) y `settings` (el nombre del grupo). Es lo que va en la copia de seguridad.
-- **`pach-v4`**: las preferencias de este dispositivo: convocatoria, formato, formaciones, medias, fecha elegida, pestaña abierta, orden de la tabla de jugadores y qué se comparte (alineación o equipos).
+- **`pachangas-db-v1`** (sin servidor): los datos, en tres colecciones. `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (cada partido, con la fecha como id: formato, formaciones, los jugadores de cada equipo con su posición, `score` y `goals`) y `settings` (el nombre del grupo). Es lo que va en la copia de seguridad.
+- **`pach-v4`**: las preferencias de este dispositivo: convocatoria, formato, formaciones, fecha y hora elegidas, tu nombre, pestaña abierta y qué se comparte (alineación o equipos).
+- **`pach-subido`**: ya se subieron al servidor los datos que había en este dispositivo.
 
 ### Ampliar la app
 

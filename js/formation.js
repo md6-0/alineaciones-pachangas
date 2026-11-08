@@ -42,8 +42,18 @@ function place(team, players) {
   pool.forEach(p => layout[p.id] = { team, zone: "bench" });
 }
 
-/** Rehace el reparto y la colocación de los convocados. */
+/** Pizarra de quien solo ve (con servidor y sin entrar): la última alineación guardada, con su fecha. */
+function viewerBoard() {
+  layout = {};
+  const m = matches[0];
+  if (!loaded || !histLoaded || !m) return;
+  applyMatch(m);
+  if (ISO_DATE.test(m.date || "")) setMatchDate(m.date, fromIso(m.date) < startOfToday());
+}
+
+/** Rehace el reparto y la colocación de los convocados (quien solo ve, la última alineación guardada). */
 function rebuild() {
+  if (!canEdit()) { viewerBoard(); return; }
   layout = {};
   const res = solve(P.filter(p => st.sel.includes(p.id)));
   if (!res) return;

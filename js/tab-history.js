@@ -8,10 +8,12 @@ function goalsHTML(m, team, list) {
   const g = (m.goals && m.goals[team]) || {};
   const scorers = Object.keys(g).filter(k => g[k] > 0).sort((a, b) => g[b] - g[a]);
   const nm = id => { const pl = list.find(p => p.id === id); return pl ? pl.name : nameOf(id); };
-  const chips = scorers.map(id => `<span class="gchip">⚽ ${esc(nm(id))}${g[id] > 1 ? ` <b>×${g[id]}</b>` : ""}<button type="button" data-gdel="${esc(id)}" aria-label="Quitar un gol de ${esc(nm(id))}">−</button></span>`).join("");
+  const ed = canEdit();
+  const chips = scorers.map(id => `<span class="gchip">⚽ ${esc(nm(id))}${g[id] > 1 ? ` <b>×${g[id]}</b>` : ""}${ed ? `<button type="button" data-gdel="${esc(id)}" aria-label="Quitar un gol de ${esc(nm(id))}">−</button>` : ""}</span>`).join("");
+  if (!ed && !scorers.length) return "";
   return `<div class="goals" data-team="${team}"><span class="gl">GOLES</span>
     ${scorers.length ? `<div class="gchips">${chips}</div>` : ""}
-    <div class="gadd"><select data-gsel aria-label="Goleador del ${TEAMS[team]}"><option value="">Elige jugador…</option>${list.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select><button type="button" data-gadd>+ Gol</button></div>
+    ${ed ? `<div class="gadd"><select data-gsel aria-label="Goleador del ${TEAMS[team]}"><option value="">Elige jugador…</option>${list.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select><button type="button" data-gadd>+ Gol</button></div>` : ""}
   </div>`;
 }
 
@@ -27,14 +29,17 @@ function mteamHTML(m, team) {
 function matchHTML(m) {
   const sc = m.score || {}, w = sc.W, d = sc.D, res = matchResult(m);
   const f = m.formation || {}, mode = esc(m.mode || "7");
-  const goalsInput = (team, v, label) => `<input type="number" inputmode="numeric" min="0" max="99" data-s="${team}" value="${typeof v === "number" ? v : ""}" aria-label="Goles del ${label}">`;
+  // Quien solo ve, el marcador como texto
+  const goalsInput = (team, v, label) => canEdit()
+    ? `<input type="number" inputmode="numeric" min="0" max="99" data-s="${team}" value="${typeof v === "number" ? v : ""}" aria-label="Goles del ${label}">`
+    : `<b class="sval">${typeof v === "number" ? v : "–"}</b>`;
   return `<article class="match" data-id="${esc(m.id)}">
       <div class="mhead">
         <div><p class="mdate">${esc(fmtDate(m.date || m.id))}</p><p class="msub">${mode} vs ${mode} · Blanco ${esc(f.W || "—")} · Oscuro ${esc(f.D || "—")}</p></div>
         <div class="score">Blanco ${goalsInput("W", w, "Equipo Blanco")}<span class="dash">–</span>${goalsInput("D", d, "Equipo Oscuro")} Oscuro ${res ? RESULT[res] : '<span class="res">Sin resultado</span>'}</div>
       </div>
       <div class="mteams">${mteamHTML(m, "W")}${mteamHTML(m, "D")}</div>
-      <div class="mfoot"><button type="button" class="btn ghost" data-mload>Cargar en la pizarra</button><button type="button" class="del" data-mdel>Borrar partido</button></div>
+      <div class="mfoot edit-only"><button type="button" class="btn ghost" data-mload>Cargar en la pizarra</button><button type="button" class="del" data-mdel>Borrar partido</button></div>
     </article>`;
 }
 
@@ -44,7 +49,7 @@ function renderHistory() {
   if (!histLoaded) { box.innerHTML = '<p class="hint">Cargando historial…</p>'; return; }
   const ae = document.activeElement;
   if (box.contains(ae) && ae.tagName === "INPUT") return;   // no repintar mientras se escribe un resultado
-  if (!matches.length) { box.innerHTML = '<p class="hint">Aún no hay partidos. Coloca los equipos en la pestaña Alineación y pulsa "Guardar alineación en historial": el partido aparecerá aquí para apuntar el resultado.</p>'; return; }
+  if (!matches.length) { box.innerHTML = `<p class="hint">${canEdit() ? 'Aún no hay partidos. Coloca los equipos en la pestaña Alineación y pulsa "Guardar alineación en historial": el partido aparecerá aquí para apuntar el resultado.' : "Aún no hay partidos."}</p>`; return; }
   box.innerHTML = matches.map(matchHTML).join("");
 }
 

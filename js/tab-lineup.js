@@ -2,8 +2,14 @@
 /* Pestaña Alineación: la pizarra con los imanes, la convocatoria, los dos equipos con su formación y banquillo,
    y el botón de guardar la alineación en el historial. El arrastre está en drag.js y Compartir en share.js. */
 
-/** Iniciales para el imán. */
-const initials = name => name.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+/** Lo que lleva el imán: el número si el nombre acaba en uno («Jugador 12» → 12), las iniciales de las dos
+    primeras palabras («Juan Pérez» → JP) o las dos primeras letras («Mario» → MA). */
+function initials(name) {
+  const w = name.trim().split(/\s+/).filter(Boolean);
+  if (!w.length) return "?";
+  if (w.length > 1 && /^\d{1,2}$/.test(w[w.length - 1])) return w[w.length - 1];
+  return (w.length > 1 ? w[0][0] + w[1][0] : w[0].slice(0, 2)).toUpperCase();
+}
 
 function magHTML(id) {
   const L = layout[id], p = BY[id];
@@ -23,8 +29,8 @@ function teamHTML(team) {
       <div class="tname"><span class="sw ${team}"></span>${TEAMS[team]}</div>
     </div>
     <p class="tsub">${pitchIds(team).length} en el campo</p>
-    <div class="forms">${forms}</div>
-    <div class="bench" data-team="${team}">${bench.length ? bench.map(magHTML).join("") : '<span class="empty">Banquillo vacío · suelta aquí un imán</span>'}</div>
+    <div class="forms edit-only">${forms}</div>
+    <div class="bench" data-team="${team}">${bench.length ? bench.map(magHTML).join("") : `<span class="empty">Banquillo vacío${canEdit() ? " · suelta aquí un imán" : ""}</span>`}</div>
   </section>`;
 }
 
@@ -49,8 +55,9 @@ function renderLineup() {
   s.className = "status warn"; s.textContent = squadWarning(); s.hidden = !s.textContent;
   board.innerHTML = pitch().svg + `<span class="tag tag-top">Oscuro</span><span class="tag tag-bot">Blanco</span>`
     + slotsHTML("D") + slotsHTML("W") + pitchIds().map(magHTML).join("");
-  $("#teams").innerHTML = hasLineup() ? teamHTML("D") + teamHTML("W")
-    : `<section class="sec"><p class="status">${P.length ? "Marca al menos dos jugadores." : "Todavía no hay jugadores. Añádelos en la pestaña Jugadores o restaura una copia en Opciones (⚙)."}</p></section>`;
+  const empty = !canEdit() ? (histLoaded ? "Todavía no hay ninguna alineación guardada." : "Cargando la alineación…")
+    : P.length ? "Marca al menos dos jugadores." : "Todavía no hay jugadores. Añádelos en la pestaña Jugadores o restaura una copia en Opciones (⚙).";
+  $("#teams").innerHTML = hasLineup() ? teamHTML("D") + teamHTML("W") : `<section class="sec"><p class="status">${empty}</p></section>`;
 }
 
 /* ---------- Acciones ---------- */

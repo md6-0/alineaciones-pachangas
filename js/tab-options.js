@@ -1,6 +1,53 @@
 "use strict";
-/* Pestaña Opciones: nombre del grupo, día y hora del partido, tu nombre, formato, copia de seguridad y borrar todo.
+/* Pestaña Opciones: entrar para editar (con servidor), subir los datos del dispositivo, nombre del grupo,
+   día y hora del partido, tu nombre, formato, copia de seguridad y borrar todo.
    La versión y «Buscar actualizaciones» están en updates.js. */
+
+const UPLOADED_KEY = "pach-subido";   // ya se subieron al servidor los datos de este dispositivo
+
+/** Con servidor: entrar o salir, y la opción de subir los datos que hubiera en el dispositivo. */
+function paintAccount() {
+  $("#account").hidden = !db.cloud;
+  $("#wipehint").textContent = db.cloud
+    ? "Elimina jugadores, historial y ajustes del servidor, para todo el mundo. No se puede deshacer: descarga antes una copia."
+    : "Elimina jugadores, historial y ajustes de este dispositivo. No se puede deshacer: descarga antes una copia.";
+  if (!db.cloud) return;
+  const u = db.user;
+  $("#loginform").hidden = !!u; $("#logged").hidden = !u;
+  $("#acchint").textContent = u ? `Has entrado como ${u.email}: puedes cambiar los datos. Los demás solo los ven.`
+    : "Solo quien organiza cambia los datos. Los demás ven la app sin poder tocar nada.";
+  let uploaded = false; try { uploaded = !!localStorage.getItem(UPLOADED_KEY); } catch {}
+  $("#migrate").hidden = !(u && readLocalData() && !uploaded);
+}
+
+const LOGIN_ERRORS = {
+  "auth/invalid-credential": "Correo o contraseña incorrectos.", "auth/wrong-password": "Correo o contraseña incorrectos.",
+  "auth/user-not-found": "Correo o contraseña incorrectos.", "auth/invalid-email": "Ese correo no es válido.",
+  "auth/too-many-requests": "Demasiados intentos. Espera un poco y vuelve a probar.", "auth/network-request-failed": "Sin conexión. Prueba otra vez con internet."
+};
+$("#loginform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("#loginbtn"); btn.disabled = true;
+  try { await db.signIn($("#loginmail").value.trim(), $("#loginpass").value); $("#loginpass").value = ""; toast("Has entrado: ya puedes cambiar los datos."); }
+  catch (err) { toast(LOGIN_ERRORS[err && err.code] || "No se pudo entrar."); }
+  btn.disabled = false;
+});
+$("#logout").addEventListener("click", async () => {
+  try { await db.signOut(); toast("Has salido: la app queda en solo ver."); } catch { toast("No se pudo salir."); }
+});
+
+$("#migbtn").addEventListener("click", async e => {
+  const btn = e.currentTarget, label = "Subir los datos de este dispositivo", local = readLocalData();
+  if (!local || !canEdit()) return;
+  if (!confirmFirst(btn, "Sí, subir y sustituir los del servidor", 5000)) return;
+  btn.disabled = true; btn.textContent = "Subiendo…";
+  try {
+    const n = await restoreBackup({ players: local.players || {}, matches: local.matches || {}, settings: local.settings && local.settings.general });
+    try { localStorage.setItem(UPLOADED_KEY, "1"); } catch {}
+    toast(`Subidos ${cnt(n.players, "jugador", "jugadores")} y ${cnt(n.matches, "partido", "partidos")}.`);
+  } catch (err) { toast(err && err.code === "invalid_argument" ? "No tienes permiso para subir datos." : "La subida se cortó a medias. Vuelve a pulsar para terminarla."); }
+  btn.disabled = false; disarm(btn, label); paintAccount();
+});
 
 /** Pinta el nombre del grupo encima del título y en su casilla (salvo mientras se escribe). */
 function paintGroup() {

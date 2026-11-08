@@ -5,7 +5,7 @@
 let drag = null;
 
 function startDrag(e) {
-  const c = e.target.closest(".mag"); if (!c || e.button > 0) return;
+  const c = e.target.closest(".mag"); if (!c || e.button > 0 || !canEdit()) return;
   e.preventDefault();
   drag = { el: c, n: c.dataset.n, sx: e.clientX, sy: e.clientY, moved: false };
   try { c.setPointerCapture(e.pointerId); } catch {}

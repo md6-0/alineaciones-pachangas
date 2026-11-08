@@ -19,7 +19,8 @@ const { ok, done } = checker();
   ok('dos equipos', (await page.locator('#teams .sec.team').count()) === 2);
   ok('7 por equipo', (await page.locator('#board .mag.W').count()) === 7 && (await page.locator('#board .mag.D').count()) === 7);
   ok('un portero por equipo con la nota POR', (await page.locator('#board .mag .ptags .pt-POR').count()) >= 2);
-  ok('sin medias', (await page.locator('#teams .tmeta, #chips .r').count()) === 0 && /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText()));
+  ok('sin medias', (await page.locator('#teams .tmeta, #chips .r').count()) === 0 && /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText())
+    && (await page.evaluate(() => [initials('Jugador 12'), initials('Juan Pérez'), initials('Mario'), initials('Íñigo')].join())) === '12,JP,MA,ÍÑ');
 
   // Otra opción cambia el reparto y es determinista
   const first = await boardIds();
