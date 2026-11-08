@@ -17,8 +17,8 @@ La primera pestaña es el **próximo partido**: arriba, quién va; debajo, cómo
 - **Apuntados**: la lista por orden de llegada, con el día, la hora y el formato en el título. La primera vez cada uno dice quién es (**Soy…**, de la lista de jugadores; el móvil lo recuerda) y después tiene su botón **Apuntarme** / **Borrarme**. Si se apuntan más de los que pide el formato, entran igual y los últimos van al banquillo.
 - **La alineación sale sola** con los apuntados: Equipo Blanco y Equipo Oscuro equilibrando porteros, defensas, medios y delanteros. Si no te convence, **Otra opción**.
 - Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada formato juega con una **formación fija**: 3-2-1 en fútbol 7, 3-3-1 en fútbol 8 y 4-2-3-1 en fútbol 11. Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio. Lo que retocas lo ve todo el mundo, y quien se apunte después entra en un hueco libre sin deshacerlo.
-- Quien organiza además **apunta y quita a cualquiera**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
-- **Guardar alineación en historial** guarda el partido con su fecha, para apuntar después el resultado y los goles.
+- Quien organiza elige arriba el **día y la hora** (por defecto, hoy y sin hora; cuando el día pasa, vuelve solo a hoy), **apunta y quita a cualquiera**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
+- **Partido jugado**, después de jugar: guarda la alineación en el historial con su fecha, vacía la lista para el próximo y te lleva al historial para apuntar el resultado y los goles.
 - **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen para compartirla o descargarla. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
 
 ### 👟 Jugadores
@@ -41,7 +41,6 @@ Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con
 
 - **Administrar** (solo con servidor): entrar para editar o salir.
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
-- **Día y hora del partido**: salen en el título y en la lista por WhatsApp. Por defecto, hoy y sin hora; cuando el día pasa, vuelve solo a hoy.
 - **Formato**: 7 vs 7, 8 vs 8 (por defecto) u 11 vs 11. Al cambiarlo, la alineación vuelve a salir sola.
 - **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
 - **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.

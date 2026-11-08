@@ -49,7 +49,7 @@ function renderHistory() {
   if (!histLoaded) { box.innerHTML = '<p class="hint">Cargando historial…</p>'; return; }
   const ae = document.activeElement;
   if (box.contains(ae) && ae.tagName === "INPUT") return;   // no repintar mientras se escribe un resultado
-  if (!matches.length) { box.innerHTML = `<p class="hint">${canEdit() ? 'Aún no hay partidos. Coloca los equipos en la pestaña Alineación y pulsa "Guardar alineación en historial": el partido aparecerá aquí para apuntar el resultado.' : "Aún no hay partidos."}</p>`; return; }
+  if (!matches.length) { box.innerHTML = `<p class="hint">${canEdit() ? 'Aún no hay partidos. Después de jugar, pulsa "Partido jugado" en la pestaña Partido: el partido aparecerá aquí para apuntar el resultado y los goles.' : "Aún no hay partidos."}</p>`; return; }
   box.innerHTML = matches.map(matchHTML).join("");
 }
 

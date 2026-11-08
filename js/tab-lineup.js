@@ -1,7 +1,7 @@
 "use strict";
 /* Pestaña Partido: arriba la lista de apuntados (con «Soy…» y Apuntarme / Borrarme), debajo la pizarra con los imanes
-   y los dos equipos con su formación y banquillo. Quien organiza además apunta y quita a cualquiera, vacía la lista,
-   retoca la alineación y la guarda en el historial. El arrastre está en drag.js y Compartir en share.js. */
+   y los dos equipos con su banquillo. Quien organiza además elige día y hora, apunta y quita a cualquiera, vacía la lista,
+   retoca la alineación y, después de jugar, pulsa «Partido jugado». El arrastre está en drag.js y Compartir en share.js. */
 
 /** Lo que lleva el imán: el número si el nombre acaba en uno («Jugador 12» → 12), las iniciales de las dos
     primeras palabras («Juan Pérez» → JP) o las dos primeras letras («Mario» → MA). */
@@ -37,9 +37,8 @@ function renderSignups() {
   $("#count").textContent = signupsLoaded ? `${ids.length} de ${need}` : "";
   $("#me").innerHTML = loaded ? meHTML() : "";
   $("#slist").innerHTML = ids.map((id, i) => {
-    const p = BY[id], tags = posTags(p);
+    const p = BY[id];   // sin las posiciones: ya salen en los imanes, y así caben los nombres en el móvil
     return `<li class="${id === me() ? "mine" : ""}${i >= need ? " extra" : ""}"><span class="sn">${i + 1}.</span><span class="sname">${esc(p.n)}${id === me() ? " <small>(tú)</small>" : ""}</span>`
-      + `${tags.length ? `<span class="ptags">${tags.map(r => `<i class="pt-${r}" title="${r}">${r[0]}</i>`).join("")}</span>` : ""}`
       + `${canEdit() ? `<button type="button" class="sdel" data-sdel="${esc(id)}" aria-label="Quitar a ${esc(p.n)} de la lista">✕</button>` : ""}</li>`;
   }).join("") || `<li class="sempty">${!signupsLoaded ? "Cargando la lista…" : "Todavía no se ha apuntado nadie."}</li>`;
   const n = ids.length, d = Math.abs(n - need), s = $("#status");
@@ -137,12 +136,18 @@ $("#swap").addEventListener("click", () => {
   swapTeams(); keepBoard().catch(boardFail); render(); toast("Equipos invertidos.");
 });
 
-// Guardar en el historial (si ya hay un partido ese día, pide confirmación para reemplazarlo)
+// Partido jugado: guarda la alineación en el historial, vacía la lista y lleva al historial para apuntar el resultado.
+// Pide confirmación (y avisa si ya había un partido guardado ese día, que se reemplaza).
 $("#fix").addEventListener("click", async e => {
-  const btn = e.currentTarget, label = "Guardar alineación en historial";
-  if (!hasLineup()) { toast("Necesitas al menos dos apuntados para guardar la alineación."); return; }
-  if (matchOfDay() && !confirmFirst(btn, "Reemplazar la ya guardada", 4000)) return;
-  disarm(btn, label);
-  try { await saveLineup(); toast("Alineación guardada en el historial."); }
-  catch (err) { toast(err && err.code === "quota_exceeded" ? "No caben más partidos en el historial." : "No se pudo fijar la alineación."); }
+  const btn = e.currentTarget, label = "Partido jugado";
+  if (!hasLineup()) { toast("Necesitas al menos dos apuntados para guardar el partido."); return; }
+  if (!confirmFirst(btn, matchOfDay() ? "Reemplazar el ya guardado y vaciar la lista" : "Guardar y vaciar la lista", 4000)) return;
+  disarm(btn, label); btn.disabled = true;
+  try {
+    await saveLineup();
+    try { await clearSignups(); } catch { toast("Partido guardado, pero no se pudo vaciar la lista."); btn.disabled = false; return; }
+    st.tab = "hist"; save(); showTab(); renderHistory();
+    toast("Partido guardado: apunta el resultado y los goles. La lista ya está vacía para el próximo.");
+  } catch (err) { toast(err && err.code === "quota_exceeded" ? "No caben más partidos en el historial." : "No se pudo guardar el partido."); }
+  btn.disabled = false;
 });

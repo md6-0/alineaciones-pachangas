@@ -66,7 +66,7 @@
       <h1 id="h1">Alineación</h1>
     </div>
     <div class="hctl" id="hctl">
-      <button class="btn ghost edit-only" id="fix" type="button">Guardar alineación en historial</button>
+      <button class="btn ghost edit-only" id="fix" type="button">Partido jugado</button>
       <div class="share">
         <button class="btn" id="sharebtn" type="button" aria-haspopup="true" aria-expanded="false">Compartir ▾</button>
         <div class="smenu" id="smenu" hidden>
@@ -103,6 +103,11 @@
 
   <section id="p-alin" class="folder" role="tabpanel" aria-labelledby="t-alin">
     <section class="signbox" id="signbox" aria-label="Apuntados al próximo partido">
+      <div class="datepick when edit-only">
+        <label>Día <input type="date" id="matchdate" aria-label="Día del partido"></label>
+        <button type="button" class="btn ghost" id="datereset">Hoy</button>
+        <label>Hora <input type="time" id="matchtime" aria-label="Hora del partido"></label>
+      </div>
       <div class="row"><h2>Apuntados</h2><span class="count" id="count"></span></div>
       <div class="me" id="me"></div>
       <ol class="slist" id="slist"></ol>
@@ -151,17 +156,6 @@
         <input type="text" id="groupname" class="textopt" maxlength="40" aria-label="Nombre del grupo">
       </div>
       <div class="optrow edit-only">
-        <div><h3>Día del partido</h3><p class="hint">Por defecto, hoy. Cuando pasa la fecha elegida, vuelve a la de hoy.</p></div>
-        <div class="datepick">
-          <input type="date" id="matchdate" aria-label="Fecha del partido">
-          <button type="button" class="btn ghost" id="datereset">Hoy</button>
-        </div>
-      </div>
-      <div class="optrow edit-only">
-        <div><h3>Hora del partido</h3><p class="hint">Sale junto al día del partido. Vacía, no sale.</p></div>
-        <div class="datepick"><input type="time" id="matchtime" aria-label="Hora del partido"></div>
-      </div>
-      <div class="optrow edit-only">
         <div><h3>Formato</h3><p class="hint">Al cambiarlo, la alineación vuelve a salir sola.</p></div>
         <div class="seg" id="modeseg" role="group" aria-label="Formato">
           <button type="button" id="m7" data-mode="7">7 vs 7</button>
@@ -186,7 +180,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.2.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.3.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>

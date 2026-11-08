@@ -19,14 +19,16 @@ const { ok, done } = checker();
   // Ya no hay opción de medias
   ok('sin opción de medias', (await page.locator('#ratingseg').count()) === 0);
 
-  // Fecha
+  // Fecha (arriba en Partido; ya no está en Opciones)
+  ok('día y hora fuera de Opciones', !(await page.locator('#p-opc #matchdate, #p-opc #matchtime').count()));
+  await tab(page, 'alin');
   await page.fill('#matchdate', '2099-01-02'); await page.dispatchEvent('#matchdate', 'change');
   ok('fecha elegida', (await page.inputValue('#matchdate')) === '2099-01-02' && await page.isVisible('#datereset'));
   await page.click('#datereset');
   ok('Hoy', await page.isHidden('#datereset'));
 
   // Guardar un partido para que la copia tenga historial
-  await tab(page, 'alin'); await page.click('#fix'); await tab(page, 'opc');
+  await page.click('#fix'); await page.click('#fix'); await page.waitForTimeout(200); await tab(page, 'opc');
 
   // Descargar copia
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#bk-down')]);

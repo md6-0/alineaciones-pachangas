@@ -1,6 +1,6 @@
 "use strict";
-/* Pestaña Opciones: entrar para editar (con servidor), subir los datos del dispositivo, nombre del grupo,
-   día y hora del partido, tu nombre, formato, copia de seguridad y borrar todo.
+/* Pestaña Opciones: entrar para editar (con servidor), subir los datos del dispositivo, nombre del grupo, formato,
+   copia de seguridad y borrar todo. El día y la hora del partido se eligen arriba en la pestaña Partido (sus controles se pintan aquí).
    La versión y «Buscar actualizaciones» están en updates.js. */
 
 const UPLOADED_KEY = "pach-subido";   // ya se subieron al servidor los datos de este dispositivo

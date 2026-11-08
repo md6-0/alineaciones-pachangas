@@ -81,7 +81,7 @@ const { ok, done } = checker();
   await page.click('#sharebtn');
   ok('sin jugadores avisa', (await toastText(page)) === 'Todavía no hay alineación para compartir.' && await page.isHidden('#smenu'));
   await page.click('#fix');
-  ok('guardar sin jugadores avisa', (await toastText(page)) === 'Necesitas al menos dos apuntados para guardar la alineación.');
+  ok('guardar sin jugadores avisa', (await toastText(page)) === 'Necesitas al menos dos apuntados para guardar el partido.');
   ok('espera a dos apuntados', /al menos dos jugadores/.test(await page.innerText('#teams')));
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));

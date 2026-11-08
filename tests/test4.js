@@ -11,18 +11,27 @@ const { ok, done } = checker();
   await page.click('#scbtn');
   ok('sin goles no comparte', (await toastText(page)) === 'Todavía no hay goles apuntados.' && await page.isHidden('#scmenu'));
 
-  // Guardar con fecha elegida
-  await tab(page, 'opc');
+  // Día del partido (arriba en la pestaña Partido) y «Partido jugado»
+  await tab(page, 'alin');
+  ok('día y hora arriba en Partido', await page.isVisible('#matchdate') && await page.isVisible('#matchtime'));
   await page.fill('#matchdate', '2099-03-07'); await page.dispatchEvent('#matchdate', 'change');
   ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));
-  await tab(page, 'alin');
   ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Partido · Sábado 7 mar', await page.textContent('#h1'));
+  const apuntados = await page.evaluate(() => signupIds());
   await page.click('#fix');
-  ok('guardada', (await toastText(page)) === 'Alineación guardada en el historial.');
+  ok('Partido jugado pide confirmación', (await page.innerText('#fix')) === 'Guardar y vaciar la lista');
+  await page.click('#fix'); await page.waitForTimeout(250);
+  ok('guardado', (await toastText(page)) === 'Partido guardado: apunta el resultado y los goles. La lista ya está vacía para el próximo.', await toastText(page));
+  ok('lleva al historial', (await page.getAttribute('#t-hist', 'aria-selected')) === 'true');
+  ok('vacía la lista', (await page.evaluate(() => signupIds().length)) === 0);
+  // Si se vuelve a jugar el mismo día, pide reemplazar
+  await page.evaluate(ids => Promise.all(ids.map(id => signUp(id))), apuntados);
+  await tab(page, 'alin'); await page.waitForTimeout(100);
   await page.click('#fix');
-  ok('la segunda vez pide reemplazar', (await page.innerText('#fix')) === 'Reemplazar la ya guardada');
-  await page.click('#fix');
-  ok('reemplazada', (await page.innerText('#fix')) === 'Guardar alineación en historial');
+  ok('la segunda vez pide reemplazar', (await page.innerText('#fix')) === 'Reemplazar el ya guardado y vaciar la lista');
+  await page.click('#fix'); await page.waitForTimeout(250);
+  ok('reemplazado', (await page.innerText('#fix')) === 'Partido jugado' && (await page.evaluate(() => matches.length)) === 1);
+  await page.evaluate(ids => Promise.all(ids.map(id => signUp(id))), apuntados);   // para lo que sigue
 
   await tab(page, 'hist');
   const match = page.locator('#hlist .match');
