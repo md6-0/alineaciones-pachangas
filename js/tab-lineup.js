@@ -66,13 +66,11 @@ const slotsHTML = team => freeSlots(team).map(s => `<div class="slot" style="lef
 
 function teamHTML(team) {
   const bench = benchIds(team);
-  const forms = FORMS[st.mode].map(f => `<button class="form" type="button" data-team="${team}" data-f="${f}" aria-pressed="${st.form[team][st.mode] === f}">${f}</button>`).join("");
   return `<section class="sec team ${team}">
     <div class="thead">
       <div class="tname"><span class="sw ${team}"></span>${TEAMS[team]}</div>
     </div>
-    <p class="tsub">${pitchIds(team).length} en el campo</p>
-    <div class="forms edit-only">${forms}</div>
+    <p class="tsub">${pitchIds(team).length} en el campo · ${st.form[team][st.mode]}</p>
     <div class="bench" data-team="${team}">${bench.length ? bench.map(magHTML).join("") : `<span class="empty">Banquillo vacío${canEdit() ? " · suelta aquí un imán" : ""}</span>`}</div>
   </section>`;
 }
@@ -132,11 +130,6 @@ $("#clearlist").addEventListener("click", e => {
 });
 
 // Retocar la alineación (se guarda para todos)
-$("#teams").addEventListener("click", e => {
-  const b = e.target.closest(".form"); if (!b || !canEdit()) return;
-  st.form[b.dataset.team][st.mode] = b.dataset.f; relayTeam(b.dataset.team); keepBoard().catch(boardFail); render();
-});
-
 $("#shuffle").addEventListener("click", () => { if (!loaded) return; reshuffle().catch(boardFail); render(); });
 
 $("#swap").addEventListener("click", () => {

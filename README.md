@@ -16,7 +16,7 @@ La primera pestaña es el **próximo partido**: arriba, quién va; debajo, cómo
 
 - **Apuntados**: la lista por orden de llegada, con el día, la hora y el formato en el título. La primera vez cada uno dice quién es (**Soy…**, de la lista de jugadores; el móvil lo recuerda) y después tiene su botón **Apuntarme** / **Borrarme**. Si se apuntan más de los que pide el formato, entran igual y los últimos van al banquillo.
 - **La alineación sale sola** con los apuntados: Equipo Blanco y Equipo Oscuro equilibrando porteros, defensas, medios y delanteros. Si no te convence, **Otra opción**.
-- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada equipo elige su **formación** (2-3-1, 3-3-1, 4-4-2, 4-3-3…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio. Lo que retocas lo ve todo el mundo, y quien se apunte después entra en un hueco libre sin deshacerlo.
+- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada formato juega con una **formación fija**: 3-2-1 en fútbol 7, 3-3-1 en fútbol 8 y 4-2-3-1 en fútbol 11. Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio. Lo que retocas lo ve todo el mundo, y quien se apunte después entra en un hueco libre sin deshacerlo.
 - Quien organiza además **apunta y quita a cualquiera**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
 - **Guardar alineación en historial** guarda el partido con su fecha, para apuntar después el resultado y los goles.
 - **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen para compartirla o descargarla. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
@@ -166,7 +166,7 @@ Los archivos de `js/` se cargan en ese orden y cada uno se apoya en los anterior
 - **Las reglas** (de `settings` a `backup`) no tocan la pantalla. Todo lo que decide cómo se reparten los equipos, dónde va cada jugador, qué se guarda en un partido está ahí, en un único sitio. El resto de la app llama a esas funciones (`solve`, `rebuild`, `dropOnPitch`, `saveLineup`, `changeGoal`, `computeStats`…) en lugar de repetir la lógica.
 - **La interfaz** (`ui`, `views` y un archivo por pestaña o funcionalidad) pinta la pantalla a partir del estado y responde a lo que hace el usuario.
 
-El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vuelve a pintar a partir del estado. Los cambios de los datos (jugadores, partidos, ajustes, apuntados y el próximo partido) se guardan con `db`, que avisa a `main.js`; este recalcula el estado y repinta lo que depende de él. La pizarra (`layout`) se calcula en cada dispositivo a partir de los apuntados con `syncBoard()` (`next-match.js`): si quien organiza no la ha retocado, sale del reparto automático, que es determinista y por eso es igual en todos los móviles; si la ha retocado (arrastrar, formación, invertir), su colocación se guarda en `next/current` y los nuevos apuntados entran en un hueco libre.
+El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vuelve a pintar a partir del estado. Los cambios de los datos (jugadores, partidos, ajustes, apuntados y el próximo partido) se guardan con `db`, que avisa a `main.js`; este recalcula el estado y repinta lo que depende de él. La pizarra (`layout`) se calcula en cada dispositivo a partir de los apuntados con `syncBoard()` (`next-match.js`): si quien organiza no la ha retocado, sale del reparto automático, que es determinista y por eso es igual en todos los móviles; si la ha retocado (arrastrar, invertir), su colocación se guarda en `next/current` y los nuevos apuntados entran en un hueco libre.
 
 ### Algunas decisiones
 
@@ -194,7 +194,7 @@ Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus 
 
 ### Ampliar la app
 
-- **Una formación nueva:** se añade a `FORMS` en `config.js`, en el formato que corresponda.
+- **Otra formación:** se cambia en `FORMS` (`config.js`). Las de tres líneas (3-3-1) y cuatro (4-2-3-1) ya tienen sus alturas en `LINES`.
 - **Un formato nuevo:** sus formaciones en `FORMS`, cuántos jugadores necesita en `NEED` y su botón en Opciones (`index.html`). Si necesita otro campo, se dibuja en `pitch.js` y en `drawPitchLines` (`share-image.js`).
 - **Una estadística nueva:** se calcula en `computeStats` (`stats.js`) y se añade su tarjeta en `tab-stats.js`.
 - **Un archivo nuevo:** se añade a `index.html` en el lugar que le corresponda según de qué dependa, y a la lista `SHELL` de `sw.js`.

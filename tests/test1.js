@@ -60,19 +60,21 @@ const { ok, done } = checker();
   ok('12 apuntados → faltan 2', (await page.innerText('#status')) === 'Faltan 2 jugadores para 7 vs 7.', await page.innerText('#status'));
   ok('huecos vacíos en el campo', (await page.locator('#board .slot').count()) === 2);
 
-  // Formaciones
-  await page.locator('#teams .form[data-team=W][data-f="3-2-1"]').click();
-  ok('formación 3-2-1 marcada', (await page.getAttribute('#teams .form[data-team=W][data-f="3-2-1"]', 'aria-pressed')) === 'true');
+  // Formación fija: 3-2-1 en fútbol 7, sin poder elegir
+  ok('7 vs 7 juega 3-2-1', (await page.locator('#teams .tsub').first().innerText()).endsWith('· 3-2-1') && (await page.locator('#teams .form').count()) === 0);
 
   // Formatos (están en Opciones)
   await tab(page, 'opc');
   await page.click('#m11');
   await tab(page, 'alin');
   ok('11 vs 11: campo grande', (await page.evaluate(() => document.getElementById('board').style.aspectRatio)).replace(/\s/g, '') === '72/109');
-  ok('11 vs 11: formaciones de 11', (await page.locator('#teams .form[data-team=D]').allInnerTexts()).join() === '4-4-2,4-3-3,3-5-2,4-5-1');
+  ok('11 vs 11: 4-2-3-1', (await page.locator('#teams .tsub').first().innerText()).endsWith('· 4-2-3-1'));
+  ok('11 vs 11: huecos POR, 4 DEF, 5 MED (2 pivotes y 3 mediapuntas) y 1 ATQ por equipo', (await page.evaluate(() => slotsFor('W').map(s => s.role).join())) === 'GK,DEF,DEF,DEF,DEF,MED,MED,MED,MED,MED,ATQ'
+    && (await page.evaluate(() => new Set(slotsFor('W').filter(s => s.role === 'MED').map(s => s.y)).size)) === 2);
   ok('11 vs 11: faltan', /^Faltan 10 jugadores para 11 vs 11\.$/.test(await page.innerText('#status')), await page.innerText('#status'));
   await tab(page, 'opc'); await page.click('#m8'); await tab(page, 'alin');
   ok('8 vs 8: campo de 7', (await page.evaluate(() => document.getElementById('board').style.aspectRatio)).replace(/\s/g, '') === '44/64');
+  ok('8 vs 8 juega 3-3-1', (await page.locator('#teams .tsub').first().innerText()).endsWith('· 3-3-1'));
 
   // Recarga: se conserva
   const sel = await page.locator('#slist li').count();

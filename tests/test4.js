@@ -28,7 +28,7 @@ const { ok, done } = checker();
   const match = page.locator('#hlist .match');
   ok('un partido', (await match.count()) === 1);
   ok('fecha del partido', (await match.locator('.mdate').textContent()) === 'Sábado 7 mar 2099');
-  ok('formato y formaciones', (await match.locator('.msub').innerText()) === '7 vs 7 · Blanco 2-3-1 · Oscuro 2-3-1');
+  ok('formato y formaciones', (await match.locator('.msub').innerText()) === '7 vs 7 · Blanco 3-2-1 · Oscuro 3-2-1');
   ok('sin resultado', (await match.locator('.res').innerText()).toLowerCase() === 'sin resultado');
   ok('7 nombres por equipo', (await match.locator('.mteam.W .mline span:not(.r)').allInnerTexts()).join(', ').split(', ').length === 7);
 
