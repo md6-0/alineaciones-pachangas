@@ -29,6 +29,10 @@ Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). No hay
 
 En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
 
+### 🎬 Rewind del año
+
+En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote y números para cada uno que haya jugado al menos 4 partidos. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
+
 ### 👀 Compartir la app con el grupo
 
 Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con pasar el enlace de la app:
@@ -120,6 +124,7 @@ css/lineup.css         pestaña Partido: lista de apuntados, equipos, banquillos
 css/players.css        pestaña Jugadores
 css/history.css        pestaña Historial
 css/stats.css          pestaña Estadísticas
+css/rewind.css         Rewind del año (recuadro e historias)
 css/options.css        pestaña Opciones
 
 js/util.js             utilidades generales: DOM, texto, fechas y descargas
@@ -139,6 +144,7 @@ js/formation.js        colocación en la pizarra: huecos, portero y soltar imane
 js/matches.js          historial: guardar la alineación, resultado y goles
 js/next-match.js       próximo partido: apuntados, día, hora, formato y la alineación (automática o retocada)
 js/stats.js            cálculo de las estadísticas
+js/rewind.js           Rewind del año: números, premios, cromos y publicarlo
 js/backup.js           copia de seguridad, subir datos al servidor (sin las medias antiguas) y borrar todo
 js/ui.js               piezas de interfaz reutilizables: avisos, confirmaciones, imagen a pantalla completa
 js/views.js            pestañas y repintado
@@ -154,6 +160,7 @@ js/tab-players.js      pestaña Jugadores
 js/tab-history.js      pestaña Historial
 js/tab-stats.js        pestaña Estadísticas
 js/share-scorers.js    goleadores para compartir: texto, imagen y su menú
+js/rewind-ui.js        Rewind en pantalla: recuadro de Estadísticas, historias e imagen de cada una
 js/tab-options.js      pestaña Opciones (también entrar y salir, y subir los datos del dispositivo)
 js/updates.js          aviso de versión nueva
 js/main.js             arranque
@@ -185,7 +192,7 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 ### Cómo se guardan los datos
 
-Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
+Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo y el año del Rewind publicado), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
 - **`pachangas-db-v1`** (sin servidor): las cinco colecciones. Cada partido de `matches` lleva la fecha como id, el formato, la formación, los jugadores de cada equipo con su puesto y su sitio, `score` y `goals`. La copia de seguridad lleva `players`, `matches` y `settings`.
 - **`pach-v4`**: las preferencias de este dispositivo: pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.

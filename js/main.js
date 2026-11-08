@@ -39,7 +39,7 @@ function onMatches(snap) {
 function onSettings(snap) {
   const d = snap.docs.find(x => x.id === "general");
   settings = d ? Object.assign({}, d.data()) : {};
-  paintGroup();
+  paintGroup(); renderRewindBox();
 }
 
 /** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver. */

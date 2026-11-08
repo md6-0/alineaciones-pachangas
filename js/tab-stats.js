@@ -13,6 +13,7 @@ function statCard(title, rows, key, cols, emptyText) {
 }
 
 function renderStats() {
+  renderRewindBox();
   const box = $("#stats");
   if (failed) { box.innerHTML = `<p class="hint">${LOAD_ERROR}</p>`; return; }
   if (!histLoaded) { box.innerHTML = '<p class="hint">Cargando estadísticas…</p>'; return; }

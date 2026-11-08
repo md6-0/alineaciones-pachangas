@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="css/players.css">
 <link rel="stylesheet" href="css/history.css">
 <link rel="stylesheet" href="css/stats.css">
+<link rel="stylesheet" href="css/rewind.css">
 <link rel="stylesheet" href="css/options.css">
 
 <!-- Scripts clásicos en orden de dependencia (ver README → Cómo está organizado el código). -->
@@ -38,6 +39,7 @@
 <script defer src="js/matches.js"></script>
 <script defer src="js/next-match.js"></script>
 <script defer src="js/stats.js"></script>
+<script defer src="js/rewind.js"></script>
 <script defer src="js/backup.js"></script>
 <!-- La interfaz -->
 <script defer src="js/ui.js"></script>
@@ -54,6 +56,7 @@
 <script defer src="js/tab-history.js"></script>
 <script defer src="js/tab-stats.js"></script>
 <script defer src="js/share-scorers.js"></script>
+<script defer src="js/rewind-ui.js"></script>
 <script defer src="js/tab-options.js"></script>
 <script defer src="js/updates.js"></script>
 <script defer src="js/main.js"></script>
@@ -89,6 +92,15 @@
     <button class="tab" role="tab" id="t-stats" data-tab="stats" type="button"><span class="tl">Estadísticas</span><span class="ts">Stats</span></button>
     <button class="tab tab-opc" role="tab" id="t-opc" data-tab="opc" type="button" aria-label="Opciones"><span class="ti">⚙</span><span class="tl">Opciones</span></button>
   </nav>
+
+  <div class="rw" id="rw" hidden role="dialog" aria-label="Pachanga Rewind">
+    <div class="rwbars" id="rwbars"></div>
+    <button class="rwclose" id="rwclose" type="button" aria-label="Cerrar">✕</button>
+    <div class="rwcard" id="rwcard"></div>
+    <button class="rwtap prev" id="rwprev" type="button" aria-label="Anterior"></button>
+    <button class="rwtap next" id="rwnext" type="button" aria-label="Siguiente"></button>
+    <button class="btn rwshare" id="rwshare" type="button">Compartir esta</button>
+  </div>
 
   <section id="p-alin" class="folder" role="tabpanel" aria-labelledby="t-alin">
     <section class="signbox" id="signbox" aria-label="Apuntados al próximo partido">
@@ -158,10 +170,11 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.4.3</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.5.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>
+    <div id="rwbox"></div>
     <div class="sbar"><div class="share">
       <button class="btn" id="scbtn" type="button" aria-haspopup="true" aria-expanded="false">Compartir goleadores ▾</button>
       <div class="smenu" id="scmenu" hidden>
