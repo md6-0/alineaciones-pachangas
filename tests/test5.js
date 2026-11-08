@@ -16,16 +16,8 @@ const { ok, done } = checker();
   ok('vacío vuelve al de por defecto', (await page.textContent('#eyebrow')) === 'Mi pachanga ⚽');
   await page.fill('#groupname', 'Los del jueves'); await page.press('#groupname', 'Tab');
 
-  // Medias
-  await page.click('#ratingseg [data-r="0"]');
-  ok('medias ocultas', await page.evaluate(() => document.body.classList.contains('no-ratings')));
-  await tab(page, 'alin');
-  ok('imanes con iniciales', /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText()));
-  ok('imanes sin color de nivel', (await page.locator('#board .mag.gold, #board .mag.silver, #board .mag.bronze').count()) === 0);
-  await tab(page, 'jug');
-  ok('pista corta sin medias', (await page.innerText('#phint')).startsWith('Los cambios se guardan al salir de cada casilla. Marca'));
-  await tab(page, 'opc'); await page.click('#ratingseg [data-r="1"]');
-  ok('medias visibles otra vez', !(await page.evaluate(() => document.body.classList.contains('no-ratings'))));
+  // Ya no hay opción de medias
+  ok('sin opción de medias', (await page.locator('#ratingseg').count()) === 0);
 
   // Fecha
   await page.fill('#matchdate', '2099-01-02'); await page.dispatchEvent('#matchdate', 'change');

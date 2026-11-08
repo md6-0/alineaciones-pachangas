@@ -26,7 +26,7 @@ function roleAt(team, y) {
     y si no, para cualquiera. Los que sobran van al banquillo. */
 function place(team, players) {
   const slots = slotsFor(team);
-  const pool = [...players].sort((a, b) => b.m - a.m);
+  const pool = [...players];
   const filled = new Array(slots.length).fill(null);
   const gk = slots.findIndex(s => s.role === "GK");
   if (gk > -1 && pool.length) { const g = pickGK(pool); filled[gk] = g; pool.splice(pool.indexOf(g), 1); }

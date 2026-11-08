@@ -1,5 +1,5 @@
 "use strict";
-/* Pestaña Opciones: nombre del grupo, día y hora del partido, tu nombre, formato, medias, copia de seguridad y borrar todo.
+/* Pestaña Opciones: nombre del grupo, día y hora del partido, tu nombre, formato, copia de seguridad y borrar todo.
    La versión y «Buscar actualizaciones» están en updates.js. */
 
 /** Pinta el nombre del grupo encima del título y en su casilla (salvo mientras se escribe). */
@@ -19,13 +19,6 @@ function paintOptions() {
   const ni = $("#myname"); if (document.activeElement !== ni) ni.value = st.myName || "";
 }
 
-/** Muestra u oculta las medias en toda la app. */
-function applyRatings() {
-  document.body.classList.toggle("no-ratings", !st.ratings);
-  $$("#ratingseg button").forEach(b => b.setAttribute("aria-pressed", (b.dataset.r === "1") === !!st.ratings));
-  $("#phint").textContent = st.ratings ? HINT_RATINGS : HINT_PLAIN;
-}
-
 /* ---------- Ajustes ---------- */
 
 $("#groupname").addEventListener("change", async e => {
@@ -42,11 +35,6 @@ $("#myname").addEventListener("change", e => { st.myName = e.target.value.trim()
 $("#modeseg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || !loaded) return;
   st.mode = b.dataset.mode; save(); rebuild(); render();
-});
-
-$("#ratingseg").addEventListener("click", e => {
-  const b = e.target.closest("button"); if (!b) return;
-  st.ratings = b.dataset.r === "1"; save(); applyRatings(); render(); renderPlayers(); renderHistory();
 });
 
 /* ---------- Copia de seguridad ---------- */

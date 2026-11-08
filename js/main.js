@@ -42,5 +42,5 @@ db.collection("settings").onSnapshot(onSettings, () => {});
 db.collection("matches").onSnapshot(onMatches, () => { if (!histLoaded) { failed = true; renderHistory(); renderStats(); } });
 db.collection("players").onSnapshot(onPlayers, () => { if (!loaded) { failed = true; render(); renderPlayers(); } else toast("Se perdió la conexión con los datos. Recarga la página."); });
 
-paintGroup(); applyRatings(); showTab(); render(); renderPlayers(); renderHistory();
+paintGroup(); showTab(); render(); renderPlayers(); renderHistory();
 window.addEventListener("load", initServiceWorker);

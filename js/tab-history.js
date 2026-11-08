@@ -17,12 +17,11 @@ function goalsHTML(m, team, list) {
 
 function mteamHTML(m, team) {
   const list = Array.isArray(m[team]) ? m[team] : [];
-  const mean = snapMean(list);
   const lines = ROLE_ORDER.map(r => {
     const ps = list.filter(p => p.role === r);
     return ps.length ? `<div class="mline"><span class="r">${r}</span><span>${ps.map(p => esc(p.name)).join(", ")}</span></div>` : "";
   }).join("");
-  return `<div class="mteam ${team}"><h3><span class="l"><span class="sw ${team}"></span>${TEAMS[team]}</span>${mean ? `<small class="rc">Media ${mean}</small>` : ""}</h3>${lines || '<p class="hint">Sin jugadores</p>'}${goalsHTML(m, team, list)}</div>`;
+  return `<div class="mteam ${team}"><h3><span class="l"><span class="sw ${team}"></span>${TEAMS[team]}</span></h3>${lines || '<p class="hint">Sin jugadores</p>'}${goalsHTML(m, team, list)}</div>`;
 }
 
 function matchHTML(m) {

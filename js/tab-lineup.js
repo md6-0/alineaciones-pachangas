@@ -2,31 +2,25 @@
 /* Pestaña Alineación: la pizarra con los imanes, la convocatoria, los dos equipos con su formación y banquillo,
    y el botón de guardar la alineación en el historial. El arrastre está en drag.js y Compartir en share.js. */
 
-/** Iniciales para el imán cuando las medias están ocultas. */
+/** Iniciales para el imán. */
 const initials = name => name.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
 
 function magHTML(id) {
   const L = layout[id], p = BY[id];
   const style = L.zone === "pitch" ? ` style="left:${L.x}%;top:${L.y}%"` : "";
   const ps = POSITIONS.filter(r => p.pos.includes(r));
-  const val = L.zone === "pitch" && roleAt(L.team, L.y) === "POR" ? p.por : p.ovr;   // en la portería, su nota de portero
   const tags = ps.length ? `<span class="ptags">${ps.map(r => `<i class="pt-${r}" title="${r}">${r[0]}</i>`).join("")}</span>` : "";
-  return `<div class="mag ${L.team}${st.ratings ? " " + tier(val) : ""}" data-n="${esc(id)}"${style}><span class="disc">${st.ratings ? val : esc(initials(p.n))}</span><span class="labrow"><span class="lab">${esc(p.n)}</span>${tags}</span></div>`;
+  return `<div class="mag ${L.team}" data-n="${esc(id)}"${style}><span class="disc">${esc(initials(p.n))}</span><span class="labrow"><span class="lab">${esc(p.n)}</span>${tags}</span></div>`;
 }
 
 const slotsHTML = team => freeSlots(team).map(s => `<div class="slot" style="left:${s.x}%;top:${s.y}%">${s.role === "GK" ? "POR" : s.role}</div>`).join("");
 
 function teamHTML(team) {
-  const ids = idsOf(team);
-  const field = ids.map(n => BY[n]).filter(Boolean);
   const bench = benchIds(team);
-  const gkId = goalkeeperOf(team);
-  const mean = field.length ? Math.ceil(teamValue(field, gkId ? BY[gkId] : null)) : "—";
   const forms = FORMS[st.mode].map(f => `<button class="form" type="button" data-team="${team}" data-f="${f}" aria-pressed="${st.form[team][st.mode] === f}">${f}</button>`).join("");
   return `<section class="sec team ${team}">
     <div class="thead">
       <div class="tname"><span class="sw ${team}"></span>${TEAMS[team]}</div>
-      <div class="tmeta rc">Media <b>${mean}</b></div>
     </div>
     <p class="tsub">${pitchIds(team).length} en el campo</p>
     <div class="forms">${forms}</div>
@@ -49,7 +43,7 @@ function renderLineup() {
     return;
   }
   $("#chips").innerHTML = [...P].sort((a, b) => a.n.localeCompare(b.n, "es", { sensitivity: "base" }))
-    .map(p => `<button class="chip" type="button" aria-pressed="${st.sel.includes(p.id)}" data-n="${esc(p.id)}">${esc(p.n)}<span class="r rc">${p.ovr}</span></button>`).join("");
+    .map(p => `<button class="chip" type="button" aria-pressed="${st.sel.includes(p.id)}" data-n="${esc(p.id)}">${esc(p.n)}</button>`).join("");
   $("#count").textContent = `${pitchIds().length} en el campo`;
   const s = $("#status");
   s.className = "status warn"; s.textContent = squadWarning(); s.hidden = !s.textContent;

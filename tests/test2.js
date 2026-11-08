@@ -1,4 +1,4 @@
-/* Jugadores: añadir, cambiar nombre, notas y posiciones, ordenar por media y quitar. Los cambios llegan a la pizarra. */
+/* Jugadores: añadir, cambiar nombre y posiciones, y quitar. Los cambios llegan a la pizarra. */
 const { open, checker, tab, toastText } = require('./helpers');
 const { ok, done } = checker();
 
@@ -14,25 +14,20 @@ const { ok, done } = checker();
   await page.click('#addform button[type=submit]');
   await page.waitForTimeout(100);
   ok('añadido', (await page.innerText('#pcount')) === '25 jugadores');
-  ok('aviso de añadido', (await toastText(page)) === 'Íñigo Pérez añadido con 70 en todo.', await toastText(page));
+  ok('aviso de añadido', (await toastText(page)) === 'Íñigo Pérez añadido.', await toastText(page));
   ok('campo vacío', (await page.inputValue('#newname')) === '');
   const row = page.locator('#plist tbody tr').last();
   const id = await row.getAttribute('data-id');
   ok('id a partir del nombre', /^inigo-perez-[a-z0-9]{1,4}$/.test(id), id);
-  ok('media 70', (await row.locator('.ov').innerText()) === '70');
+  ok('sin medias', (await page.locator('#plist input[type=number], #plist .ov').count()) === 0);
   ok('vacío no añade', await (async () => { await page.fill('#newname', '   '); await page.click('#addform button[type=submit]'); return (await page.innerText('#pcount')) === '25 jugadores'; })());
 
-  // Notas y posiciones
-  const num = f => row.locator(`input[data-f=${f}]`);
-  await num('atq').fill('150'); await num('atq').press('Tab'); await page.waitForTimeout(150);
-  ok('ATQ se limita a 99', (await num('atq').inputValue()) === '99');
-  ok('media sin posición: (99+70)/2 → 85', (await row.locator('.ov').innerText()) === '85', await row.locator('.ov').innerText());
+  // Posiciones
   await row.locator('[data-pos=DEF]').click(); await page.waitForTimeout(100);
   const row2 = page.locator(`#plist tr[data-id="${id}"]`);
   ok('DEF marcada', (await row2.locator('[data-pos=DEF]').getAttribute('aria-pressed')) === 'true');
-  ok('media de defensa: 99·.25+70·.75 → 78', (await row2.locator('.ov').innerText()) === '78', await row2.locator('.ov').innerText());
   await row2.locator('[data-pos=ATQ]').click(); await page.waitForTimeout(100);
-  ok('DEF+ATQ promedian → 85', (await page.locator(`#plist tr[data-id="${id}"] .ov`).innerText()) === '85');
+  ok('DEF y ATQ marcadas', (await page.locator(`#plist tr[data-id="${id}"] [aria-pressed=true]`).count()) === 2);
   const nameIn = page.locator(`#plist tr[data-id="${id}"] input[data-f=name]`);
   await nameIn.fill(''); await nameIn.press('Tab'); await page.waitForTimeout(100);
   ok('nombre vacío vuelve al anterior', (await nameIn.inputValue()) === 'Íñigo Pérez');
@@ -46,12 +41,8 @@ const { ok, done } = checker();
   await chip.click();
   ok('convocado: aparece su imán', (await page.locator(`.mag[data-n="${id}"]`).count()) === 1);
 
-  // Orden por media
+  // Orden de lista
   await tab(page, 'jug');
-  await page.click('#s-media');
-  const ovs = (await page.locator('#plist .ov').allInnerTexts()).map(Number);
-  ok('por media: de mayor a menor', ovs.every((v, i) => !i || ovs[i - 1] >= v));
-  await page.click('#s-list');
   ok('orden de lista: el nuevo al final', (await page.locator('#plist tbody tr').last().getAttribute('data-id')) === id);
 
   // Quitar (pide confirmación)
@@ -66,7 +57,7 @@ const { ok, done } = checker();
   // Persistencia
   await page.reload(); await page.waitForSelector('#board .mag');
   await tab(page, 'jug');
-  ok('persiste tras recargar', (await page.innerText('#pcount')) === '24 jugadores' && (await page.getAttribute('#s-list', 'aria-pressed')) === 'true');
+  ok('persiste tras recargar', (await page.innerText('#pcount')) === '24 jugadores');
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close(); done();

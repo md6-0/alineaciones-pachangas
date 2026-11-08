@@ -19,8 +19,6 @@
 .mag.W .disc{background:var(--w-mag);color:#16191a;--ring-bg:var(--w-mag)}
 .mag.D .disc{background:var(--d-mag);color:#f1f1ee;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45);--ring-bg:var(--d-mag)}
 /* Aro de color según la media: oro, plata o bronce */
-.mag.gold{--tier:var(--gold)} .mag.silver{--tier:var(--silver)} .mag.bronze{--tier:var(--bronze)}
-.mag.gold .disc,.mag.silver .disc,.mag.bronze .disc{box-shadow:0 0 0 3px var(--tier),0 2px 3px rgba(0,0,0,.35),0 6px 14px -4px rgba(0,0,0,.45)}
 .lab{font-size:.7rem;font-weight:600;line-height:1;color:#fff;white-space:nowrap;padding:3px 6px;border-radius:3px;background:rgba(0,0,0,.42);display:flex;gap:5px;align-items:baseline}
 .role{font-size:.56rem;font-weight:600;letter-spacing:.12em;color:rgba(255,255,255,.55)}
 .mag.dragging{position:fixed!important;z-index:60;cursor:grabbing;transform:translate(-50%,-50%) scale(1.1);pointer-events:none}
@@ -42,7 +40,6 @@
 /* Imanes más pequeños en el móvil */
 @media (max-width:520px){
   .board .disc{width:28px;height:28px;font-size:.76rem}
-  .board .mag.gold .disc,.board .mag.silver .disc,.board .mag.bronze .disc{box-shadow:0 0 0 2px var(--tier),0 2px 4px rgba(0,0,0,.4)}
   .board .lab{font-size:.56rem;padding:2px 4px;max-width:62px;overflow:hidden;text-overflow:ellipsis;display:block}
   .board .labrow{gap:1px}
   .board .ptags i{font-size:.42rem;padding:1px 2px;min-width:7px}

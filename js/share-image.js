@@ -1,6 +1,6 @@
 "use strict";
 /* Imagen de la alineación para compartir (1080 px de ancho): el campo con los imanes y los banquillos.
-   Lleva solo nombres y posiciones, sin medias, para que nadie se pique al ver su nota. */
+   Lleva nombres y posiciones. */
 
 /** Rectángulo con esquinas redondeadas. */
 function roundRect(ctx, x, y, w, h, r) {

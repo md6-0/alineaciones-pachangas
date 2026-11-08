@@ -2,13 +2,14 @@
 /* Reglas del historial: guardar la alineación como partido, el resultado y los goles, y volver a cargarla en la pizarra.
    Cada partido se guarda con la fecha como id:
      { date, mode, formation: { W, D }, W: [jugador], D: [jugador], score: { W, D }, goals: { W: { id: n }, D: {…} }, fixedAt }
-   y cada jugador del partido como { id, name, ovr, por, role: POR|DEF|MED|ATQ|SUP, x, y } (x e y vacíos en el banquillo). */
+   y cada jugador del partido como { id, name, role: POR|DEF|MED|ATQ|SUP, x, y } (x e y vacíos en el banquillo).
+   Los partidos antiguos pueden traer las medias (ovr, por): se ignoran y se borran al subir los datos. */
 
 /** Foto de un equipo tal como está en la pizarra. */
 function teamSnap(team) {
   return idsOf(team).map(id => {
-    const L = layout[id], p = BY[id];
-    return { id, name: nameOf(id), ovr: p ? p.ovr : null, por: p ? p.por : null,
+    const L = layout[id];
+    return { id, name: nameOf(id),
       role: L.zone === "bench" ? "SUP" : roleAt(team, L.y),
       x: L.zone === "pitch" ? Math.round(L.x * 10) / 10 : null, y: L.zone === "pitch" ? Math.round(L.y * 10) / 10 : null };
   });
@@ -56,12 +57,6 @@ function matchResult(m) {
   const sc = m.score || {}, w = sc.W, d = sc.D;
   if (typeof w !== "number" || typeof d !== "number") return null;
   return w > d ? "W" : d > w ? "D" : "draw";
-}
-
-/** Media de un equipo del partido, con la nota POR para el portero (null si no hay medias). */
-function snapMean(list) {
-  const field = list.filter(p => typeof p.ovr === "number");
-  return field.length ? Math.ceil(field.reduce((a, p) => a + (p.role === "POR" && typeof p.por === "number" ? p.por : p.ovr), 0) / field.length) : null;
 }
 
 /** Pone un partido en la pizarra: formato, formaciones, convocatoria y colocación.

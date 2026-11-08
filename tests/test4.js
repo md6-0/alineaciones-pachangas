@@ -102,11 +102,10 @@ const { ok, done } = checker();
   await page.waitForTimeout(100);
   ok('al abrir carga la última alineación', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
 
-  // Medias del historial con medias ocultas
-  await tab(page, 'opc'); await page.click('#ratingseg [data-r="0"]');
+  // Sin medias en el historial ni en lo guardado
   await tab(page, 'hist');
-  ok('medias ocultas en el historial', !(await page.locator('#hlist .mteam small.rc').first().isVisible()));
-  await tab(page, 'opc'); await page.click('#ratingseg [data-r="1"]');
+  ok('historial sin medias', (await page.locator('#hlist .mteam small').count()) === 0
+    && await page.evaluate(() => matches.every(m => ['W', 'D'].every(t => m[t].every(p => !('ovr' in p) && !('por' in p))))));
 
   // Borrar partido
   await tab(page, 'hist');

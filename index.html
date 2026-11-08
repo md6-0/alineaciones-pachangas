@@ -71,7 +71,7 @@
           </div></div>
           <a class="s-wa" id="s-wa" href="#" target="_blank" rel="noopener">WhatsApp<small class="wtxt">Alineación en texto</small></a>
           <a class="s-tg" id="s-tg" href="#" target="_blank" rel="noopener">Telegram<small class="wtxt">Alineación en texto</small></a>
-          <button type="button" class="s-dl" id="export">Descargar imagen<small>PNG sin medias</small></button>
+          <button type="button" class="s-dl" id="export">Descargar imagen<small>PNG</small></button>
           <button type="button" class="s-share" id="shareimg" hidden>Compartir imagen<small>WhatsApp, Telegram…</small></button>
           <button type="button" class="s-view" id="viewimg">Ver imagen<small>Mantén pulsada para compartir</small></button>
         </div>
@@ -145,13 +145,6 @@
           <button type="button" id="m11" data-mode="11">11 vs 11</button>
         </div>
       </div>
-      <div class="optrow">
-        <div><h3>Medias</h3><p class="hint">Se ocultan en toda la página sin borrar las notas.</p></div>
-        <div class="seg" id="ratingseg" role="group" aria-label="Mostrar medias">
-          <button type="button" data-r="1">Mostrar</button>
-          <button type="button" data-r="0">Ocultar</button>
-        </div>
-      </div>
       <div class="backup optrow">
         <div>
           <h3>Copia de seguridad</h3>
@@ -193,10 +186,6 @@
   <section id="p-jug" class="folder" role="tabpanel" aria-labelledby="t-jug" hidden>
     <div class="pcol">
       <div class="ptools">
-        <div class="seg" role="group" aria-label="Orden">
-          <button type="button" id="s-list" data-sort="list">Orden de lista</button>
-          <button type="button" id="s-media" data-sort="media">Por media</button>
-        </div>
         <span class="pcount" id="pcount"></span>
         <form class="addrow" id="addform">
           <input id="newname" type="text" placeholder="Nombre del jugador" aria-label="Nombre del nuevo jugador" maxlength="20">
@@ -204,7 +193,7 @@
         </form>
       </div>
       <div class="plistwrap" id="plist"></div>
-      <p class="hint" id="phint"></p>
+      <p class="hint" id="phint">Los cambios se guardan al salir de cada casilla. Marca varias posiciones si alguien es polivalente. En cada equipo va a la portería quien tenga la posición POR.</p>
     </div>
   </section>
 </div>

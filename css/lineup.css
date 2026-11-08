@@ -15,7 +15,6 @@
 /* Convocatoria */
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;display:inline-flex;gap:7px;align-items:center;font-size:.86rem;font-weight:500}
-.chip .r{font-variant-numeric:tabular-nums;font-weight:700;font-size:.78rem;color:var(--faint)}
 .chip[aria-pressed="true"]{border-color:var(--fg);color:var(--fg);background:var(--bg)}
 .chip[aria-pressed="true"] .r{color:var(--fg)}
 
@@ -25,8 +24,6 @@
 .sec.team.W{--tb:var(--w-border)} .sec.team.D{--tb:var(--d-border)}
 .thead{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .tname{font-weight:700;font-stretch:80%;font-size:1.3rem;text-transform:uppercase;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
-.tmeta{display:flex;align-items:baseline;gap:6px;color:var(--muted);font-size:.8rem}
-.tmeta b{font-weight:800;font-stretch:75%;font-size:1.6rem;color:var(--fg);font-variant-numeric:tabular-nums;line-height:1}
 .tsub{font-size:.8rem;color:var(--muted);margin:-6px 0 0}
 .forms{display:flex;flex-wrap:wrap;gap:6px}
 .form{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.84rem;font-weight:600;font-variant-numeric:tabular-nums}
@@ -36,7 +33,6 @@
 /* Banquillo: los imanes se vuelven pastillas en fila */
 .bench{min-height:58px;border-radius:4px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px dashed var(--line);background:var(--bg)}
 .bench.over{border-color:var(--gk);border-style:solid}
-.bench .mag.gold .disc,.bench .mag.silver .disc,.bench .mag.bronze .disc{box-shadow:0 0 0 2px var(--tier)}
 .bench .ptags{margin-top:0}
 .bench .mag{position:static;transform:none;flex-direction:row;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px}
 .bench .disc{width:28px;height:28px;font-size:.78rem;box-shadow:0 1px 2px rgba(0,0,0,.25)}
@@ -61,8 +57,7 @@
 
 @media (max-width:520px){
   .tname{font-size:1.05rem}
-  .tmeta b{font-size:1.3rem}
-  .sec.team{padding:12px}
+    .sec.team{padding:12px}
   #teams{padding:0 8px 8px}
   .sec{padding:14px}
   .hctl{width:100%}

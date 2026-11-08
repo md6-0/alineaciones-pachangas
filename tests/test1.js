@@ -19,7 +19,7 @@ const { ok, done } = checker();
   ok('dos equipos', (await page.locator('#teams .sec.team').count()) === 2);
   ok('7 por equipo', (await page.locator('#board .mag.W').count()) === 7 && (await page.locator('#board .mag.D').count()) === 7);
   ok('un portero por equipo con la nota POR', (await page.locator('#board .mag .ptags .pt-POR').count()) >= 2);
-  ok('medias visibles', /Media \d+/.test(await page.locator('#teams .tmeta').first().textContent()));
+  ok('sin medias', (await page.locator('#teams .tmeta, #chips .r').count()) === 0 && /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText()));
 
   // Otra opción cambia el reparto y es determinista
   const first = await boardIds();
