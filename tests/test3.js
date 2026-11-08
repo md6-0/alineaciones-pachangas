@@ -55,8 +55,6 @@ const { ok, done } = checker();
   const after = await snapPos();
   ok('un nuevo apuntado no mueve a los demás', Object.keys(retouched).every(k => after[k] === retouched[k]));
   ok('y entra en la alineación', (await page.locator('.mag[data-n="jugador-24"]').count()) === 1);
-  await page.click('#shuffle'); await page.waitForTimeout(100);
-  ok('Otra opción vuelve al reparto automático', await page.evaluate(() => savedLayout === null));
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close(); done();

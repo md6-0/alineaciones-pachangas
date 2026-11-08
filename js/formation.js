@@ -82,9 +82,3 @@ function dropOnPitch(id, x, y, ratio) {
 }
 
 const dropOnBench = (id, team) => { layout[id] = { team, zone: "bench" }; };
-
-/** Invierte los equipos: los mismos jugadores juntos, cada uno en su sitio reflejado en la otra mitad. */
-function swapTeams() {
-  Object.values(layout).forEach(L => { L.team = other(L.team); if (L.zone === "pitch") L.y = 100 - L.y; });
-  const f = st.form.W[st.mode]; st.form.W[st.mode] = st.form.D[st.mode]; st.form.D[st.mode] = f;
-}

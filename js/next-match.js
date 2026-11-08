@@ -60,9 +60,6 @@ function addToBoard(id) {
 /** La alineación tal como está ahora pasa a ser la retocada (la ven todos). */
 function keepBoard() { savedLayout = clone(layout); return saveNext(); }
 
-/** Otro reparto automático (olvida los retoques). */
-function reshuffle() { seed++; savedLayout = null; syncBoard(); return saveNext(); }
-
 /** Cambia el formato: el reparto vuelve a salir solo. */
 function setMode(mode) { st.mode = mode; savedLayout = null; syncBoard(); return saveNext(); }
 

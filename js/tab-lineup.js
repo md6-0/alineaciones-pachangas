@@ -128,14 +128,6 @@ $("#clearlist").addEventListener("click", e => {
   clearSignups().then(() => toast("Lista vacía: lista para el próximo partido.")).catch(listFail);
 });
 
-// Retocar la alineación (se guarda para todos)
-$("#shuffle").addEventListener("click", () => { if (!loaded) return; reshuffle().catch(boardFail); render(); });
-
-$("#swap").addEventListener("click", () => {
-  if (!loaded || !hasLineup()) return;
-  swapTeams(); keepBoard().catch(boardFail); render(); toast("Equipos invertidos.");
-});
-
 // Partido jugado: guarda la alineación en el historial, vacía la lista y lleva al historial para apuntar el resultado.
 // Pide confirmación (y avisa si ya había un partido guardado ese día, que se reemplaza).
 $("#fix").addEventListener("click", async e => {

@@ -36,6 +36,6 @@ let settings = {};       // ajustes compartidos con los datos (nombre del grupo)
 /* ---------- Pizarra ---------- */
 // Dónde está cada apuntado: { id: { team: "W"|"D", zone: "pitch", x, y } } o { team, zone: "bench" }. x e y en % del campo.
 let layout = {};
-let seed = 0;            // qué opción de reparto se muestra (Otra opción la cambia; llega con next/current)
+let seed = 0;            // qué opción de reparto se muestra (llega con next/current)
 
 const nameOf = id => BY[id] ? BY[id].n : id;

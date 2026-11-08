@@ -23,20 +23,11 @@ const { ok, done } = checker();
   ok('sin medias', (await page.locator('#teams .tmeta').count()) === 0 && /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText())
     && (await page.evaluate(() => [initials('Jugador 12'), initials('Juan Pérez'), initials('Mario'), initials('Íñigo')].join())) === '12,JP,MA,ÍÑ');
 
-  // Otra opción cambia el reparto y es determinista
+  // Sin el bloque Alineación (Otra opción, Invertir equipos)
+  ok('sin Otra opción ni Invertir', (await page.locator('#shuffle, #swap').count()) === 0);
   const first = await boardIds();
-  const whites = () => page.locator('#board .mag.W').evaluateAll(els => els.map(e => e.dataset.n).sort().join(','));
-  const w0 = await whites();
-  await page.click('#shuffle'); const w1 = await whites();
-  ok('Otra opción cambia el reparto', w1 !== w0);
-  ok('Otra opción mantiene a los mismos 14', (await boardIds()) === first);
-
-  // Invertir
-  const wBefore = await whites();
-  await page.click('#swap');
-  const darks = await page.locator('#board .mag.D').evaluateAll(els => els.map(e => e.dataset.n).sort().join(','));
-  ok('Invertir: el Blanco pasa a Oscuro', darks === wBefore);
-  ok('Invertir: aviso', (await toastText(page)) === 'Equipos invertidos.');
+  await page.reload(); await page.waitForSelector('#board .mag');
+  ok('el reparto es siempre el mismo', (await boardIds()) === first);
 
   // «Soy…» y apuntarse
   ok('pide quién eres', await page.isVisible('#mesel'));

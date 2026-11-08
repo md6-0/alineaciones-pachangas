@@ -99,10 +99,6 @@ const { ok, done } = checker();
   await tab(page, 'hist');
   ok('sin «Cargar en la pizarra»', (await page.locator('#hlist [data-mload]').count()) === 0);
   await tab(page, 'alin');
-  const before = await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join());
-  await page.click('#swap');
-  await page.reload(); await page.waitForSelector('#board .mag'); await page.waitForTimeout(100);
-  ok('el retoque (invertir) se conserva al recargar', (await page.locator('#board .mag.D').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
 
   // Vaciar la lista para el siguiente partido
   await page.click('#clearlist');

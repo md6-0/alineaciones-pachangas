@@ -30,7 +30,7 @@ const positions = page => page.locator('#board .mag').evaluateAll(els => Object.
   ok('lista de apuntados', (await page.locator('#slist .sname').count()) === 14 && (await page.innerText('#count')) === '14 de 16');
   ok('alineación de los apuntados', (await page.locator('#board .mag').count()) === 14);
   ok('sin quitar, apuntar a otros, retocar ni guardar', (await page.locator('#slist .sdel').count()) === 0 && await page.isHidden('#saddform')
-    && await page.isHidden('#shuffle') && await page.isHidden('#fix') && await page.isHidden('#t-jug'));
+    && await page.isHidden('#fix') && await page.isHidden('#t-jug'));
   ok('sin formaciones', !(await page.locator('#teams .forms').first().isVisible()));
   ok('puede compartir', await page.isVisible('#sharebtn'));
   const mag = page.locator('#board .mag.W').nth(3), before = await mag.getAttribute('style'), box = await mag.boundingBox();

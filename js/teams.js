@@ -1,6 +1,6 @@
 "use strict";
 /* Reparto de los convocados en dos equipos equilibrados por posiciones (no hay medias). No toca la pantalla.
-   Entre los repartos igual de equilibrados se elige uno al azar, con semilla: Otra opción pasa a otro. */
+   Entre los repartos igual de equilibrados se elige uno al azar, con semilla (igual en todos los móviles). */
 
 /** Portero que tendría un equipo: el primero que tenga la posición POR (si no hay, el primero). */
 function pickGK(list) {
@@ -64,7 +64,7 @@ function searchSplits(list) {
   return out;
 }
 
-/** Reparto de la lista: uno al azar entre los más equilibrados, según la semilla (Otra opción cambia la semilla).
+/** Reparto de la lista: uno al azar entre los más equilibrados, según la semilla.
     null si hay menos de 2. */
 function solve(list, seedN = seed) {
   if (list.length < 2) return null;
