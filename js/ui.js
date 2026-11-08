@@ -1,5 +1,5 @@
 "use strict";
-/* Piezas de interfaz reutilizables: avisos, botones que piden confirmación y la imagen a pantalla completa. */
+/* Piezas de interfaz reutilizables: avisos y botones que piden confirmación. */
 
 const LOAD_ERROR = "No se pudieron leer los datos guardados en este navegador.";
 
@@ -22,11 +22,4 @@ function confirmFirst(btn, armedText, ms) {
 }
 function disarm(btn, label) { btn.classList.remove("arm"); btn.textContent = label; }
 
-/** Muestra una imagen a pantalla completa (para mantenerla pulsada y compartirla). */
-function showImage(src) {
-  $("#ovimg").src = src;
-  $("#overlay").hidden = false;
-}
-
 $("#toast").addEventListener("click", () => { $("#toast").hidden = true; });
-$("#ovclose").addEventListener("click", () => { $("#overlay").hidden = true; });

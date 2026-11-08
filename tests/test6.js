@@ -1,4 +1,4 @@
-/* Compartir: texto para WhatsApp y Telegram, imagen descargada y vista de la imagen. */
+/* Compartir: texto para WhatsApp e imagen (en el ordenador, sin menú de compartir, se descarga). */
 const { open, checker, toastText } = require('./helpers');
 const { ok, done } = checker();
 
@@ -14,26 +14,20 @@ const { ok, done } = checker();
   ok('primera línea', /^⚽ Alineación · \S+ \d+ \w+ \(7 vs 7\)$/.test(lines[0]), lines[0]);
   ok('equipos', lines.includes('⚪ Equipo Blanco') && lines.includes('⚫ Equipo Oscuro'));
   ok('porteros', lines.filter(l => l.startsWith('Portero: ')).length === 2);
-  const tg = await page.getAttribute('#s-tg', 'href');
-  ok('Telegram: título en url y resto en text', tg.startsWith('https://t.me/share/url?url=' + encodeURIComponent(lines[0]) + '&text='));
+  ok('solo WhatsApp y Compartir imagen', (await page.locator('#smenu a, #smenu > button').count()) === 2 && (await page.locator('#s-tg, #export, #viewimg, #overlay').count()) === 0);
   await page.keyboard.press('Escape');
   ok('Escape cierra', await page.isHidden('#smenu'));
 
   await page.click('#sharebtn');
-  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#export')]);
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#shareimg')]);
   ok('descarga la imagen', dl.suggestedFilename() === 'pachanga-alineaciones.png');
   ok('aviso', (await toastText(page)) === 'Imagen guardada.');
   ok('el menú se cierra al elegir', await page.isHidden('#smenu'));
   const size = (await require('fs').promises.stat(await dl.path())).size;
   ok('imagen no vacía', size > 20000, size);
 
-  await page.click('#sharebtn'); await page.click('#viewimg');
-  await page.waitForFunction(() => (document.getElementById('ovimg').src || '').startsWith('data:image/png'));
-  ok('ver imagen', await page.isVisible('#overlay'));
-  const dims = await page.evaluate(() => { const i = document.getElementById('ovimg'); return [i.naturalWidth, i.naturalHeight]; });
+  const dims = await page.evaluate(async () => { const c = await drawImage(); return [c.width, c.height]; });
   ok('imagen de 1080 de ancho', dims[0] === 1080 && dims[1] > 1500, dims.join('x'));
-  await page.click('#ovclose');
-  ok('cerrar', await page.isHidden('#overlay'));
 
   // Imagen de los equipos (sin alineación)
   await page.click('#sharebtn'); await page.click('#whatseg [data-what=teams]');
@@ -41,17 +35,12 @@ const { ok, done } = checker();
   const wa2 = decodeURIComponent((await page.getAttribute('#s-wa', 'href')).replace('https://wa.me/?text=', '')).split('\n');
   ok('texto de equipos', /^⚽ Equipos · /.test(wa2[0]) && wa2.includes('⚪ Equipo Blanco') && wa2.includes('⚫ Equipo Oscuro'), wa2[0]);
   ok('equipos: un jugador por línea, sin posiciones', wa2.filter(l => /^Jugador \d+$/.test(l)).length === 14 && !wa2.some(l => /Portero|Banquillo|:/.test(l)));
-  const tg2 = await page.getAttribute('#s-tg', 'href');
-  ok('Telegram con el texto de equipos', tg2.startsWith('https://t.me/share/url?url=' + encodeURIComponent(wa2[0])));
   ok('subtítulo cambia', (await page.innerText('#s-wa small')) === 'Equipos en texto');
   ok('selector marcado', (await page.getAttribute('#whatseg [data-what=teams]', 'aria-pressed')) === 'true');
-  const [dl2] = await Promise.all([page.waitForEvent('download'), page.click('#export')]);
+  const [dl2] = await Promise.all([page.waitForEvent('download'), page.click('#shareimg')]);
   ok('descarga la imagen de equipos', dl2.suggestedFilename() === 'pachanga-equipos.png');
-  await page.click('#sharebtn'); await page.click('#viewimg');
-  await page.waitForFunction(w => { const i = document.getElementById('ovimg'); return i.complete && i.naturalWidth && i.naturalHeight !== w; }, dims[1]);
-  const dims2 = await page.evaluate(() => { const i = document.getElementById('ovimg'); return [i.naturalWidth, i.naturalHeight]; });
+  const dims2 = await page.evaluate(async () => { const c = await drawTeamsImage(); return [c.width, c.height]; });
   ok('imagen de equipos más corta que la del campo', dims2[0] === 1080 && dims2[1] < dims[1], dims2.join('x'));
-  await page.click('#ovclose');
   await page.reload(); await page.click('#sharebtn');
   ok('recuerda la imagen elegida', (await page.getAttribute('#whatseg [data-what=teams]', 'aria-pressed')) === 'true');
   await page.click('#whatseg [data-what=lineup]'); await page.keyboard.press('Escape');

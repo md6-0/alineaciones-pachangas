@@ -1,5 +1,5 @@
 "use strict";
-/* Tabla de goleadores para compartir: en texto (WhatsApp, Telegram) o en imagen (1080 px de ancho), desde la pestaña Estadísticas.
+/* Tabla de goleadores para compartir: en texto (WhatsApp) o en imagen (1080 px de ancho), desde la pestaña Estadísticas.
    Usa computeStats y scoreRanks (stats.js) y roundRect y fitText (share-image.js y share-teams-image.js). */
 
 const MEDALS = ["🥇", "🥈", "🥉"];

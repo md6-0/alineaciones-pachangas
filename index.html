@@ -74,10 +74,7 @@
             <button type="button" data-what="lineup" aria-pressed="true">Alineación</button><button type="button" data-what="teams" aria-pressed="false">Equipos</button>
           </div></div>
           <a class="s-wa" id="s-wa" href="#" target="_blank" rel="noopener">WhatsApp<small class="wtxt">Alineación en texto</small></a>
-          <a class="s-tg" id="s-tg" href="#" target="_blank" rel="noopener">Telegram<small class="wtxt">Alineación en texto</small></a>
-          <button type="button" class="s-dl" id="export">Descargar imagen<small>PNG</small></button>
-          <button type="button" class="s-share" id="shareimg" hidden>Compartir imagen<small>WhatsApp, Telegram…</small></button>
-          <button type="button" class="s-view" id="viewimg">Ver imagen<small>Mantén pulsada para compartir</small></button>
+          <button type="button" class="s-share" id="shareimg">Compartir imagen<small>WhatsApp, Telegram…</small></button>
         </div>
       </div>
     </div>
@@ -92,14 +89,6 @@
     <button class="tab" role="tab" id="t-stats" data-tab="stats" type="button"><span class="tl">Estadísticas</span><span class="ts">Stats</span></button>
     <button class="tab tab-opc" role="tab" id="t-opc" data-tab="opc" type="button" aria-label="Opciones"><span class="ti">⚙</span><span class="tl">Opciones</span></button>
   </nav>
-
-  <div class="overlay" id="overlay" hidden>
-    <div class="ovbox">
-      <img id="ovimg" alt="Imagen para compartir">
-      <p id="ovhelp">Mantén pulsada la imagen para compartirla o guardarla (en ordenador, clic derecho).</p>
-      <button class="btn ghost" id="ovclose" type="button">Cerrar</button>
-    </div>
-  </div>
 
   <section id="p-alin" class="folder" role="tabpanel" aria-labelledby="t-alin">
     <section class="signbox" id="signbox" aria-label="Apuntados al próximo partido">
@@ -169,7 +158,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.4.2</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.4.3</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>
@@ -177,10 +166,7 @@
       <button class="btn" id="scbtn" type="button" aria-haspopup="true" aria-expanded="false">Compartir goleadores ▾</button>
       <div class="smenu" id="scmenu" hidden>
         <a class="s-wa" href="#" target="_blank" rel="noopener">WhatsApp<small>Goleadores en texto</small></a>
-        <a class="s-tg" href="#" target="_blank" rel="noopener">Telegram<small>Goleadores en texto</small></a>
-        <button type="button" class="s-dl">Descargar imagen<small>PNG</small></button>
-        <button type="button" class="s-share" hidden>Compartir imagen<small>WhatsApp, Telegram…</small></button>
-        <button type="button" class="s-view">Ver imagen<small>Mantén pulsada para compartir</small></button>
+        <button type="button" class="s-share">Compartir imagen<small>WhatsApp, Telegram…</small></button>
       </div>
     </div></div>
     <div id="stats"></div>

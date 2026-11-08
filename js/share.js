@@ -1,5 +1,5 @@
 "use strict";
-/* Menú Compartir de la Alineación: en texto (WhatsApp, Telegram) o en imagen (descargar, compartir o ver).
+/* Menú Compartir de la pestaña Partido: en texto (WhatsApp) o en imagen (Compartir imagen).
    El selector «Qué compartes» elige entre la alineación (posiciones y banquillo) o solo los jugadores de cada equipo. */
 
 /** Alineación en texto, por equipos y líneas. */
@@ -31,7 +31,7 @@ const what = () => WHAT[st.img] || WHAT.lineup;
 /** Avisa y devuelve false si todavía no hay alineación. */
 function needLineup() { if (hasLineup()) return true; toast("Todavía no hay alineación para compartir."); return false; }
 
-/** Marca la opción elegida y prepara los enlaces de WhatsApp y Telegram con su texto. */
+/** Marca la opción elegida y prepara el enlace de WhatsApp con su texto. */
 function paintWhat() {
   const w = what();
   $$("#whatseg button").forEach(b => b.setAttribute("aria-pressed", String(WHAT[b.dataset.what] === w)));

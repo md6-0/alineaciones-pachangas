@@ -1,9 +1,8 @@
 "use strict";
-/* Piezas comunes de los menús Compartir (Alineación y Estadísticas): abrir y cerrar el menú, que quepa en la pantalla,
-   los enlaces de WhatsApp y Telegram y los tres botones de imagen (descargar, compartir y ver).
-   Cada menú marca sus piezas con clases: .s-wa, .s-tg, .s-dl, .s-share y .s-view. */
+/* Piezas comunes de los menús Compartir (Partido y Estadísticas): abrir y cerrar el menú, que quepa en la pantalla,
+   el enlace de WhatsApp (.s-wa) y el botón Compartir imagen (.s-share). */
 
-/** Si el navegador puede compartir archivos (si no, «Compartir imagen» no aparece). */
+/** Si el navegador puede compartir archivos (si no, «Compartir imagen» descarga la imagen). */
 const canShareFiles = (() => {
   try {
     const f = new File([new Blob(["x"], { type: "image/png" })], "x.png", { type: "image/png" });
@@ -21,11 +20,9 @@ function fitMenu(menu) {
   if (dx) menu.style.transform = `translateX(${Math.round(dx)}px)`;
 }
 
-/** Prepara los enlaces de WhatsApp y Telegram con un texto (en Telegram, la primera línea va como título). */
+/** Prepara el enlace de WhatsApp con un texto. */
 function setTextLinks(menu, text) {
-  const [first, ...rest] = text.split("\n");
   menu.querySelector(".s-wa").href = "https://wa.me/?text=" + encodeURIComponent(text);
-  menu.querySelector(".s-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(first) + "&text=" + encodeURIComponent(rest.join("\n"));
 }
 
 /** Convierte un botón y su menú en un menú desplegable. open() se llama antes de abrir y, si devuelve false, no se abre.
@@ -43,24 +40,14 @@ function dropMenu(btn, menu, { open, keep } = {}) {
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !menu.hidden) close(); });
 }
 
-/** Da vida a los botones de imagen de un menú. img() → { draw, file, title }; ready() devuelve false (y avisa) si no hay nada que enseñar. */
+/** Da vida al botón Compartir imagen de un menú: abre el menú de compartir del móvil (WhatsApp, Telegram…) y, donde no lo hay
+    (en el ordenador), descarga la imagen. img() → { draw, file, title }; ready() devuelve false (y avisa) si no hay nada. */
 function imageButtons(menu, img, ready) {
-  const share = menu.querySelector(".s-share");
-  if (canShareFiles) share.hidden = false;
-  share.addEventListener("click", async () => {
+  menu.querySelector(".s-share").addEventListener("click", async () => {
     if (!ready()) return;
-    const i = img(), file = new File([await imageBlob(await i.draw())], i.file, { type: "image/png" });
-    try { await navigator.share({ files: [file], title: i.title }); }
+    const i = img(), blob = await imageBlob(await i.draw());
+    if (!canShareFiles) { saveFile(i.file, blob); toast("Imagen guardada."); return; }
+    try { await navigator.share({ files: [new File([blob], i.file, { type: "image/png" })], title: i.title }); }
     catch (e) { if (e && e.name !== "AbortError") toast("No se pudo compartir la imagen."); }
-  });
-  menu.querySelector(".s-view").addEventListener("click", async () => {
-    if (!ready()) return;
-    showImage((await img().draw()).toDataURL("image/png"));
-  });
-  menu.querySelector(".s-dl").addEventListener("click", async () => {
-    if (!ready()) return;
-    const i = img();
-    saveFile(i.file, await imageBlob(await i.draw()));
-    toast("Imagen guardada.");
   });
 }

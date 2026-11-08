@@ -92,13 +92,10 @@ const { ok, done } = checker();
   ok('abre el menú de goleadores', await page.isVisible('#scmenu'));
   const sw = decodeURIComponent((await page.getAttribute('#scmenu .s-wa', 'href')).replace('https://wa.me/?text=', '')).split('\n');
   ok('texto de goleadores', /^⚽ Goleadores · .+ · 1 partido$/.test(sw[0]) && sw[2] === `🥇 ${scorerName}: 1 gol (1 PJ)`, sw.join(' / '));
-  ok('Telegram de goleadores', (await page.getAttribute('#scmenu .s-tg', 'href')).startsWith('https://t.me/share/url?url=' + encodeURIComponent(sw[0])));
-  const [sdl] = await Promise.all([page.waitForEvent('download'), page.click('#scmenu .s-dl')]);
-  ok('descarga la imagen de goleadores', sdl.suggestedFilename() === 'pachanga-goleadores.png' && await page.isHidden('#scmenu'));
-  await page.click('#scbtn'); await page.click('#scmenu .s-view');
-  await page.waitForFunction(() => { const i = document.getElementById('ovimg'); return (i.src || '').startsWith('data:image/png') && i.complete && i.naturalWidth; });
-  ok('imagen de goleadores', (await page.evaluate(() => document.getElementById('ovimg').naturalWidth)) === 1080);
-  await page.click('#ovclose');
+  ok('solo WhatsApp y Compartir imagen', (await page.locator('#scmenu a, #scmenu button').count()) === 2);
+  const [sdl] = await Promise.all([page.waitForEvent('download'), page.click('#scmenu .s-share')]);
+  ok('imagen de goleadores (descargada en el ordenador)', sdl.suggestedFilename() === 'pachanga-goleadores.png' && await page.isHidden('#scmenu'));
+  ok('imagen de goleadores de 1080 de ancho', (await page.evaluate(async () => (await drawScorersImage()).width)) === 1080);
 
   await tab(page, 'alin');
 
