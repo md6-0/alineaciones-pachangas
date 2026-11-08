@@ -1,7 +1,7 @@
 /* Service worker: la app funciona sin conexión.
    Al publicar una versión nueva hay que cambiar VERSION (y la de Opciones, en index.html): así el navegador detecta el cambio y la app avisa.
    Cada archivo nuevo de css/ o js/ tiene que estar también en SHELL. */
-const VERSION = "1.12.3";
+const VERSION = "1.13.0";
 const CACHE = "mipachanga-" + VERSION;
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png",
@@ -10,7 +10,7 @@ const SHELL = [
   "./js/util.js", "./js/sample-squad.js", "./js/db.js", "./js/config.js", "./js/state.js",
   "./js/settings.js", "./js/dates.js", "./js/players.js", "./js/teams.js", "./js/formation.js",
   "./js/matches.js", "./js/stats.js", "./js/backup.js", "./js/ui.js", "./js/views.js",
-  "./js/pitch.js", "./js/tab-lineup.js", "./js/drag.js", "./js/share-image.js", "./js/share-teams-image.js", "./js/share-menu.js", "./js/share.js",
+  "./js/pitch.js", "./js/tab-lineup.js", "./js/drag.js", "./js/share-image.js", "./js/share-teams-image.js", "./js/share-menu.js", "./js/share.js", "./js/share-signup.js",
   "./js/tab-players.js", "./js/tab-history.js", "./js/tab-stats.js", "./js/share-scorers.js", "./js/tab-options.js", "./js/updates.js",
   "./js/main.js"
 ];

@@ -18,6 +18,7 @@ Es una aplicación web que se instala en el móvil como cualquier otra app. Func
 - El portero cuenta en la media de su equipo con su nota de portero, y su imán la muestra.
 - **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, la de hoy). Al abrir la app, la pizarra carga la última alineación guardada.
 - **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen sin medias para compartirla o descargarla. Así nadie se pica al ver su nota. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
+- **Lista para apuntarse por WhatsApp** (debajo de la convocatoria) prepara un mensaje con el día del partido y huecos numerados para los jugadores del formato y tres reservas. Cada uno lo copia y pone su nombre en el primer hueco libre.
 
 ### 👟 Jugadores
 
@@ -122,6 +123,7 @@ js/share-image.js      imagen de la alineación para compartir
 js/share-teams-image.js imagen de los equipos (solo jugadores) para compartir
 js/share-menu.js       piezas comunes de los menús Compartir (abrir, cerrar, enlaces, botones de imagen)
 js/share.js            menú Compartir de la Alineación
+js/share-signup.js     lista para apuntarse por WhatsApp
 js/tab-players.js      pestaña Jugadores
 js/tab-history.js      pestaña Historial
 js/tab-stats.js        pestaña Estadísticas

@@ -57,6 +57,12 @@ const { ok, done } = checker();
   ok('recuerda la imagen elegida', (await page.getAttribute('#whatseg [data-what=teams]', 'aria-pressed')) === 'true');
   await page.click('#whatseg [data-what=lineup]'); await page.keyboard.press('Escape');
 
+  // Lista para apuntarse
+  await page.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
+  await page.click('#signup');
+  const su = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
+  ok('lista para apuntarse', /^⚽ Pachanga · .+ \(7 vs 7\)$/.test(su[0]) && su.includes('14. ') && !su.includes('15. ') && su.includes('Reservas') && su[su.length - 1] === '3. ', su[0]);
+
   // Clic fuera cierra el menú
   await page.click('#sharebtn'); await page.click('h1');
   ok('clic fuera cierra', await page.isHidden('#smenu'));
