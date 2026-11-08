@@ -34,17 +34,15 @@ function meHTML() {
 
 function renderSignups() {
   const need = NEED[st.mode] || 16, ids = signupIds();
-  $("#count").textContent = signupsLoaded ? `${ids.length} de ${need}` : "";
+  const c = $("#count");
+  c.innerHTML = signupsLoaded ? `<b>${ids.length}</b> de ${need}` : "";
+  c.classList.toggle("full", signupsLoaded && ids.length >= need);
   $("#me").innerHTML = loaded ? meHTML() : "";
   $("#slist").innerHTML = ids.map((id, i) => {
     const p = BY[id];   // sin las posiciones: ya salen en los imanes, y así caben los nombres en el móvil
     return `<li class="${id === me() ? "mine" : ""}${i >= need ? " extra" : ""}"><span class="sn">${i + 1}.</span><span class="sname">${esc(p.n)}${id === me() ? " <small>(tú)</small>" : ""}</span>`
       + `${canEdit() ? `<button type="button" class="sdel" data-sdel="${esc(id)}" aria-label="Quitar a ${esc(p.n)} de la lista">✕</button>` : ""}</li>`;
   }).join("") || `<li class="sempty">${!signupsLoaded ? "Cargando la lista…" : "Todavía no se ha apuntado nadie."}</li>`;
-  const n = ids.length, d = Math.abs(n - need), s = $("#status");
-  s.className = "status warn";
-  s.textContent = !signupsLoaded || !n ? "" : n < need ? `Faltan ${cnt(d, "jugador", "jugadores")} para ${st.mode} vs ${st.mode}.` : n > need ? `${d > 1 ? `Sobran ${d}` : "Sobra 1"}: van al banquillo.` : "";
-  s.hidden = !s.textContent;
   if (canEdit()) {
     const free = [...P].filter(p => !isSignedUp(p.id)).sort(byName);
     $("#saddsel").innerHTML = `<option value="">${free.length ? "Apuntar a…" : "Están todos apuntados"}</option>` + free.map(p => `<option value="${esc(p.id)}">${esc(p.n)}</option>`).join("");

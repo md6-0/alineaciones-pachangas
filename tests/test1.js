@@ -15,7 +15,7 @@ const { ok, done } = checker();
   ok('por orden de llegada', (await page.locator('#slist li .sname').first().innerText()) === 'Jugador 1');
   ok('14 imanes en el campo', (await mags('#board')) === 14, await mags('#board'));
   ok('contador', (await page.innerText('#count')) === '14 de 14');
-  ok('sin aviso de la lista', await page.isHidden('#status'));
+  ok('sin avisos de faltan o sobran', (await page.locator('#status').count()) === 0 && await page.evaluate(() => document.getElementById('count').classList.contains('full')));
   ok('se puede apuntar a los 10 que faltan', (await page.locator('#saddsel option').count()) === 11);
   ok('dos equipos', (await page.locator('#teams .sec.team').count()) === 2);
   ok('7 por equipo', (await page.locator('#board .mag.W').count()) === 7 && (await page.locator('#board .mag.D').count()) === 7);
@@ -35,7 +35,7 @@ const { ok, done } = checker();
   ok('Eres…', /Eres Jugador 20/.test(await page.innerText('#me')) && (await page.innerText('#mebtn')) === 'Apuntarme');
   await page.click('#mebtn'); await page.waitForTimeout(100);
   ok('apuntado: aviso', (await toastText(page)) === 'Apuntado. ¡Nos vemos en el campo!');
-  ok('15 apuntados → sobra 1', (await page.innerText('#status')) === 'Sobra 1: van al banquillo.', await page.innerText('#status'));
+  ok('15 apuntados', (await page.innerText('#count')) === '15 de 14', await page.innerText('#count'));
   ok('el último de la lista es él, marcado', (await page.locator('#slist li').last().innerText()).includes('Jugador 20') && (await page.locator('#slist li.mine.extra').count()) === 1);
   ok('entra en la pizarra (al banquillo)', (await page.locator('.mag[data-n="jugador-20"]').count()) === 1 && (await mags('#teams .bench')) === 1);
   ok('ahora puede borrarse', (await page.innerText('#mebtn')) === 'Borrarme');
@@ -48,7 +48,7 @@ const { ok, done } = checker();
   await page.selectOption('#saddsel', 'jugador-15'); await page.click('#saddform button'); await page.waitForTimeout(100);
   ok('apuntar a otro', (await page.locator('#slist li').count()) === 15);
   for (let i = 0; i < 3; i++) { await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(60); }
-  ok('12 apuntados → faltan 2', (await page.innerText('#status')) === 'Faltan 2 jugadores para 7 vs 7.', await page.innerText('#status'));
+  ok('12 apuntados', (await page.innerText('#count')) === '12 de 14' && !(await page.evaluate(() => document.getElementById('count').classList.contains('full'))));
   ok('huecos vacíos en el campo', (await page.locator('#board .slot').count()) === 2);
 
   // Formación fija de cada formato
@@ -62,7 +62,7 @@ const { ok, done } = checker();
   ok('11 vs 11: 4-2-3-1', (await page.evaluate(() => FORMS[st.mode])) === '4-2-3-1');
   ok('11 vs 11: huecos POR, 4 DEF, 5 MED (2 pivotes y 3 mediapuntas) y 1 ATQ por equipo', (await page.evaluate(() => slotsFor('W').map(s => s.role).join())) === 'GK,DEF,DEF,DEF,DEF,MED,MED,MED,MED,MED,ATQ'
     && (await page.evaluate(() => new Set(slotsFor('W').filter(s => s.role === 'MED').map(s => s.y)).size)) === 2);
-  ok('11 vs 11: faltan', /^Faltan 10 jugadores para 11 vs 11\.$/.test(await page.innerText('#status')), await page.innerText('#status'));
+  ok('11 vs 11: de 22', (await page.innerText('#count')) === '12 de 22', await page.innerText('#count'));
   await tab(page, 'opc'); await page.click('#m8'); await tab(page, 'alin');
   ok('8 vs 8: campo de 7', (await page.evaluate(() => document.getElementById('board').style.aspectRatio)).replace(/\s/g, '') === '44/64');
   ok('8 vs 8 juega 3-3-1', (await page.evaluate(() => FORMS[st.mode])) === '3-3-1');
@@ -70,7 +70,7 @@ const { ok, done } = checker();
   // Recarga: se conserva
   const sel = await page.locator('#slist li').count();
   await page.reload(); await page.waitForSelector('#board .mag');
-  ok('recargar conserva lista y formato', (await page.locator('#slist li').count()) === sel && /8 vs 8/.test(await page.innerText('#status')));
+  ok('recargar conserva lista y formato', (await page.locator('#slist li').count()) === sel && (await page.innerText('#count')) === '12 de 16');
 
   // Pestañas por dirección
   await page.goto(app.url + '#estadisticas'); await page.reload(); await page.waitForSelector('#board .mag', { state: 'attached' });
