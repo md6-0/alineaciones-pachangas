@@ -182,8 +182,6 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 **Solo ver se decide en la interfaz y se garantiza en el servidor.** Sin entrar, la app esconde todo lo que cambia datos (clase `viewer` en `body` y `.edit-only`), pero lo que de verdad impide escribir son las reglas de `firestore.rules`.
 
-**Sin medias.** La app las tuvo y se quitaron para poder compartirla. Los datos antiguos pueden traer `atq`, `def` y `por` en los jugadores, y `ovr` y `por` en los partidos: se ignoran, y al restaurar una copia o subir los datos al servidor se borran, para que nadie pueda leerlos.
-
 **La app abre desde la caché.** Cada versión guarda todos sus archivos en el dispositivo al instalarse, y al abrir la app se leen de ahí sin preguntar al servidor por cada uno. Por eso abre al momento, con o sin conexión, y por eso los cambios solo llegan al subir `VERSION`.
 
 **El reparto es determinista.** La misma lista de apuntados da siempre el mismo reparto, en todos los móviles: entre los repartos igual de equilibrados se elige uno con un generador aleatorio cuya semilla sale de los ids de los apuntados. Hasta 16 apuntados se prueban todos los repartos; con más, se buscan al azar y se mejoran intercambiando parejas.
