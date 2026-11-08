@@ -43,3 +43,4 @@
   .match{padding:14px}
   .mhead{gap:8px}
 }
+.score .sval{display:inline-block;min-width:1.6em;text-align:center;font-size:1.1rem;font-variant-numeric:tabular-nums}

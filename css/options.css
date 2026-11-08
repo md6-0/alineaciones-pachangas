@@ -16,6 +16,8 @@
 .datepick input:focus{outline:2px solid var(--accent);border-color:transparent}
 .textopt{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;min-width:0;width:min(320px,100%)}
 .textopt:focus{outline:2px solid var(--accent);border-color:transparent}
+.loginform{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.loginform .textopt{width:min(220px,100%)}
 
 /* Borrar todo */
 .btn.danger{color:#f3a59b;border-color:rgba(243,165,155,.45)}

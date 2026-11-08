@@ -9,16 +9,16 @@ const slotX = (j, k) => k === 1 ? 50 : k === 2 ? (j ? 73 : 27) : k >= 5 ? 10 + j
 
 /** Huecos de la formación del equipo: [{ role: "GK"|"DEF"|"MED"|"ATQ", x, y }]. */
 function slotsFor(team, withGK = true) {
-  const parts = st.form[team][st.mode].split("-").map(Number), roles = ["DEF", "MED", "ATQ"], out = [];
+  const parts = st.form[team][st.mode].split("-").map(Number), lines = LINES[parts.length] || LINES[3], out = [];
   if (withGK) out.push({ role: "GK", x: 50, y: yFor(team, DIST.GK) });
-  parts.forEach((k, i) => { for (let j = 0; j < k; j++) out.push({ role: roles[i], x: slotX(j, k), y: yFor(team, DIST[roles[i]]) }); });
+  parts.forEach((k, i) => { const [role, d] = lines[i]; for (let j = 0; j < k; j++) out.push({ role, x: slotX(j, k), y: yFor(team, d) }); });
   return out;
 }
 
 /** Posición que corresponde a una altura del campo (para el rol de cada imán). */
 function roleAt(team, y) {
   const d = team === "W" ? 100 - y : y;
-  return d < 13 ? "POR" : d < 27 ? "DEF" : d < 39 ? "MED" : "ATQ";
+  return d < 13 ? "POR" : d < 21 ? "DEF" : d < 40 ? "MED" : "ATQ";
 }
 
 /** Coloca a los jugadores de un equipo en su formación: el portero primero; después cada hueco para quien
@@ -26,7 +26,7 @@ function roleAt(team, y) {
     y si no, para cualquiera. Los que sobran van al banquillo. */
 function place(team, players) {
   const slots = slotsFor(team);
-  const pool = [...players].sort((a, b) => b.m - a.m);
+  const pool = [...players];
   const filled = new Array(slots.length).fill(null);
   const gk = slots.findIndex(s => s.role === "GK");
   if (gk > -1 && pool.length) { const g = pickGK(pool); filled[gk] = g; pool.splice(pool.indexOf(g), 1); }
@@ -42,18 +42,13 @@ function place(team, players) {
   pool.forEach(p => layout[p.id] = { team, zone: "bench" });
 }
 
-/** Rehace el reparto y la colocación de los convocados. */
+/** Reparto automático de los apuntados y su colocación (la alineación retocada está en next-match.js). */
 function rebuild() {
   layout = {};
-  const res = solve(P.filter(p => st.sel.includes(p.id)));
+  const res = solve(P.filter(p => isSignedUp(p.id)));
   if (!res) return;
   place("W", res.A);
   place("D", res.B);
-}
-
-/** Vuelve a colocar a un equipo (al cambiar su formación), con los mismos jugadores. */
-function relayTeam(team) {
-  place(team, idsOf(team).filter(n => BY[n]).map(n => BY[n]));
 }
 
 /* ---------- Consultas ---------- */
@@ -88,8 +83,8 @@ function dropOnPitch(id, x, y, ratio) {
 
 const dropOnBench = (id, team) => { layout[id] = { team, zone: "bench" }; };
 
-/** Invierte los equipos: los mismos jugadores juntos, cada uno en su sitio reflejado en la otra mitad, y con su formación. */
+/** Invierte los equipos: los mismos jugadores juntos, cada uno en su sitio reflejado en la otra mitad. */
 function swapTeams() {
   Object.values(layout).forEach(L => { L.team = other(L.team); if (L.zone === "pitch") L.y = 100 - L.y; });
-  const f = st.form.W[st.mode]; st.form.W[st.mode] = st.form.D[st.mode]; st.form.D[st.mode] = f; save();
+  const f = st.form.W[st.mode]; st.form.W[st.mode] = st.form.D[st.mode]; st.form.D[st.mode] = f;
 }

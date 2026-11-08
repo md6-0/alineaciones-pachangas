@@ -46,6 +46,18 @@ const { ok, done } = checker();
   await page.mouse.click(c.x, c.y);
   ok('clic sin arrastrar no cambia nada', (await page.innerHTML('#board')) === before);
 
+  // Los retoques se guardan (los ve todo el mundo) y los nuevos apuntados no los deshacen
+  const snapPos = () => page.locator('#board .mag').evaluateAll(els => Object.fromEntries(els.map(e => [e.dataset.n, e.className + ' ' + e.style.left + ' ' + e.style.top])));
+  const retouched = await snapPos();
+  await page.reload(); await page.waitForSelector('#board .mag'); await page.waitForTimeout(100);
+  ok('el retoque se conserva al recargar', JSON.stringify(await snapPos()) === JSON.stringify(retouched));
+  await page.selectOption('#saddsel', 'jugador-24'); await page.click('#saddform button'); await page.waitForTimeout(150);
+  const after = await snapPos();
+  ok('un nuevo apuntado no mueve a los demás', Object.keys(retouched).every(k => after[k] === retouched[k]));
+  ok('y entra en la alineación', (await page.locator('.mag[data-n="jugador-24"]').count()) === 1);
+  await page.click('#shuffle'); await page.waitForTimeout(100);
+  ok('Otra opción vuelve al reparto automático', await page.evaluate(() => savedLayout === null));
+
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close(); done();
 })().catch(e => { console.log('CRASH ' + e.stack); process.exit(1); });

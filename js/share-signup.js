@@ -1,12 +1,12 @@
 "use strict";
-/* Lista para apuntarse por WhatsApp: día y hora del partido y un hueco numerado por cada jugador del formato.
-   Si has puesto tu nombre en Opciones, sales ya apuntado en el primero. */
+/* Lista para apuntarse por WhatsApp: día y hora del partido y un hueco numerado por cada jugador del formato,
+   con los que ya se han apuntado en la app (por orden de llegada); si sobran, siguen numerados debajo. */
 
 /** Mensaje para apuntarse. */
 function signupText() {
-  const head = ["⚽ Pachanga", matchDayLabel(), st.time].filter(Boolean).join(" · ");
-  const me = (st.myName || "").trim();
-  const slots = Array.from({ length: st.mode * 2 }, (_, i) => `${i + 1}. ${i === 0 ? me : ""}`.trimEnd());
+  const head = ["⚽ Pachanga", matchWhen()].join(" · ");
+  const names = signupIds().map(nameOf);
+  const slots = Array.from({ length: Math.max(st.mode * 2, names.length) }, (_, i) => `${i + 1}. ${names[i] || ""}`.trimEnd());
   return [head, "", "", ...slots].join("\n");
 }
 

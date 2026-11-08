@@ -28,6 +28,8 @@ h1{font-weight:800;font-stretch:72%;font-size:2.6rem;letter-spacing:-.01em;line-
 button{font:inherit;cursor:pointer;color:inherit}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
+/* Con servidor, quien no ha entrado solo ve: fuera todo lo que cambia datos */
+.viewer .edit-only{display:none!important}
 .signup{display:block;margin-top:8px;text-align:center;text-decoration:none}
 .btn{font-weight:600;font-size:.86rem;border:1px solid var(--fg);border-radius:999px;padding:7px 15px;background:var(--fg);color:var(--bg)}
 .btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
@@ -51,7 +53,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sw.W{background:var(--w-mag);box-shadow:0 0 0 1px #c9c8c0 inset}.sw.D{background:var(--d-mag);box-shadow:0 0 0 1px rgba(255,255,255,.2) inset}
 
 /* Medias ocultas en toda la app (Opciones → Medias) */
-.no-ratings .rc,.no-ratings #s-media{display:none!important}
 
 /* Aviso breve arriba */
 .toast{position:fixed;z-index:95;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,0);margin:0;

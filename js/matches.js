@@ -1,14 +1,15 @@
 "use strict";
-/* Reglas del historial: guardar la alineación como partido, el resultado y los goles, y volver a cargarla en la pizarra.
+/* Reglas del historial: guardar la alineación como partido, el resultado y los goles.
    Cada partido se guarda con la fecha como id:
      { date, mode, formation: { W, D }, W: [jugador], D: [jugador], score: { W, D }, goals: { W: { id: n }, D: {…} }, fixedAt }
-   y cada jugador del partido como { id, name, ovr, por, role: POR|DEF|MED|ATQ|SUP, x, y } (x e y vacíos en el banquillo). */
+   y cada jugador del partido como { id, name, role: POR|DEF|MED|ATQ|SUP, x, y } (x e y vacíos en el banquillo).
+   Los partidos antiguos pueden traer las medias (ovr, por): se ignoran y se borran al subir los datos. */
 
 /** Foto de un equipo tal como está en la pizarra. */
 function teamSnap(team) {
   return idsOf(team).map(id => {
-    const L = layout[id], p = BY[id];
-    return { id, name: nameOf(id), ovr: p ? p.ovr : null, por: p ? p.por : null,
+    const L = layout[id];
+    return { id, name: nameOf(id),
       role: L.zone === "bench" ? "SUP" : roleAt(team, L.y),
       x: L.zone === "pitch" ? Math.round(L.x * 10) / 10 : null, y: L.zone === "pitch" ? Math.round(L.y * 10) / 10 : null };
   });
@@ -56,36 +57,4 @@ function matchResult(m) {
   const sc = m.score || {}, w = sc.W, d = sc.D;
   if (typeof w !== "number" || typeof d !== "number") return null;
   return w > d ? "W" : d > w ? "D" : "draw";
-}
-
-/** Media de un equipo del partido, con la nota POR para el portero (null si no hay medias). */
-function snapMean(list) {
-  const field = list.filter(p => typeof p.ovr === "number");
-  return field.length ? Math.ceil(field.reduce((a, p) => a + (p.role === "POR" && typeof p.por === "number" ? p.por : p.ovr), 0) / field.length) : null;
-}
-
-/** Pone un partido en la pizarra: formato, formaciones, convocatoria y colocación.
-    Cada línea se recoloca en los huecos actuales, conservando el orden de izquierda a derecha.
-    Devuelve cuántos jugadores del partido ya no están en la lista. */
-function applyMatch(m) {
-  const mode = FORMS[m.mode] ? m.mode : "7";
-  st.mode = mode;
-  SIDES.forEach(t => { const f = m.formation && m.formation[t]; if (f && FORMS[mode].includes(f)) st.form[t][mode] = f; });
-  layout = {}; let missing = 0; const sel = [];
-  SIDES.forEach(team => {
-    (Array.isArray(m[team]) ? m[team] : []).forEach(pl => {
-      const id = pl.id;
-      if (!BY[id]) { missing++; return; }
-      sel.push(id);
-      if (pl.role === "SUP" || typeof pl.x !== "number" || typeof pl.y !== "number") layout[id] = { team, zone: "bench" };
-      else { const r = pl.role === "POR" ? "GK" : (DIST[pl.role] !== undefined ? pl.role : null); layout[id] = { team, zone: "pitch", x: pl.x, y: r ? yFor(team, DIST[r]) : pl.y }; }
-    });
-  });
-  SIDES.forEach(team => ["GK", "DEF", "MED", "ATQ"].forEach(r => {
-    const y = yFor(team, DIST[r]);
-    const row = Object.keys(layout).filter(k => layout[k].team === team && layout[k].zone === "pitch" && layout[k].y === y).sort((a, b) => layout[a].x - layout[b].x);
-    row.forEach((k, j) => { layout[k].x = slotX(j, row.length); });
-  }));
-  st.sel = sel; seed = 0;
-  return missing;
 }

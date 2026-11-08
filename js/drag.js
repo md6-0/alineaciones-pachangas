@@ -5,7 +5,7 @@
 let drag = null;
 
 function startDrag(e) {
-  const c = e.target.closest(".mag"); if (!c || e.button > 0) return;
+  const c = e.target.closest(".mag"); if (!c || e.button > 0 || !canEdit()) return;
   e.preventDefault();
   drag = { el: c, n: c.dataset.n, sx: e.clientX, sy: e.clientY, moved: false };
   try { c.setPointerCapture(e.pointerId); } catch {}
@@ -37,6 +37,7 @@ function endDrag(e) {
       const r = t.getBoundingClientRect();
       dropOnPitch(d.n, (e.clientX - r.left) / r.width * 100, (e.clientY - r.top) / r.height * 100, pitch().h / pitch().w);
     } else if (t) dropOnBench(d.n, t.dataset.team);
+    if (t) keepBoard().catch(() => toast("No se pudo guardar la alineación."));   // la ven todos
   }
   render();
 }

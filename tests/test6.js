@@ -61,12 +61,14 @@ const { ok, done } = checker();
   await page.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
   await page.click('#signup');
   const su = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('lista para apuntarse', /^⚽ Pachanga · [^·]+$/.test(su[0]) && su[1] === '' && su[2] === '' && su[3] === '1.' && su[su.length - 1] === '14.' && su.length === 17 && !su.includes('Reservas'), su.join('|'));
-  // Con hora y tu nombre (Opciones)
-  await page.evaluate(() => { const set = (id, v) => { const i = document.getElementById(id); i.value = v; i.dispatchEvent(new Event('change')); }; set('matchtime', '12:00'); set('myname', ' Mario '); });
+  ok('lista para apuntarse con los apuntados', /^⚽ Pachanga · [^·]+$/.test(su[0]) && su[1] === '' && su[2] === '' && su[3] === '1. Jugador 1' && su[su.length - 1] === '14. Jugador 14' && su.length === 17, su.join('|'));
+  // Con hora (Opciones) y huecos libres
+  await page.evaluate(() => { const i = document.getElementById('matchtime'); i.value = '12:00'; i.dispatchEvent(new Event('change')); });
+  ok('la hora sale en el título', / · 12:00$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
+  await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(100);
   await page.click('#signup');
   const su2 = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('lista con hora y tu nombre', / · 12:00$/.test(su2[0]) && su2[3] === '1. Mario' && su2[4] === '2.', su2.slice(0, 5).join('|'));
+  ok('lista con hora y hueco libre', / · 12:00$/.test(su2[0]) && su2[3] === '1. Jugador 2' && su2[16] === '14.', su2.join('|'));
   await page.evaluate(() => { const i = document.getElementById('matchtime'); i.value = ''; i.dispatchEvent(new Event('change')); });
   ok('sin hora no sale', (await page.evaluate(() => [st.time, signupText().split('\n')[0].split(' · ').length])).join() === ',2');
 
@@ -75,23 +77,23 @@ const { ok, done } = checker();
   ok('clic fuera cierra', await page.isHidden('#smenu'));
 
   // Sin jugadores
-  while (await page.locator('#chips .chip[aria-pressed=true]').count()) await page.locator('#chips .chip[aria-pressed=true]').first().click();
+  while (await page.locator('#slist .sdel').count()) { await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(30); }
   await page.click('#sharebtn');
-  ok('sin jugadores avisa', (await toastText(page)) === 'Marca jugadores antes de compartir.' && await page.isHidden('#smenu'));
+  ok('sin jugadores avisa', (await toastText(page)) === 'Todavía no hay alineación para compartir.' && await page.isHidden('#smenu'));
   await page.click('#fix');
-  ok('guardar sin jugadores avisa', (await toastText(page)) === 'Marca jugadores antes de guardar la alineación.');
-  ok('pide marcar dos', /Marca al menos dos jugadores/.test(await page.innerText('#teams')));
+  ok('guardar sin jugadores avisa', (await toastText(page)) === 'Necesitas al menos dos apuntados para guardar el partido.');
+  ok('espera a dos apuntados', /al menos dos jugadores/.test(await page.innerText('#teams')));
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close();
 
   // Primera vez, con el formato por defecto: 8 vs 8, 16 convocados y 16 huecos en la lista
   const fresh = await open({ mode: null }), p2 = fresh.page;
-  ok('8 vs 8 por defecto', (await p2.evaluate(() => [st.mode, st.sel.length])).join() === '8,16');
+  ok('8 vs 8 por defecto', (await p2.evaluate(() => [st.mode, signupIds().length])).join() === '8,16');
   await p2.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
   await p2.click('#signup');
   const su8 = decodeURIComponent((await p2.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('lista de 16', su8[su8.length - 1] === '16.' && su8.length === 19, su8.join('|'));
+  ok('lista de 16', su8[su8.length - 1] === '16. Jugador 16' && su8.length === 19, su8.join('|'));
   ok('sin errores (8 vs 8)', !fresh.errors.length, fresh.errors.join(' | '));
   await fresh.close(); done();
 })().catch(e => { console.log('CRASH ' + e.stack); process.exit(1); });

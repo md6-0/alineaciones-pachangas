@@ -11,24 +11,33 @@ const { ok, done } = checker();
   await page.click('#scbtn');
   ok('sin goles no comparte', (await toastText(page)) === 'Todavía no hay goles apuntados.' && await page.isHidden('#scmenu'));
 
-  // Guardar con fecha elegida
-  await tab(page, 'opc');
+  // Día del partido (arriba en la pestaña Partido) y «Partido jugado»
+  await tab(page, 'alin');
+  ok('día y hora arriba en Partido', await page.isVisible('#matchdate') && await page.isVisible('#matchtime'));
   await page.fill('#matchdate', '2099-03-07'); await page.dispatchEvent('#matchdate', 'change');
   ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));
-  await tab(page, 'alin');
-  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Alineación · Sábado 7 mar', await page.textContent('#h1'));
+  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Partido · Sábado 7 mar', await page.textContent('#h1'));
+  const apuntados = await page.evaluate(() => signupIds());
   await page.click('#fix');
-  ok('guardada', (await toastText(page)) === 'Alineación guardada en el historial.');
+  ok('Partido jugado pide confirmación', (await page.innerText('#fix')) === 'Guardar y vaciar la lista');
+  await page.click('#fix'); await page.waitForTimeout(250);
+  ok('guardado', (await toastText(page)) === 'Partido guardado: apunta el resultado y los goles. La lista ya está vacía para el próximo.', await toastText(page));
+  ok('lleva al historial', (await page.getAttribute('#t-hist', 'aria-selected')) === 'true');
+  ok('vacía la lista', (await page.evaluate(() => signupIds().length)) === 0);
+  // Si se vuelve a jugar el mismo día, pide reemplazar
+  await page.evaluate(ids => Promise.all(ids.map(id => signUp(id))), apuntados);
+  await tab(page, 'alin'); await page.waitForTimeout(100);
   await page.click('#fix');
-  ok('la segunda vez pide reemplazar', (await page.innerText('#fix')) === 'Reemplazar la ya guardada');
-  await page.click('#fix');
-  ok('reemplazada', (await page.innerText('#fix')) === 'Guardar alineación en historial');
+  ok('la segunda vez pide reemplazar', (await page.innerText('#fix')) === 'Reemplazar el ya guardado y vaciar la lista');
+  await page.click('#fix'); await page.waitForTimeout(250);
+  ok('reemplazado', (await page.innerText('#fix')) === 'Partido jugado' && (await page.evaluate(() => matches.length)) === 1);
+  await page.evaluate(ids => Promise.all(ids.map(id => signUp(id))), apuntados);   // para lo que sigue
 
   await tab(page, 'hist');
   const match = page.locator('#hlist .match');
   ok('un partido', (await match.count()) === 1);
   ok('fecha del partido', (await match.locator('.mdate').textContent()) === 'Sábado 7 mar 2099');
-  ok('formato y formaciones', (await match.locator('.msub').innerText()) === '7 vs 7 · Blanco 2-3-1 · Oscuro 2-3-1');
+  ok('formato y formaciones', (await match.locator('.msub').innerText()) === '7 vs 7 · Blanco 3-2-1 · Oscuro 3-2-1');
   ok('sin resultado', (await match.locator('.res').innerText()).toLowerCase() === 'sin resultado');
   ok('7 nombres por equipo', (await match.locator('.mteam.W .mline span:not(.r)').allInnerTexts()).join(', ').split(', ').length === 7);
 
@@ -86,27 +95,27 @@ const { ok, done } = checker();
   ok('imagen de goleadores', (await page.evaluate(() => document.getElementById('ovimg').naturalWidth)) === 1080);
   await page.click('#ovclose');
 
-  // Cargar en la pizarra
+  // Ya no se carga un partido en la pizarra: la pizarra es siempre la del próximo partido
+  await tab(page, 'hist');
+  ok('sin «Cargar en la pizarra»', (await page.locator('#hlist [data-mload]').count()) === 0);
   await tab(page, 'alin');
   const before = await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join());
-  await page.click('#shuffle'); await page.click('#swap');
-  await tab(page, 'hist');
-  await page.click('#hlist [data-mload]');
-  ok('cargada: vuelve a Alineación', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true');
-  ok('aviso', (await toastText(page)) === 'Alineación cargada en la pizarra.');
-  ok('los mismos blancos', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
-
-  // Al abrir se carga la última guardada
   await page.click('#swap');
-  await page.reload(); await page.waitForSelector('#board .mag');
-  await page.waitForTimeout(100);
-  ok('al abrir carga la última alineación', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
+  await page.reload(); await page.waitForSelector('#board .mag'); await page.waitForTimeout(100);
+  ok('el retoque (invertir) se conserva al recargar', (await page.locator('#board .mag.D').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
 
-  // Medias del historial con medias ocultas
-  await tab(page, 'opc'); await page.click('#ratingseg [data-r="0"]');
+  // Vaciar la lista para el siguiente partido
+  await page.click('#clearlist');
+  ok('vaciar pide confirmación', (await page.innerText('#clearlist')) === 'Sí, vaciar la lista');
+  await page.click('#clearlist'); await page.waitForTimeout(200);
+  ok('lista vacía', (await toastText(page)) === 'Lista vacía: lista para el próximo partido.' && (await page.locator('#slist .sname').count()) === 0 && (await page.locator('#board .mag').count()) === 0);
   await tab(page, 'hist');
-  ok('medias ocultas en el historial', !(await page.locator('#hlist .mteam small.rc').first().isVisible()));
-  await tab(page, 'opc'); await page.click('#ratingseg [data-r="1"]');
+  ok('el historial sigue', (await page.locator('#hlist .match').count()) === 1);
+
+  // Sin medias en el historial ni en lo guardado
+  await tab(page, 'hist');
+  ok('historial sin medias', (await page.locator('#hlist .mteam small').count()) === 0
+    && await page.evaluate(() => matches.every(m => ['W', 'D'].every(t => m[t].every(p => !('ovr' in p) && !('por' in p))))));
 
   // Borrar partido
   await tab(page, 'hist');

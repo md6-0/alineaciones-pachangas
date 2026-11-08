@@ -16,25 +16,19 @@ const { ok, done } = checker();
   ok('vacío vuelve al de por defecto', (await page.textContent('#eyebrow')) === 'Mi pachanga ⚽');
   await page.fill('#groupname', 'Los del jueves'); await page.press('#groupname', 'Tab');
 
-  // Medias
-  await page.click('#ratingseg [data-r="0"]');
-  ok('medias ocultas', await page.evaluate(() => document.body.classList.contains('no-ratings')));
-  await tab(page, 'alin');
-  ok('imanes con iniciales', /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText()));
-  ok('imanes sin color de nivel', (await page.locator('#board .mag.gold, #board .mag.silver, #board .mag.bronze').count()) === 0);
-  await tab(page, 'jug');
-  ok('pista corta sin medias', (await page.innerText('#phint')).startsWith('Los cambios se guardan al salir de cada casilla. Marca'));
-  await tab(page, 'opc'); await page.click('#ratingseg [data-r="1"]');
-  ok('medias visibles otra vez', !(await page.evaluate(() => document.body.classList.contains('no-ratings'))));
+  // Ya no hay opción de medias
+  ok('sin opción de medias', (await page.locator('#ratingseg').count()) === 0);
 
-  // Fecha
+  // Fecha (arriba en Partido; ya no está en Opciones)
+  ok('día y hora fuera de Opciones', !(await page.locator('#p-opc #matchdate, #p-opc #matchtime').count()));
+  await tab(page, 'alin');
   await page.fill('#matchdate', '2099-01-02'); await page.dispatchEvent('#matchdate', 'change');
   ok('fecha elegida', (await page.inputValue('#matchdate')) === '2099-01-02' && await page.isVisible('#datereset'));
   await page.click('#datereset');
   ok('Hoy', await page.isHidden('#datereset'));
 
   // Guardar un partido para que la copia tenga historial
-  await tab(page, 'alin'); await page.click('#fix'); await tab(page, 'opc');
+  await page.click('#fix'); await page.click('#fix'); await page.waitForTimeout(200); await tab(page, 'opc');
 
   // Descargar copia
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#bk-down')]);
@@ -63,7 +57,7 @@ const { ok, done } = checker();
   ok('historial vacío', /Aún no hay partidos/.test(await page.innerText('#hlist')));
   await page.reload(); await page.waitForSelector('#t-alin');
   await page.waitForTimeout(100);
-  ok('tras recargar no vuelve la plantilla de ejemplo', (await page.locator('#chips .chip').count()) === 0);
+  ok('tras recargar no vuelve la plantilla de ejemplo', (await page.locator('#slist .sname').count()) === 0 && (await page.locator('#saddsel option').count()) === 1);
 
   // Restaurar copia
   await tab(page, 'opc');
@@ -76,7 +70,7 @@ const { ok, done } = checker();
   await tab(page, 'hist');
   ok('historial restaurado', (await page.locator('#hlist .match').count()) === 1);
   await tab(page, 'alin');
-  ok('jugadores restaurados', (await page.locator('#chips .chip').count()) === 24);
+  ok('jugadores restaurados', (await page.locator('#saddsel option').count()) === 25);
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   fs.rmSync(file, { force: true }); fs.rmSync(bad, { force: true });

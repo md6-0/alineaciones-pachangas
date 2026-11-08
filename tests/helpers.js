@@ -19,13 +19,26 @@ function serve(root = ROOT) {
   });
 }
 
+/** Hace que la app use el servidor, con el Firebase simulado de fake-firebase.js. server: datos iniciales del servidor. */
+async function useFakeCloud(ctx, server = {}) {
+  await ctx.route(/\/js\/firebase-config\.js$/, r => r.fulfill({ contentType: 'text/javascript', body: 'const FIREBASE_CONFIG = { projectId: "pruebas" };' }));
+  await ctx.route(/\/js\/vendor\/firebase-app-compat\.js$/, r => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'fake-firebase.js'), 'utf8') }));
+  await ctx.route(/\/js\/vendor\/firebase-(auth|firestore)-compat\.js$/, r => r.fulfill({ contentType: 'text/javascript', body: '' }));
+  await ctx.addInitScript(d => { if (!localStorage.getItem('fake-firestore')) localStorage.setItem('fake-firestore', JSON.stringify(d)); }, server);
+}
+
 /** Abre la app en un móvil (o en el tamaño indicado) y recoge los errores de la página.
-    Las pruebas se escribieron con 7 vs 7: mode lo fija la primera vez (null = el formato por defecto de la app). */
-async function open({ viewport, offline = false, mode = "7" } = {}) {
+    Las pruebas se escribieron con 7 vs 7: mode lo fija la primera vez (null = el formato por defecto de la app).
+    cloud: datos del servidor simulado (si se da, la app usa el servidor); waitFor: lo que se espera al abrir. */
+async function open({ viewport, offline = false, mode = "7", cloud = null, waitFor = '#board .mag' } = {}) {
   const server = await serve();
   const browser = await chromium.launch();
   const opts = viewport ? { viewport, acceptDownloads: true } : { ...devices['Pixel 7'], acceptDownloads: true };
+  if (cloud) opts.serviceWorkers = 'block';   // que no guarde en caché la configuración ni el Firebase de verdad
   const ctx = await browser.newContext(opts);
+  // Sin servidor (las pruebas en el dispositivo) o con el Firebase simulado; nunca el servidor de verdad
+  if (cloud) await useFakeCloud(ctx, cloud);
+  else await ctx.route(/\/js\/firebase-config\.js$/, r => r.fulfill({ contentType: 'text/javascript', body: 'const FIREBASE_CONFIG = null;' }));
   // Sin internet: la tipografía de Google Fonts no se descarga (cae a la del sistema) y las pruebas no dependen de la red
   await ctx.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   if (mode) await ctx.addInitScript(m => { try { if (!localStorage.getItem('pach-v4')) localStorage.setItem('pach-v4', JSON.stringify({ mode: m })); } catch {} }, mode);
@@ -35,7 +48,7 @@ async function open({ viewport, offline = false, mode = "7" } = {}) {
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::/.test(m.text())) errors.push('console: ' + m.text()); });
   page.on('dialog', d => { errors.push('diálogo nativo: ' + d.message()); d.dismiss(); });
   await page.goto(server.url);
-  await page.waitForSelector('#board .mag');
+  if (waitFor) await page.waitForSelector(waitFor);
   return { page, ctx, browser, server, errors, url: server.url,
     async close() { await browser.close(); server.close(); } };
 }
@@ -56,4 +69,4 @@ function checker() {
 const tab = (page, id) => page.click('#t-' + id);
 const toastText = async page => (await page.locator('#toast').isVisible()) ? page.innerText('#toast') : '';
 
-module.exports = { ROOT, serve, open, checker, tab, toastText };
+module.exports = { ROOT, serve, open, useFakeCloud, checker, tab, toastText };

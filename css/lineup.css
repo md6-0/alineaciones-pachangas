@@ -15,7 +15,6 @@
 /* Convocatoria */
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;display:inline-flex;gap:7px;align-items:center;font-size:.86rem;font-weight:500}
-.chip .r{font-variant-numeric:tabular-nums;font-weight:700;font-size:.78rem;color:var(--faint)}
 .chip[aria-pressed="true"]{border-color:var(--fg);color:var(--fg);background:var(--bg)}
 .chip[aria-pressed="true"] .r{color:var(--fg)}
 
@@ -25,18 +24,11 @@
 .sec.team.W{--tb:var(--w-border)} .sec.team.D{--tb:var(--d-border)}
 .thead{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .tname{font-weight:700;font-stretch:80%;font-size:1.3rem;text-transform:uppercase;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
-.tmeta{display:flex;align-items:baseline;gap:6px;color:var(--muted);font-size:.8rem}
-.tmeta b{font-weight:800;font-stretch:75%;font-size:1.6rem;color:var(--fg);font-variant-numeric:tabular-nums;line-height:1}
 .tsub{font-size:.8rem;color:var(--muted);margin:-6px 0 0}
-.forms{display:flex;flex-wrap:wrap;gap:6px}
-.form{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.84rem;font-weight:600;font-variant-numeric:tabular-nums}
-.form:hover{color:var(--fg)}
-.form[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 
 /* Banquillo: los imanes se vuelven pastillas en fila */
 .bench{min-height:58px;border-radius:4px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px dashed var(--line);background:var(--bg)}
 .bench.over{border-color:var(--gk);border-style:solid}
-.bench .mag.gold .disc,.bench .mag.silver .disc,.bench .mag.bronze .disc{box-shadow:0 0 0 2px var(--tier)}
 .bench .ptags{margin-top:0}
 .bench .mag{position:static;transform:none;flex-direction:row;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px}
 .bench .disc{width:28px;height:28px;font-size:.78rem;box-shadow:0 1px 2px rgba(0,0,0,.25)}
@@ -61,9 +53,31 @@
 
 @media (max-width:520px){
   .tname{font-size:1.05rem}
-  .tmeta b{font-size:1.3rem}
-  .sec.team{padding:12px}
+    .sec.team{padding:12px}
   #teams{padding:0 8px 8px}
   .sec{padding:14px}
   .hctl{width:100%}
 }
+
+/* Lista de apuntados (arriba de la pestaña Partido) */
+.signbox{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin-bottom:20px;display:flex;flex-direction:column;gap:12px}
+.when{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.when label{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.signbox h2{margin:0;font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.mesel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem;color:var(--muted)}
+.mesel select,.sadd select{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;max-width:100%}
+.meline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;font:inherit;cursor:pointer}
+.slist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:2px 14px}
+.slist li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);min-width:0}
+.slist .sn{color:var(--faint);font-variant-numeric:tabular-nums;min-width:1.8em;font-size:.85rem}
+.slist .sname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.slist .sname small{color:var(--muted);font-weight:500}
+.slist li.mine .sname{color:var(--accent)}
+.slist li.extra .sn::after{content:" B";color:var(--warn);font-size:.7rem}
+.slist .sempty{color:var(--muted);border-bottom:0}
+.slist .ptags{position:static;transform:none}
+.sdel{border:0;background:transparent;color:var(--faint);padding:2px 6px;border-radius:4px;font-size:.8rem}
+.sdel:hover{color:var(--fg);background:var(--bg)}
+.sadmin{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px}
+.sadd{display:flex;gap:8px;align-items:center;flex-wrap:wrap}

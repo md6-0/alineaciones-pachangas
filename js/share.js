@@ -29,7 +29,7 @@ const WHAT = {
 const smenu = $("#smenu");
 const what = () => WHAT[st.img] || WHAT.lineup;
 /** Avisa y devuelve false si todavía no hay alineación. */
-function needLineup() { if (hasLineup()) return true; toast("Marca jugadores antes de compartir."); return false; }
+function needLineup() { if (hasLineup()) return true; toast("Todavía no hay alineación para compartir."); return false; }
 
 /** Marca la opción elegida y prepara los enlaces de WhatsApp y Telegram con su texto. */
 function paintWhat() {

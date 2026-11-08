@@ -1,29 +1,26 @@
 "use strict";
-/* Reparto de los convocados en dos equipos lo más igualados posible. No toca la pantalla. */
+/* Reparto de los convocados en dos equipos equilibrados por posiciones (no hay medias). No toca la pantalla.
+   Entre los repartos igual de equilibrados se elige uno al azar, con semilla: Otra opción pasa a otro. */
 
-/** Portero que tendría un equipo: primero quien tenga la posición POR; después, la mejor nota POR. */
+/** Portero que tendría un equipo: el primero que tenga la posición POR (si no hay, el primero). */
 function pickGK(list) {
-  return [...list].sort((a, b) => (b.pos.includes("POR") - a.pos.includes("POR")) || b.por - a.por || a.m - b.m)[0];
+  return list.find(p => p.pos.includes("POR")) || list[0];
 }
 
-/** Media de un equipo: el portero cuenta con su nota POR y el resto con su media. */
-function teamValue(list, gk) {
-  if (!list.length) return 0;
-  const g = gk !== undefined ? gk : pickGK(list);
-  return list.reduce((a, p) => a + (p === g ? p.por : p.m), 0) / list.length;
-}
-
-/** Lo desigual que es un reparto: diferencia de medias más una penalización si un equipo tiene
-    bastantes más porteros, defensas o delanteros que el otro. */
+/** Lo desigual que es un reparto: cuánto se separan los dos equipos en porteros, defensas, medios y delanteros
+    (pesa más que falte portero). */
 function splitCost(A, B) {
   const can = (p, r) => p.pos.includes(r);
-  let cost = Math.abs(teamValue(A) - teamValue(B));
-  for (const r of ["POR", "DEF", "ATQ"]) {
+  let cost = 0;
+  for (const r of ["POR", "DEF", "MED", "ATQ"]) {
     const d = Math.abs(A.filter(p => can(p, r)).length - B.filter(p => can(p, r)).length);
-    cost += Math.max(0, d - 1) * (r === "POR" ? 6 : 1.5);
+    cost += Math.max(0, d - 1) * (r === "POR" ? 6 : 1.5) + d * (r === "POR" ? .5 : .1);
   }
   return cost;
 }
+
+/** Número a partir de los ids (para que la misma convocatoria dé las mismas opciones). */
+const idsHash = list => list.reduce((h, p) => { for (const ch of p.id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h; }, 2166136261) >>> 0;
 
 /** Generador de números aleatorios con semilla: la misma convocatoria da siempre las mismas opciones. */
 function rng(seedN) {
@@ -48,7 +45,7 @@ function allSplits(list) {
 /** Demasiados jugadores para probarlos todos: 120 repartos al azar, cada uno mejorado intercambiando parejas. */
 function searchSplits(list) {
   const n = list.length, k = Math.floor(n / 2), odd = n % 2 === 1, out = [];
-  const rand = rng(n * 7919 + list.reduce((a, p) => a + p.m, 0) | 0), seen = new Set();
+  const rand = rng(n * 7919 + idsHash(list)), seen = new Set();
   for (let t = 0; t < 120; t++) {
     const idx = [...list.keys()];
     for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
@@ -67,13 +64,14 @@ function searchSplits(list) {
   return out;
 }
 
-/** Reparto de la lista: uno de los 6 mejores, según la semilla (Otra opción pasa al siguiente). null si hay menos de 2. */
+/** Reparto de la lista: uno al azar entre los más equilibrados, según la semilla (Otra opción cambia la semilla).
+    null si hay menos de 2. */
 function solve(list, seedN = seed) {
   if (list.length < 2) return null;
   const out = list.length <= 16 ? allSplits(list) : searchSplits(list);
   if (!out.length) return null;
   out.sort((a, b) => a.cost - b.cost);
-  const top = out.slice(0, Math.min(6, out.length));
-  const s = top[seedN % top.length];
+  const best = out.filter(s => s.cost <= out[0].cost + 1e-9);
+  const s = best[Math.floor(rng(idsHash(list) + seedN * 104729)() * best.length)];
   return { A: s.A, B: s.B };
 }
