@@ -33,8 +33,10 @@ function localDb() {
 
   return {
     cloud: false,
+    firstRun,           // primera visita: main.js apunta a los primeros jugadores
     user: null,
     onAuth: () => {},
+    ensureUser: () => Promise.resolve("local"),
     collection: c => ({
       onSnapshot(cb) {
         (subs[c] = subs[c] || []).push(cb);

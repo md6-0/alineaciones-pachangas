@@ -4,19 +4,17 @@
 /* ---------- Preferencias (localStorage, clave pach-v4) ---------- */
 const PREFS_KEY = "pach-v4";
 let st = {
-  sel: null,          // ids convocados (null hasta la primera carga: entonces se convoca a los primeros que pide el formato)
-  date: null,         // día del partido elegido (2026-11-05) o null para hoy; datePast: viene de cargar un partido pasado
-  time: null,         // hora del partido ("12:00") o null; sale en la lista para apuntarse
-  myName: "",         // tu nombre: sale el primero en la lista para apuntarse
+  me: null,           // quién eres (id del jugador), para apuntarte desde este dispositivo
+  // Lo siguiente es del próximo partido y llega del servidor (next/current, ver next-match.js); aquí queda lo último que llegó
+  date: null,         // día del partido (2026-11-05) o null para hoy
+  time: null,         // hora del partido ("12:00") o null
   mode: "8",          // formato: "7", "8" u "11" (por defecto, 8 vs 8)
   form: { W: { "7": "2-3-1", "8": "3-3-1" }, D: { "7": "2-3-1", "8": "3-3-1" } },   // formación de cada equipo en cada formato
   tab: "alin",        // pestaña abierta
   img: "lineup"       // qué se comparte (texto e imagen): "lineup" (la alineación) o "teams" (solo los jugadores de cada equipo)
 };
 try { const s = JSON.parse(localStorage.getItem(PREFS_KEY) || "null"); if (s && typeof s === "object") st = Object.assign(st, s); } catch {}
-delete st.ratings; delete st.sort;   // preferencias de cuando había medias
-// Una fecha pasada que vino de cargar un partido del historial solo dura hasta que se vuelve a abrir la app
-if (st.datePast) { st.date = null; st.datePast = false; }
+["ratings", "sort", "sel", "myName", "datePast"].forEach(k => delete st[k]);   // preferencias de versiones anteriores
 SIDES.forEach(t => { st.form[t] = st.form[t] || {}; Object.keys(FORMS).forEach(m => { if (!FORMS[m].includes(st.form[t][m])) st.form[t][m] = FORMS[m][0]; }); });
 if (!FORMS[st.mode]) st.mode = "8";
 // Las direcciones #jugadores, #historial… abren esa pestaña
@@ -36,9 +34,8 @@ let matches = [];        // partidos del historial, del más reciente al más an
 let settings = {};       // ajustes compartidos con los datos (nombre del grupo)
 
 /* ---------- Pizarra ---------- */
-// Dónde está cada convocado: { id: { team: "W"|"D", zone: "pitch", x, y } } o { team, zone: "bench" }. x e y en % del campo.
+// Dónde está cada apuntado: { id: { team: "W"|"D", zone: "pitch", x, y } } o { team, zone: "bench" }. x e y en % del campo.
 let layout = {};
-let seed = 0;            // qué opción de reparto se muestra (Otra opción la cambia)
-let autoLoaded = false;  // ya se cargó en la pizarra la última alineación guardada
+let seed = 0;            // qué opción de reparto se muestra (Otra opción la cambia; llega con next/current)
 
 const nameOf = id => BY[id] ? BY[id].n : id;

@@ -1,6 +1,6 @@
 "use strict";
-/* Pestaña Historial: los partidos guardados, con el resultado, los goles de cada jugador,
-   y los botones para cargar uno en la pizarra o borrarlo. */
+/* Pestaña Historial: los partidos guardados, con el resultado y los goles de cada jugador.
+   Quien organiza apunta resultados y goles, y borra partidos; los demás solo los ven. */
 
 const RESULT = { W: '<span class="res W">Gana Blanco</span>', D: '<span class="res D">Gana Oscuro</span>', draw: '<span class="res">Empate</span>' };
 
@@ -39,7 +39,7 @@ function matchHTML(m) {
         <div class="score">Blanco ${goalsInput("W", w, "Equipo Blanco")}<span class="dash">–</span>${goalsInput("D", d, "Equipo Oscuro")} Oscuro ${res ? RESULT[res] : '<span class="res">Sin resultado</span>'}</div>
       </div>
       <div class="mteams">${mteamHTML(m, "W")}${mteamHTML(m, "D")}</div>
-      <div class="mfoot edit-only"><button type="button" class="btn ghost" data-mload>Cargar en la pizarra</button><button type="button" class="del" data-mdel>Borrar partido</button></div>
+      <div class="mfoot edit-only"><button type="button" class="del" data-mdel>Borrar partido</button></div>
     </article>`;
 }
 
@@ -51,17 +51,6 @@ function renderHistory() {
   if (box.contains(ae) && ae.tagName === "INPUT") return;   // no repintar mientras se escribe un resultado
   if (!matches.length) { box.innerHTML = `<p class="hint">${canEdit() ? 'Aún no hay partidos. Coloca los equipos en la pestaña Alineación y pulsa "Guardar alineación en historial": el partido aparecerá aquí para apuntar el resultado.' : "Aún no hay partidos."}</p>`; return; }
   box.innerHTML = matches.map(matchHTML).join("");
-}
-
-/** Pone un partido en la pizarra. Si es al abrir la app (quiet), sin aviso, sin cambiar de pestaña ni de fecha. */
-function loadMatch(m, quiet) {
-  if (!loaded) { if (!quiet) toast("Espera a que carguen los jugadores."); return; }
-  const missing = applyMatch(m);
-  // Cargado a mano, también trae la fecha del partido (aunque ya haya pasado)
-  if (!quiet && ISO_DATE.test(m.date || "")) setMatchDate(m.date, fromIso(m.date) < startOfToday());
-  if (!quiet) st.tab = "alin";
-  save(); showTab(); render();
-  if (!quiet) toast(missing ? `Alineación cargada. ${missing} jugador${missing > 1 ? "es ya no están" : " ya no está"} en la lista.` : "Alineación cargada en la pizarra.");
 }
 
 /* ---------- Acciones ---------- */
@@ -87,8 +76,6 @@ hlist.addEventListener("click", e => {
     changeGoal(mid, team, pid, ga ? 1 : -1).catch(() => toast("No se pudo guardar el gol."));
     return;
   }
-  const ld = e.target.closest("[data-mload]");
-  if (ld) { const m = matchById(ld.closest(".match").dataset.id); if (m) loadMatch(m); return; }
   const del = e.target.closest("[data-mdel]");
   if (del && confirmFirst(del, "¿Seguro?", 3000)) deleteMatch(del.closest(".match").dataset.id).catch(() => toast("No se pudo borrar el partido."));
 });

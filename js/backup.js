@@ -38,11 +38,12 @@ async function restoreBackup(data) {
   return { players: pIds.length, matches: mIds.length };
 }
 
-/** Borra jugadores, historial y ajustes, y deja la pizarra vacía. */
+/** Borra jugadores, historial, ajustes, la lista de apuntados y el próximo partido. */
 async function wipeAll() {
+  for (const id of Object.keys(signups)) await db.doc("signups/" + id).delete();
   for (const id of Object.keys(rawPlayers)) await db.doc("players/" + id).delete();
   for (const m of matches) await db.doc("matches/" + m.id).delete();
   await db.doc("settings/general").delete();
-  Object.assign(st, { sel: [], date: null, datePast: false }); save();
-  layout = {}; autoLoaded = false;
+  await db.doc("next/current").delete();
+  st.me = null; save();
 }

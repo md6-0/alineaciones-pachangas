@@ -42,20 +42,10 @@ function place(team, players) {
   pool.forEach(p => layout[p.id] = { team, zone: "bench" });
 }
 
-/** Pizarra de quien solo ve (con servidor y sin entrar): la última alineación guardada, con su fecha. */
-function viewerBoard() {
-  layout = {};
-  const m = matches[0];
-  if (!loaded || !histLoaded || !m) return;
-  applyMatch(m);
-  if (ISO_DATE.test(m.date || "")) setMatchDate(m.date, fromIso(m.date) < startOfToday());
-}
-
-/** Rehace el reparto y la colocación de los convocados (quien solo ve, la última alineación guardada). */
+/** Reparto automático de los apuntados y su colocación (la alineación retocada está en next-match.js). */
 function rebuild() {
-  if (!canEdit()) { viewerBoard(); return; }
   layout = {};
-  const res = solve(P.filter(p => st.sel.includes(p.id)));
+  const res = solve(P.filter(p => isSignedUp(p.id)));
   if (!res) return;
   place("W", res.A);
   place("D", res.B);
@@ -101,5 +91,5 @@ const dropOnBench = (id, team) => { layout[id] = { team, zone: "bench" }; };
 /** Invierte los equipos: los mismos jugadores juntos, cada uno en su sitio reflejado en la otra mitad, y con su formación. */
 function swapTeams() {
   Object.values(layout).forEach(L => { L.team = other(L.team); if (L.zone === "pitch") L.y = 100 - L.y; });
-  const f = st.form.W[st.mode]; st.form.W[st.mode] = st.form.D[st.mode]; st.form.D[st.mode] = f; save();
+  const f = st.form.W[st.mode]; st.form.W[st.mode] = st.form.D[st.mode]; st.form.D[st.mode] = f;
 }

@@ -10,14 +10,16 @@ Es una aplicación web que se instala en el móvil como cualquier otra app y fun
 
 ## Qué puedes hacer
 
-### 📋 Alineación
+### 📋 Partido
 
-- Marca en la **convocatoria** quién viene y la app reparte el Equipo Blanco y el Equipo Oscuro equilibrando porteros, defensas, medios y delanteros. Si no te convence el reparto, pulsa **Otra opción**.
-- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada equipo elige su **formación** (2-3-1, 3-3-1, 4-4-2, 4-3-3…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Los fichajes de última hora, en dos segundos.
-- **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio.
-- **Guardar alineación en historial** guarda el partido con la fecha elegida (por defecto, la de hoy). Al abrir la app, la pizarra carga la última alineación guardada.
+La primera pestaña es el **próximo partido**: arriba, quién va; debajo, cómo quedan los equipos.
+
+- **Apuntados**: la lista por orden de llegada, con el día, la hora y el formato en el título. La primera vez cada uno dice quién es (**Soy…**, de la lista de jugadores; el móvil lo recuerda) y después tiene su botón **Apuntarme** / **Borrarme**. Si se apuntan más de los que pide el formato, entran igual y los últimos van al banquillo.
+- **La alineación sale sola** con los apuntados: Equipo Blanco y Equipo Oscuro equilibrando porteros, defensas, medios y delanteros. Si no te convence, **Otra opción**.
+- Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada equipo elige su **formación** (2-3-1, 3-3-1, 4-4-2, 4-3-3…). Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. **Invertir equipos** cambia el Blanco por el Oscuro sin mover a nadie de sitio. Lo que retocas lo ve todo el mundo, y quien se apunte después entra en un hueco libre sin deshacerlo.
+- Quien organiza además **apunta y quita a cualquiera**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
+- **Guardar alineación en historial** guarda el partido con su fecha, para apuntar después el resultado y los goles.
 - **Compartir** manda la alineación en texto por WhatsApp o Telegram, o crea una imagen para compartirla o descargarla. Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
-- **Lista para apuntarse por WhatsApp** (debajo de la convocatoria) prepara un mensaje con el día y la hora del partido y un hueco numerado por jugador del formato (16 en 8 vs 8, el formato por defecto). Si pones tu nombre en Opciones, sales ya apuntado el primero.
 
 ### 👟 Jugadores
 
@@ -31,17 +33,16 @@ En el historial apuntas el resultado y quién marcó cada gol. Puedes volver a c
 
 Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con pasar el enlace de la app:
 
-- **Quien abre el enlace solo ve**: la última alineación guardada (con su fecha), el historial con resultados y goles, y las estadísticas. Puede compartir la alineación y los goleadores, pero no cambiar nada; la pestaña Jugadores no aparece.
-- **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces la app funciona como siempre. Lo que guarda llega al momento a todos los demás.
+- **Quien abre el enlace** ve el próximo partido (la lista y la alineación), el historial con resultados y goles, y las estadísticas, y puede **apuntarse y borrarse él mismo**. No puede cambiar nada más: ni la alineación, ni el historial, ni los goles; la pestaña Jugadores no aparece. Si a alguien lo apunta quien organiza, solo quien organiza puede quitarlo.
+- **Quien organiza entra en Opciones → Administrar** con su correo y contraseña, y entonces lo cambia todo. Lo que guarda llega al momento a todos los demás.
 - **Subir los datos de este dispositivo**: si el móvil de quien organiza tenía datos de antes del servidor, Opciones ofrece subirlos (sustituyen a los del servidor y se suben sin las notas de las antiguas medias).
 
 ### ⚙️ Opciones
 
 - **Administrar** (solo con servidor): entrar para editar o salir.
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
-- **Día del partido**: por defecto, hoy, pero puedes elegir cualquier fecha. Cuando ese día pasa, vuelve sola a la de hoy.
-- **Formato**: 7 vs 7, 8 vs 8 (por defecto) u 11 vs 11.
-- **Hora del partido** y **Tu nombre**: salen en la lista para apuntarse.
+- **Día y hora del partido**: salen en el título y en la lista por WhatsApp. Por defecto, hoy y sin hora; cuando el día pasa, vuelve solo a hoy.
+- **Formato**: 7 vs 7, 8 vs 8 (por defecto) u 11 vs 11. Al cambiarlo, la alineación vuelve a salir sola.
 - **Copia de seguridad**: descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
 - **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.
 - **Versión**: al final de la pestaña, con un botón para buscar actualizaciones.
@@ -78,12 +79,12 @@ Para compartir la app con el grupo, los datos van a un proyecto de Firebase en e
 
 1. En [console.firebase.google.com](https://console.firebase.google.com), **Crear proyecto** (Google Analytics no hace falta).
 2. **Compilación → Firestore Database → Crear base de datos**, en una ubicación de Europa y en modo de producción.
-3. **Compilación → Authentication → Comenzar → Correo electrónico/contraseña**: actívalo. En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
+3. **Compilación → Authentication → Comenzar → Método de acceso**: activa **Correo electrónico/contraseña** y **Anónimo** (el anónimo es para que los demás se apunten sin cuenta). En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
 4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**.
 5. **Configuración del proyecto → Tus apps → Web (`</>`)**: registra la app (sin Hosting) y copia el objeto `firebaseConfig` en `js/firebase-config.js` (`const FIREBASE_CONFIG = { … };`). No es secreto: lo que protege los datos son las reglas.
 6. Publica una versión nueva. Quien organiza entra en **Opciones → Administrar** y, si tenía datos en el móvil, pulsa **Subir los datos de este dispositivo**.
 
-Nadie más puede crear cuentas que escriban: aunque alguien se registrara con la clave pública del proyecto, las reglas solo dejan escribir al UID de quien organiza.
+Nadie más puede crear cuentas que escriban: aunque alguien se registrara con la clave pública del proyecto, las reglas solo dejan escribir al UID de quien organiza; cualquier otro usuario, anónimo o no, solo puede apuntarse a sí mismo y borrar lo que apuntó él.
 
 ### Pruebas
 
@@ -116,7 +117,7 @@ tests/                 pruebas automáticas en un navegador real (no se publican
 
 css/base.css           colores, botones, pestañas y piezas comunes (avisos, banda de versión nueva)
 css/board.css          la pizarra: campo, imanes y huecos
-css/lineup.css         pestaña Alineación: convocatoria, equipos, banquillos y menú Compartir
+css/lineup.css         pestaña Partido: lista de apuntados, equipos, banquillos y menú Compartir
 css/players.css        pestaña Jugadores
 css/history.css        pestaña Historial
 css/stats.css          pestaña Estadísticas
@@ -136,19 +137,20 @@ js/dates.js            día del partido
 js/players.js          jugadores: lectura, añadir, cambiar y quitar
 js/teams.js            reparto en dos equipos equilibrados por posiciones
 js/formation.js        colocación en la pizarra: huecos, portero, soltar imanes, invertir equipos
-js/matches.js          historial: guardar la alineación, resultado, goles y volver a cargarla
+js/matches.js          historial: guardar la alineación, resultado y goles
+js/next-match.js       próximo partido: apuntados, día, hora, formato y la alineación (automática o retocada)
 js/stats.js            cálculo de las estadísticas
 js/backup.js           copia de seguridad, subir datos al servidor (sin las medias antiguas) y borrar todo
 js/ui.js               piezas de interfaz reutilizables: avisos, confirmaciones, imagen a pantalla completa
 js/views.js            pestañas y repintado
 js/pitch.js            dibujo del campo en SVG
-js/tab-lineup.js       pestaña Alineación
+js/tab-lineup.js       pestaña Partido: lista de apuntados, «Soy…», pizarra y equipos
 js/drag.js             arrastrar imanes
 js/share-image.js      imagen de la alineación para compartir
 js/share-teams-image.js imagen de los equipos (solo jugadores) para compartir
 js/share-menu.js       piezas comunes de los menús Compartir (abrir, cerrar, enlaces, botones de imagen)
-js/share.js            menú Compartir de la Alineación
-js/share-signup.js     lista para apuntarse por WhatsApp
+js/share.js            menú Compartir de la pestaña Partido
+js/share-signup.js     lista por WhatsApp con los apuntados
 js/tab-players.js      pestaña Jugadores
 js/tab-history.js      pestaña Historial
 js/tab-stats.js        pestaña Estadísticas
@@ -164,7 +166,7 @@ Los archivos de `js/` se cargan en ese orden y cada uno se apoya en los anterior
 - **Las reglas** (de `settings` a `backup`) no tocan la pantalla. Todo lo que decide cómo se reparten los equipos, dónde va cada jugador, qué se guarda en un partido está ahí, en un único sitio. El resto de la app llama a esas funciones (`solve`, `rebuild`, `dropOnPitch`, `saveLineup`, `changeGoal`, `computeStats`…) en lugar de repetir la lógica.
 - **La interfaz** (`ui`, `views` y un archivo por pestaña o funcionalidad) pinta la pantalla a partir del estado y responde a lo que hace el usuario.
 
-El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vuelve a pintar a partir del estado. Los cambios de los datos (jugadores, partidos, ajustes) se guardan con `db`, que avisa a `main.js`; este recalcula el estado y repinta lo que depende de él. Los cambios de la pizarra (convocatoria, formaciones, arrastrar) no se guardan en `db`: cambian `layout` y llaman a `render()`.
+El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vuelve a pintar a partir del estado. Los cambios de los datos (jugadores, partidos, ajustes, apuntados y el próximo partido) se guardan con `db`, que avisa a `main.js`; este recalcula el estado y repinta lo que depende de él. La pizarra (`layout`) se calcula en cada dispositivo a partir de los apuntados con `syncBoard()` (`next-match.js`): si quien organiza no la ha retocado, sale del reparto automático, que es determinista y por eso es igual en todos los móviles; si la ha retocado (arrastrar, formación, invertir), su colocación se guarda en `next/current` y los nuevos apuntados entran en un hueco libre.
 
 ### Algunas decisiones
 
@@ -180,14 +182,14 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 **La app abre desde la caché.** Cada versión guarda todos sus archivos en el dispositivo al instalarse, y al abrir la app se leen de ahí sin preguntar al servidor por cada uno. Por eso abre al momento, con o sin conexión, y por eso los cambios solo llegan al subir `VERSION`.
 
-**El reparto es determinista.** La misma convocatoria da siempre las mismas opciones: entre los repartos igual de equilibrados se elige uno con un generador aleatorio con semilla, y **Otra opción** cambia la semilla. Hasta 16 convocados se prueban todos los repartos; con más, se buscan al azar y se mejoran intercambiando parejas.
+**El reparto es determinista.** La misma lista de apuntados da siempre las mismas opciones (en todos los móviles): entre los repartos igual de equilibrados se elige uno con un generador aleatorio con semilla, y **Otra opción** cambia la semilla. Hasta 16 apuntados se prueban todos los repartos; con más, se buscan al azar y se mejoran intercambiando parejas.
 
 ### Cómo se guardan los datos
 
-Los datos son tres colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` y `settings`. Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
+Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó, y `uid`, quién lo apuntó) y `next` (un documento, `current`, con el día, la hora, el formato, las formaciones, el reparto que se muestra y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
 - **`pachangas-db-v1`** (sin servidor): los datos, en tres colecciones. `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (cada partido, con la fecha como id: formato, formaciones, los jugadores de cada equipo con su posición, `score` y `goals`) y `settings` (el nombre del grupo). Es lo que va en la copia de seguridad.
-- **`pach-v4`**: las preferencias de este dispositivo: convocatoria, formato, formaciones, fecha y hora elegidas, tu nombre, pestaña abierta y qué se comparte (alineación o equipos).
+- **`pach-v4`**: las preferencias de este dispositivo: quién eres (para apuntarte), pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.
 - **`pach-subido`**: ya se subieron al servidor los datos que había en este dispositivo.
 
 ### Ampliar la app

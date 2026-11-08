@@ -34,12 +34,11 @@ const { ok, done } = checker();
   await nameIn.fill('Íñigo'); await nameIn.press('Tab'); await page.waitForTimeout(150);
   ok('nombre cambiado', (await page.locator(`#plist tr[data-id="${id}"] input[data-f=name]`).inputValue()) === 'Íñigo');
 
-  // Llega a la convocatoria y a la pizarra
+  // Se puede apuntar y llega a la pizarra
   await tab(page, 'alin');
-  const chip = page.locator(`#chips .chip[data-n="${id}"]`);
-  ok('aparece en la convocatoria sin marcar', (await chip.getAttribute('aria-pressed')) === 'false' && /Íñigo/.test(await chip.innerText()));
-  await chip.click();
-  ok('convocado: aparece su imán', (await page.locator(`.mag[data-n="${id}"]`).count()) === 1);
+  ok('se puede apuntar', (await page.locator(`#saddsel option[value="${id}"]`).innerText()) === 'Íñigo');
+  await page.selectOption('#saddsel', id); await page.click('#saddform button'); await page.waitForTimeout(100);
+  ok('apuntado: aparece su imán', (await page.locator(`.mag[data-n="${id}"]`).count()) === 1);
 
   // Orden de lista
   await tab(page, 'jug');

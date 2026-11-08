@@ -16,7 +16,7 @@ const { ok, done } = checker();
   await page.fill('#matchdate', '2099-03-07'); await page.dispatchEvent('#matchdate', 'change');
   ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));
   await tab(page, 'alin');
-  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Alineación · Sábado 7 mar', await page.textContent('#h1'));
+  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Partido · Sábado 7 mar', await page.textContent('#h1'));
   await page.click('#fix');
   ok('guardada', (await toastText(page)) === 'Alineación guardada en el historial.');
   await page.click('#fix');
@@ -86,21 +86,22 @@ const { ok, done } = checker();
   ok('imagen de goleadores', (await page.evaluate(() => document.getElementById('ovimg').naturalWidth)) === 1080);
   await page.click('#ovclose');
 
-  // Cargar en la pizarra
+  // Ya no se carga un partido en la pizarra: la pizarra es siempre la del próximo partido
+  await tab(page, 'hist');
+  ok('sin «Cargar en la pizarra»', (await page.locator('#hlist [data-mload]').count()) === 0);
   await tab(page, 'alin');
   const before = await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join());
-  await page.click('#shuffle'); await page.click('#swap');
-  await tab(page, 'hist');
-  await page.click('#hlist [data-mload]');
-  ok('cargada: vuelve a Alineación', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true');
-  ok('aviso', (await toastText(page)) === 'Alineación cargada en la pizarra.');
-  ok('los mismos blancos', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
-
-  // Al abrir se carga la última guardada
   await page.click('#swap');
-  await page.reload(); await page.waitForSelector('#board .mag');
-  await page.waitForTimeout(100);
-  ok('al abrir carga la última alineación', (await page.locator('#board .mag.W').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
+  await page.reload(); await page.waitForSelector('#board .mag'); await page.waitForTimeout(100);
+  ok('el retoque (invertir) se conserva al recargar', (await page.locator('#board .mag.D').evaluateAll(e => e.map(x => x.dataset.n).sort().join())) === before);
+
+  // Vaciar la lista para el siguiente partido
+  await page.click('#clearlist');
+  ok('vaciar pide confirmación', (await page.innerText('#clearlist')) === 'Sí, vaciar la lista');
+  await page.click('#clearlist'); await page.waitForTimeout(200);
+  ok('lista vacía', (await toastText(page)) === 'Lista vacía: lista para el próximo partido.' && (await page.locator('#slist .sname').count()) === 0 && (await page.locator('#board .mag').count()) === 0);
+  await tab(page, 'hist');
+  ok('el historial sigue', (await page.locator('#hlist .match').count()) === 1);
 
   // Sin medias en el historial ni en lo guardado
   await tab(page, 'hist');

@@ -13,11 +13,11 @@ function showTab() {
     $("#t-" + t).setAttribute("aria-selected", st.tab === t);
     $("#p-" + t).hidden = st.tab !== t;
   });
-  $("#hctl").hidden = st.tab !== "alin";   // Guardar y Compartir solo en Alineación
+  $("#hctl").hidden = st.tab !== "alin";   // Guardar y Compartir solo en Partido
   paintTitle();
 }
 /** Título de la pestaña (el de Alineación lleva el día del partido, que puede cambiar al llegar los datos). */
-const paintTitle = () => { $("#h1").textContent = st.tab === "alin" ? `Alineación · ${matchDayLabel()}` : TITLES[st.tab]; };
+const paintTitle = () => { $("#h1").textContent = st.tab === "alin" ? `Partido · ${matchWhen()}` : TITLES[st.tab]; };
 
 /** Repinta la pizarra y lo que depende de ella en Opciones (formato y fecha). */
 function render() { paintOptions(); paintTitle(); renderLineup(); }

@@ -2,7 +2,8 @@
 /* Datos en el servidor (Firebase: Cloud Firestore y Authentication), con la misma interfaz que db-local.js.
    La librería de Firebase (js/vendor) solo se carga si hay servidor configurado. Firestore guarda una copia
    en el dispositivo, así que la app sigue funcionando sin conexión y se sincroniza al volver.
-   Leer puede cualquiera; escribir, solo quien ha entrado con su cuenta (las reglas del servidor lo comprueban). */
+   Leer puede cualquiera. Quien organiza entra con correo y contraseña y cambia todo; los demás, para apuntarse, entran
+   sin darse cuenta con un usuario anónimo y solo pueden apuntarse y borrarse a sí mismos (lo comprueban las reglas). */
 
 const FIREBASE_SDK = ["js/vendor/firebase-app-compat.js", "js/vendor/firebase-auth-compat.js", "js/vendor/firebase-firestore-compat.js"];
 
@@ -22,7 +23,7 @@ function cloudDb(config) {
     fs.enablePersistence({ synchronizeTabs: true }).catch(() => {});   // sin copia local (navegación privada…): sigue funcionando
     auth = firebase.auth();
     auth.onAuthStateChanged(u => {
-      api.user = u ? { uid: u.uid, email: u.email } : null; api.authKnown = true;
+      api.user = u ? { uid: u.uid, email: u.email, anon: !!u.isAnonymous } : null; api.authKnown = true;
       authSubs.forEach(f => { try { f(api.user); } catch (e) { console.error(e); } });
     });
   });
@@ -50,6 +51,8 @@ function cloudDb(config) {
     onAuth(cb) { authSubs.push(cb); if (api.authKnown) cb(api.user); },
     signIn: (email, pass) => ready.then(() => auth.signInWithEmailAndPassword(email, pass)),
     signOut: () => ready.then(() => auth.signOut()),
+    /** uid de quien usa la app; si no ha entrado, entra como anónimo (para apuntarse). */
+    ensureUser: () => wrap(ready.then(() => auth.currentUser ? auth.currentUser.uid : auth.signInAnonymously().then(c => c.user.uid))),
     collection: c => ({
       onSnapshot(cb, err) {
         let off = null, gone = false;

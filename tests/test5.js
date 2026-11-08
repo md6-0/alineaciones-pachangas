@@ -55,7 +55,7 @@ const { ok, done } = checker();
   ok('historial vacío', /Aún no hay partidos/.test(await page.innerText('#hlist')));
   await page.reload(); await page.waitForSelector('#t-alin');
   await page.waitForTimeout(100);
-  ok('tras recargar no vuelve la plantilla de ejemplo', (await page.locator('#chips .chip').count()) === 0);
+  ok('tras recargar no vuelve la plantilla de ejemplo', (await page.locator('#slist .sname').count()) === 0 && (await page.locator('#saddsel option').count()) === 1);
 
   // Restaurar copia
   await tab(page, 'opc');
@@ -68,7 +68,7 @@ const { ok, done } = checker();
   await tab(page, 'hist');
   ok('historial restaurado', (await page.locator('#hlist .match').count()) === 1);
   await tab(page, 'alin');
-  ok('jugadores restaurados', (await page.locator('#chips .chip').count()) === 24);
+  ok('jugadores restaurados', (await page.locator('#saddsel option').count()) === 25);
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   fs.rmSync(file, { force: true }); fs.rmSync(bad, { force: true });

@@ -62,3 +62,24 @@
   .sec{padding:14px}
   .hctl{width:100%}
 }
+
+/* Lista de apuntados (arriba de la pestaña Partido) */
+.signbox{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin-bottom:20px;display:flex;flex-direction:column;gap:12px}
+.signbox h2{margin:0;font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.mesel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem;color:var(--muted)}
+.mesel select,.sadd select{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;max-width:100%}
+.meline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;font:inherit;cursor:pointer}
+.slist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:2px 14px}
+.slist li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);min-width:0}
+.slist .sn{color:var(--faint);font-variant-numeric:tabular-nums;min-width:1.8em;font-size:.85rem}
+.slist .sname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.slist .sname small{color:var(--muted);font-weight:500}
+.slist li.mine .sname{color:var(--accent)}
+.slist li.extra .sn::after{content:" B";color:var(--warn);font-size:.7rem}
+.slist .sempty{color:var(--muted);border-bottom:0}
+.slist .ptags{position:static;transform:none}
+.sdel{border:0;background:transparent;color:var(--faint);padding:2px 6px;border-radius:4px;font-size:.8rem}
+.sdel:hover{color:var(--fg);background:var(--bg)}
+.sadmin{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px}
+.sadd{display:flex;gap:8px;align-items:center;flex-wrap:wrap}

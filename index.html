@@ -36,6 +36,7 @@
 <script defer src="js/teams.js"></script>
 <script defer src="js/formation.js"></script>
 <script defer src="js/matches.js"></script>
+<script defer src="js/next-match.js"></script>
 <script defer src="js/stats.js"></script>
 <script defer src="js/backup.js"></script>
 <!-- La interfaz -->
@@ -85,7 +86,7 @@
   <div class="upd" id="upd" role="status" aria-live="polite" hidden><span>Hay una versión nueva</span><button type="button" class="btn" id="updGo">Actualizar</button><button type="button" class="updx" id="updX" aria-label="Cerrar aviso">✕</button></div>
   <p class="toast" id="toast" role="status" hidden></p>
   <nav class="tabs" role="tablist" aria-label="Secciones">
-    <button class="tab" role="tab" id="t-alin" data-tab="alin" type="button">Alineación</button>
+    <button class="tab" role="tab" id="t-alin" data-tab="alin" type="button">Partido</button>
     <button class="tab edit-only" role="tab" id="t-jug" data-tab="jug" type="button">Jugadores</button>
     <button class="tab" role="tab" id="t-hist" data-tab="hist" type="button">Historial</button>
     <button class="tab" role="tab" id="t-stats" data-tab="stats" type="button"><span class="tl">Estadísticas</span><span class="ts">Stats</span></button>
@@ -101,18 +102,29 @@
   </div>
 
   <section id="p-alin" class="folder" role="tabpanel" aria-labelledby="t-alin">
+    <section class="signbox" id="signbox" aria-label="Apuntados al próximo partido">
+      <div class="row"><h2>Apuntados</h2><span class="count" id="count"></span></div>
+      <div class="me" id="me"></div>
+      <ol class="slist" id="slist"></ol>
+      <p class="status" id="status" hidden></p>
+      <div class="sadmin edit-only">
+        <form class="sadd" id="saddform"><select id="saddsel" aria-label="Jugador que apuntar"></select><button class="btn ghost" type="submit">Apuntar</button></form>
+        <div class="btns">
+          <a class="btn ghost" id="signup" href="#" target="_blank" rel="noopener">Lista por WhatsApp</a>
+          <button class="btn ghost danger" id="clearlist" type="button">Vaciar la lista</button>
+        </div>
+      </div>
+    </section>
     <div class="main">
       <div class="board" id="board"></div>
       <div class="side">
         <section class="sec edit-only">
-          <div class="row"><h2>Convocatoria</h2><span class="count" id="count"></span></div>
-          <p class="status" id="status" hidden></p>
-          <div class="chips" id="chips"></div>
+          <div class="row"><h2>Alineación</h2></div>
+          <p class="hint">Sale sola con los apuntados. Arrastra los imanes, cambia la formación o invierte los equipos para retocarla: todos ven tus cambios.</p>
           <div class="btns">
             <button class="btn" id="shuffle" type="button">Otra opción</button>
             <button class="btn ghost" id="swap" type="button">Invertir equipos</button>
           </div>
-          <a class="btn ghost signup" id="signup" href="#" target="_blank" rel="noopener">Lista para apuntarse por WhatsApp</a>
         </section>
         <div id="teams"></div>
       </div>
@@ -146,15 +158,11 @@
         </div>
       </div>
       <div class="optrow edit-only">
-        <div><h3>Hora del partido</h3><p class="hint">Sale en la lista para apuntarse. Vacía, no sale.</p></div>
+        <div><h3>Hora del partido</h3><p class="hint">Sale junto al día del partido. Vacía, no sale.</p></div>
         <div class="datepick"><input type="time" id="matchtime" aria-label="Hora del partido"></div>
       </div>
       <div class="optrow edit-only">
-        <div><h3>Tu nombre</h3><p class="hint">Sales el primero en la lista para apuntarse. Vacío, la lista empieza sin nombres.</p></div>
-        <input type="text" id="myname" class="textopt" maxlength="40" aria-label="Tu nombre">
-      </div>
-      <div class="optrow edit-only">
-        <div><h3>Formato</h3><p class="hint">Al cambiarlo se rehace el reparto.</p></div>
+        <div><h3>Formato</h3><p class="hint">Al cambiarlo, la alineación vuelve a salir sola.</p></div>
         <div class="seg" id="modeseg" role="group" aria-label="Formato">
           <button type="button" id="m7" data-mode="7">7 vs 7</button>
           <button type="button" id="m8" data-mode="8">8 vs 8</button>
@@ -178,7 +186,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.0.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.1.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>

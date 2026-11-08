@@ -1,4 +1,4 @@
-/* Primera visita y pizarra: plantilla de ejemplo, reparto, convocatoria, formaciones, formatos e invertir equipos. */
+/* Primera visita y pestaña Partido: plantilla de ejemplo, lista de apuntados, «Soy…», reparto, formaciones, formatos e invertir equipos. */
 const { open, checker, tab, toastText } = require('./helpers');
 const { ok, done } = checker();
 
@@ -8,18 +8,19 @@ const { ok, done } = checker();
   const boardIds = () => page.locator('#board .mag').evaluateAll(els => els.map(e => e.dataset.n).sort().join(','));
 
   ok('5 pestañas', (await page.locator('.tabs .tab').count()) === 5);
-  ok('empieza en Alineación', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true' && !(await page.isHidden('#p-alin')));
-  ok('título con la fecha de hoy', /^Alineación · \S+ \d+ \w+$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
+  ok('empieza en Partido', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true' && !(await page.isHidden('#p-alin')));
+  ok('título con la fecha de hoy', /^Partido · \S+ \d+ \w+$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
   ok('grupo por defecto', (await page.textContent('#eyebrow')) === 'Mi pachanga ⚽');
-  ok('plantilla de ejemplo: 24 jugadores en la convocatoria', (await page.locator('#chips .chip').count()) === 24);
-  ok('14 convocados', (await page.locator('#chips .chip[aria-pressed=true]').count()) === 14);
+  ok('primera vez: 14 apuntados (los que pide el formato)', (await page.locator('#slist li').count()) === 14);
+  ok('por orden de llegada', (await page.locator('#slist li .sname').first().innerText()) === 'Jugador 1');
   ok('14 imanes en el campo', (await mags('#board')) === 14, await mags('#board'));
-  ok('contador', (await page.innerText('#count')) === '14 en el campo');
-  ok('sin aviso de convocatoria', await page.isHidden('#status'));
+  ok('contador', (await page.innerText('#count')) === '14 de 14');
+  ok('sin aviso de la lista', await page.isHidden('#status'));
+  ok('se puede apuntar a los 10 que faltan', (await page.locator('#saddsel option').count()) === 11);
   ok('dos equipos', (await page.locator('#teams .sec.team').count()) === 2);
   ok('7 por equipo', (await page.locator('#board .mag.W').count()) === 7 && (await page.locator('#board .mag.D').count()) === 7);
   ok('un portero por equipo con la nota POR', (await page.locator('#board .mag .ptags .pt-POR').count()) >= 2);
-  ok('sin medias', (await page.locator('#teams .tmeta, #chips .r').count()) === 0 && /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText())
+  ok('sin medias', (await page.locator('#teams .tmeta').count()) === 0 && /^[A-Z0-9]{1,2}$/.test(await page.locator('#board .mag .disc').first().innerText())
     && (await page.evaluate(() => [initials('Jugador 12'), initials('Juan Pérez'), initials('Mario'), initials('Íñigo')].join())) === '12,JP,MA,ÍÑ');
 
   // Otra opción cambia el reparto y es determinista
@@ -37,12 +38,26 @@ const { ok, done } = checker();
   ok('Invertir: el Blanco pasa a Oscuro', darks === wBefore);
   ok('Invertir: aviso', (await toastText(page)) === 'Equipos invertidos.');
 
-  // Convocatoria
-  await page.locator('#chips .chip[aria-pressed=false]').first().click();
-  ok('15 convocados → sobra 1', (await page.innerText('#status')) === 'Sobra 1 para 7 vs 7; van al banquillo.');
-  ok('uno al banquillo', (await mags('#teams .bench')) === 1);
-  for (let i = 0; i < 3; i++) await page.locator('#chips .chip[aria-pressed=true]').first().click();
-  ok('12 convocados → faltan 2', (await page.innerText('#status')) === 'Faltan 2 jugadores para 7 vs 7.');
+  // «Soy…» y apuntarse
+  ok('pide quién eres', await page.isVisible('#mesel'));
+  await page.selectOption('#mesel', 'jugador-20');
+  ok('Eres…', /Eres Jugador 20/.test(await page.innerText('#me')) && (await page.innerText('#mebtn')) === 'Apuntarme');
+  await page.click('#mebtn'); await page.waitForTimeout(100);
+  ok('apuntado: aviso', (await toastText(page)) === 'Apuntado. ¡Nos vemos en el campo!');
+  ok('15 apuntados → sobra 1', (await page.innerText('#status')) === 'Sobra 1: van al banquillo.', await page.innerText('#status'));
+  ok('el último de la lista es él, marcado', (await page.locator('#slist li').last().innerText()).includes('Jugador 20') && (await page.locator('#slist li.mine.extra').count()) === 1);
+  ok('entra en la pizarra (al banquillo)', (await page.locator('.mag[data-n="jugador-20"]').count()) === 1 && (await mags('#teams .bench')) === 1);
+  ok('ahora puede borrarse', (await page.innerText('#mebtn')) === 'Borrarme');
+  await page.click('#mebtn'); await page.waitForTimeout(100);
+  ok('borrado', (await page.locator('#slist li').count()) === 14 && (await toastText(page)) === 'Te has borrado de la lista.');
+  await page.click('#mechange');
+  ok('cambiar quién eres', await page.isVisible('#mesel'));
+
+  // Quien organiza: apuntar y quitar a cualquiera
+  await page.selectOption('#saddsel', 'jugador-15'); await page.click('#saddform button'); await page.waitForTimeout(100);
+  ok('apuntar a otro', (await page.locator('#slist li').count()) === 15);
+  for (let i = 0; i < 3; i++) { await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(60); }
+  ok('12 apuntados → faltan 2', (await page.innerText('#status')) === 'Faltan 2 jugadores para 7 vs 7.', await page.innerText('#status'));
   ok('huecos vacíos en el campo', (await page.locator('#board .slot').count()) === 2);
 
   // Formaciones
@@ -60,14 +75,14 @@ const { ok, done } = checker();
   ok('8 vs 8: campo de 7', (await page.evaluate(() => document.getElementById('board').style.aspectRatio)).replace(/\s/g, '') === '44/64');
 
   // Recarga: se conserva
-  const sel = await page.locator('#chips .chip[aria-pressed=true]').count();
+  const sel = await page.locator('#slist li').count();
   await page.reload(); await page.waitForSelector('#board .mag');
-  ok('recargar conserva convocatoria y formato', (await page.locator('#chips .chip[aria-pressed=true]').count()) === sel && /8 vs 8/.test(await page.innerText('#status')));
+  ok('recargar conserva lista y formato', (await page.locator('#slist li').count()) === sel && /8 vs 8/.test(await page.innerText('#status')));
 
   // Pestañas por dirección
   await page.goto(app.url + '#estadisticas'); await page.reload(); await page.waitForSelector('#board .mag', { state: 'attached' });
   ok('#estadisticas abre Estadísticas', (await page.getAttribute('#t-stats', 'aria-selected')) === 'true' && (await page.textContent('#h1')) === 'Estadísticas');
-  ok('fuera de Alineación no se ven Guardar ni Compartir', await page.isHidden('#hctl'));
+  ok('fuera de Partido no se ven Guardar ni Compartir', await page.isHidden('#hctl'));
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close(); done();

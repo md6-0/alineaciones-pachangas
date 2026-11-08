@@ -12,7 +12,7 @@ function paintAccount() {
     ? "Elimina jugadores, historial y ajustes del servidor, para todo el mundo. No se puede deshacer: descarga antes una copia."
     : "Elimina jugadores, historial y ajustes de este dispositivo. No se puede deshacer: descarga antes una copia.";
   if (!db.cloud) return;
-  const u = db.user;
+  const u = canEdit() ? db.user : null;   // un usuario anónimo (de apuntarse) cuenta como no haber entrado
   $("#loginform").hidden = !!u; $("#logged").hidden = !u;
   $("#acchint").textContent = u ? `Has entrado como ${u.email}: puedes cambiar los datos. Los demás solo los ven.`
     : "Solo quien organiza cambia los datos. Los demás ven la app sin poder tocar nada.";
@@ -60,10 +60,9 @@ function paintOptions() {
   $$("#modeseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === st.mode));
   const mdi = $("#matchdate");
   if (document.activeElement !== mdi) mdi.value = isoDate(matchDay());
-  mdi.min = st.datePast ? "" : todayIso();
+  mdi.min = todayIso();
   $("#datereset").hidden = !customDate();
   const ti = $("#matchtime"); if (document.activeElement !== ti) ti.value = st.time || "";
-  const ni = $("#myname"); if (document.activeElement !== ni) ni.value = st.myName || "";
 }
 
 /* ---------- Ajustes ---------- */
@@ -73,15 +72,15 @@ $("#groupname").addEventListener("change", async e => {
   try { await saving; } catch { toast("No se pudo guardar el nombre del grupo."); }
 });
 
-$("#matchdate").addEventListener("change", e => { setMatchDate(e.target.value); showTab(); render(); });
-$("#datereset").addEventListener("click", () => { setMatchDate(null); showTab(); render(); });
+const saveFail = () => toast("No se pudo guardar el cambio.");
+$("#matchdate").addEventListener("change", e => { setMatchDate(e.target.value).catch(saveFail); showTab(); render(); });
+$("#datereset").addEventListener("click", () => { setMatchDate(null).catch(saveFail); showTab(); render(); });
 
-$("#matchtime").addEventListener("change", e => { st.time = /^\d\d:\d\d$/.test(e.target.value) ? e.target.value : null; save(); });
-$("#myname").addEventListener("change", e => { st.myName = e.target.value.trim().slice(0, 40); e.target.value = st.myName; save(); });
+$("#matchtime").addEventListener("change", e => { setMatchTime(e.target.value).catch(saveFail); showTab(); render(); });
 
 $("#modeseg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || !loaded) return;
-  st.mode = b.dataset.mode; save(); rebuild(); render();
+  setMode(b.dataset.mode).catch(saveFail); render();
 });
 
 /* ---------- Copia de seguridad ---------- */
