@@ -1,6 +1,5 @@
 "use strict";
-/* Lista para apuntarse por WhatsApp: el día del partido y huecos numerados (los jugadores del formato y unas reservas).
-   Cada uno copia el mensaje y pone su nombre en el primer hueco libre. */
+/* Lista para apuntarse por WhatsApp: el día del partido y huecos numerados (los jugadores del formato y unas reservas). */
 
 const SIGNUP_RESERVES = 3;
 
@@ -8,7 +7,7 @@ const SIGNUP_RESERVES = 3;
 function signupText() {
   const n = st.mode * 2, slots = k => Array.from({ length: k }, (_, i) => `${i + 1}. `);
   return [`⚽ Pachanga · ${matchDayLabel()} (${st.mode} vs ${st.mode})`,
-    "Para apuntarte, copia el mensaje y pon tu nombre en el primer hueco libre.", "",
+    "",
     ...slots(n), "", "Reservas", ...slots(SIGNUP_RESERVES)].join("\n");
 }
 

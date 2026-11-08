@@ -4,10 +4,10 @@
 /* ---------- Preferencias (localStorage, clave pach-v4) ---------- */
 const PREFS_KEY = "pach-v4";
 let st = {
-  sel: null,          // ids convocados (null hasta la primera carga: entonces se convoca a los 14 primeros)
+  sel: null,          // ids convocados (null hasta la primera carga: entonces se convoca a los primeros que pide el formato)
   ratings: true,      // mostrar las medias
   date: null,         // día del partido elegido (2026-11-05) o null para hoy; datePast: viene de cargar un partido pasado
-  mode: "7",          // formato: "7", "8" u "11"
+  mode: "8",          // formato: "7", "8" u "11" (por defecto, 8 vs 8)
   form: { W: { "7": "2-3-1", "8": "3-3-1" }, D: { "7": "2-3-1", "8": "3-3-1" } },   // formación de cada equipo en cada formato
   tab: "alin",        // pestaña abierta
   sort: "list",       // orden de la tabla de jugadores: "list" o "media"
@@ -17,7 +17,7 @@ try { const s = JSON.parse(localStorage.getItem(PREFS_KEY) || "null"); if (s && 
 // Una fecha pasada que vino de cargar un partido del historial solo dura hasta que se vuelve a abrir la app
 if (st.datePast) { st.date = null; st.datePast = false; }
 SIDES.forEach(t => { st.form[t] = st.form[t] || {}; Object.keys(FORMS).forEach(m => { if (!FORMS[m].includes(st.form[t][m])) st.form[t][m] = FORMS[m][0]; }); });
-if (!FORMS[st.mode]) st.mode = "7";
+if (!FORMS[st.mode]) st.mode = "8";
 // Las direcciones #jugadores, #historial… abren esa pestaña
 const HASH_TABS = { "#jugadores": "jug", "#historial": "hist", "#estadisticas": "stats", "#opciones": "opc" };
 if (HASH_TABS[location.hash]) st.tab = HASH_TABS[location.hash];

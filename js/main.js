@@ -14,7 +14,7 @@ function onPlayers(snap) {
   const ids = new Set(P.map(p => p.id));
   if (!loaded) {
     loaded = true;
-    if (!Array.isArray(st.sel)) st.sel = P.slice(0, 14).map(p => p.id);   // primera vez: los 14 primeros
+    if (!Array.isArray(st.sel)) st.sel = P.slice(0, NEED[st.mode]).map(p => p.id);   // primera vez: los primeros que pide el formato
     st.sel = st.sel.filter(id => ids.has(id)); save(); rebuild();
   } else {
     // Si se ha quitado a alguien convocado o en la pizarra, se rehace el reparto

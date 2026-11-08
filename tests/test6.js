@@ -61,7 +61,7 @@ const { ok, done } = checker();
   await page.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
   await page.click('#signup');
   const su = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
-  ok('lista para apuntarse', /^⚽ Pachanga · .+ \(7 vs 7\)$/.test(su[0]) && su.includes('14. ') && !su.includes('15. ') && su.includes('Reservas') && su[su.length - 1] === '3. ', su[0]);
+  ok('lista para apuntarse', /^⚽ Pachanga · .+ \(7 vs 7\)$/.test(su[0]) && su[1] === '' && su.includes('14. ') && !su.includes('15. ') && su.includes('Reservas') && su[su.length - 1] === '3. ', su[0]);
 
   // Clic fuera cierra el menú
   await page.click('#sharebtn'); await page.click('h1');
@@ -76,5 +76,15 @@ const { ok, done } = checker();
   ok('pide marcar dos', /Marca al menos dos jugadores/.test(await page.innerText('#teams')));
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
-  await app.close(); done();
+  await app.close();
+
+  // Primera vez, con el formato por defecto: 8 vs 8, 16 convocados y 16 huecos en la lista
+  const fresh = await open({ mode: null }), p2 = fresh.page;
+  ok('8 vs 8 por defecto', (await p2.evaluate(() => [st.mode, st.sel.length])).join() === '8,16');
+  await p2.evaluate(() => document.getElementById('signup').addEventListener('click', e => e.preventDefault()));
+  await p2.click('#signup');
+  const su8 = decodeURIComponent((await p2.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
+  ok('lista de 16', /\(8 vs 8\)$/.test(su8[0]) && su8.includes('16. ') && !su8.includes('17. '), su8[0]);
+  ok('sin errores (8 vs 8)', !fresh.errors.length, fresh.errors.join(' | '));
+  await fresh.close(); done();
 })().catch(e => { console.log('CRASH ' + e.stack); process.exit(1); });

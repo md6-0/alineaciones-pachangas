@@ -19,14 +19,16 @@ function serve(root = ROOT) {
   });
 }
 
-/** Abre la app en un móvil (o en el tamaño indicado) y recoge los errores de la página. */
-async function open({ viewport, offline = false } = {}) {
+/** Abre la app en un móvil (o en el tamaño indicado) y recoge los errores de la página.
+    Las pruebas se escribieron con 7 vs 7: mode lo fija la primera vez (null = el formato por defecto de la app). */
+async function open({ viewport, offline = false, mode = "7" } = {}) {
   const server = await serve();
   const browser = await chromium.launch();
   const opts = viewport ? { viewport, acceptDownloads: true } : { ...devices['Pixel 7'], acceptDownloads: true };
   const ctx = await browser.newContext(opts);
   // Sin internet: la tipografía de Google Fonts no se descarga (cae a la del sistema) y las pruebas no dependen de la red
   await ctx.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  if (mode) await ctx.addInitScript(m => { try { if (!localStorage.getItem('pach-v4')) localStorage.setItem('pach-v4', JSON.stringify({ mode: m })); } catch {} }, mode);
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
