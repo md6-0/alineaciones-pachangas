@@ -80,7 +80,7 @@ const positions = page => page.locator('#board .mag').evaluateAll(els => Object.
 
   // Día y hora
   await tab(admin, 'opc');
-  await admin.evaluate(() => { const i = document.getElementById('matchtime'); i.value = '10:30'; i.dispatchEvent(new Event('change')); });
+  await admin.evaluate(() => { const i = document.getElementById('matchwhen'); i.value = '2099-11-15T10:30'; i.dispatchEvent(new Event('change')); });
   await page.waitForTimeout(150);
   ok('el amigo ve la hora nueva', / · 10:30$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
 

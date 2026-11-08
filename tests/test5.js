@@ -17,12 +17,12 @@ const { ok, done } = checker();
   await page.fill('#groupname', 'Los del jueves'); await page.press('#groupname', 'Tab');
 
   // Fecha (arriba en Partido; ya no está en Opciones)
-  ok('día y hora fuera de Opciones', !(await page.locator('#p-opc #matchdate, #p-opc #matchtime').count()));
+  ok('día y hora fuera de Opciones', !(await page.locator('#p-opc #matchwhen').count()));
   await tab(page, 'alin');
-  await page.fill('#matchdate', '2099-01-02'); await page.dispatchEvent('#matchdate', 'change');
-  ok('fecha elegida', (await page.inputValue('#matchdate')) === '2099-01-02' && await page.isVisible('#datereset'));
+  await page.fill('#matchwhen', '2099-01-02T10:00'); await page.dispatchEvent('#matchwhen', 'change');
+  ok('fecha elegida', (await page.inputValue('#matchwhen')) === '2099-01-02T10:00' && await page.isVisible('#datereset'));
   await page.click('#datereset');
-  ok('Hoy', await page.isHidden('#datereset'));
+  ok('Hoy: sin día ni hora', await page.isHidden('#datereset') && (await page.evaluate(() => [st.date, st.time].join())) === ',');
 
   // Guardar un partido para que la copia tenga historial
   await page.click('#fix'); await page.click('#fix'); await page.waitForTimeout(200); await tab(page, 'opc');

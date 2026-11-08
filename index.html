@@ -104,9 +104,8 @@
   <section id="p-alin" class="folder" role="tabpanel" aria-labelledby="t-alin">
     <section class="signbox" id="signbox" aria-label="Apuntados al próximo partido">
       <div class="datepick when edit-only">
-        <label>Día <input type="date" id="matchdate" aria-label="Día del partido"></label>
+        <label>Día y hora <input type="datetime-local" id="matchwhen" aria-label="Día y hora del partido"></label>
         <button type="button" class="btn ghost" id="datereset">Hoy</button>
-        <label>Hora <input type="time" id="matchtime" aria-label="Hora del partido"></label>
       </div>
       <div class="row"><h2>Apuntados</h2><span class="count" id="count"></span></div>
       <ol class="slist" id="slist"></ol>
@@ -170,7 +169,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.4.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.4.1</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>

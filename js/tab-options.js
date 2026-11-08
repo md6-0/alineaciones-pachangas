@@ -58,11 +58,10 @@ function paintGroup() {
 /** Formato y fecha elegidos (se pinta con la pizarra, porque los dos la cambian). */
 function paintOptions() {
   $$("#modeseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === st.mode));
-  const mdi = $("#matchdate");
-  if (document.activeElement !== mdi) mdi.value = isoDate(matchDay());
-  mdi.min = todayIso();
+  const wi = $("#matchwhen");
+  if (document.activeElement !== wi) wi.value = customDate() ? `${st.date}T${st.time || "00:00"}` : "";
+  wi.min = todayIso() + "T00:00";
   $("#datereset").hidden = !customDate();
-  const ti = $("#matchtime"); if (document.activeElement !== ti) ti.value = st.time || "";
 }
 
 /* ---------- Ajustes ---------- */
@@ -73,10 +72,9 @@ $("#groupname").addEventListener("change", async e => {
 });
 
 const saveFail = () => toast("No se pudo guardar el cambio.");
-$("#matchdate").addEventListener("change", e => { setMatchDate(e.target.value).catch(saveFail); showTab(); render(); });
-$("#datereset").addEventListener("click", () => { setMatchDate(null).catch(saveFail); showTab(); render(); });
+$("#matchwhen").addEventListener("change", e => { setMatchWhen(e.target.value).catch(saveFail); showTab(); render(); });
+$("#datereset").addEventListener("click", () => { setMatchWhen("").catch(saveFail); showTab(); render(); });
 
-$("#matchtime").addEventListener("change", e => { setMatchTime(e.target.value).catch(saveFail); showTab(); render(); });
 
 $("#modeseg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || !loaded) return;

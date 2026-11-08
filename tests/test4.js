@@ -13,10 +13,10 @@ const { ok, done } = checker();
 
   // Día del partido (arriba en la pestaña Partido) y «Partido jugado»
   await tab(page, 'alin');
-  ok('día y hora arriba en Partido', await page.isVisible('#matchdate') && await page.isVisible('#matchtime'));
-  await page.fill('#matchdate', '2099-03-07'); await page.dispatchEvent('#matchdate', 'change');
+  ok('día y hora arriba en Partido, en un solo campo', await page.isVisible('#matchwhen') && (await page.locator('#matchdate, #matchtime').count()) === 0);
+  await page.fill('#matchwhen', '2099-03-07T19:30'); await page.dispatchEvent('#matchwhen', 'change');
   ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));
-  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Partido · Sábado 7 mar', await page.textContent('#h1'));
+  ok('título con la fecha elegida', (await page.textContent('#h1')) === 'Partido · Sábado 7 mar · 19:30', await page.textContent('#h1'));
   const apuntados = await page.evaluate(() => signupIds());
   await page.click('#fix');
   ok('Partido jugado pide confirmación', (await page.innerText('#fix')) === 'Guardar y vaciar la lista');

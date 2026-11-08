@@ -62,13 +62,13 @@ const { ok, done } = checker();
   const su = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
   ok('lista para apuntarse con los apuntados', /^⚽ Pachanga · [^·]+$/.test(su[0]) && su[1] === '' && su[2] === '' && su[3] === '1. Jugador 1' && su[su.length - 1] === '14. Jugador 14' && su.length === 17, su.join('|'));
   // Con hora (Opciones) y huecos libres
-  await page.evaluate(() => { const i = document.getElementById('matchtime'); i.value = '12:00'; i.dispatchEvent(new Event('change')); });
+  await page.evaluate(() => { const i = document.getElementById('matchwhen'); i.value = isoDate(new Date()) + 'T12:00'; i.dispatchEvent(new Event('change')); });
   ok('la hora sale en el título', / · 12:00$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
   await page.locator('#slist .sdel').first().click(); await page.waitForTimeout(100);
   await page.click('#signup');
   const su2 = decodeURIComponent((await page.getAttribute('#signup', 'href')).replace('https://wa.me/?text=', '')).split('\n');
   ok('lista con hora y hueco libre', / · 12:00$/.test(su2[0]) && su2[3] === '1. Jugador 2' && su2[16] === '14.', su2.join('|'));
-  await page.evaluate(() => { const i = document.getElementById('matchtime'); i.value = ''; i.dispatchEvent(new Event('change')); });
+  await page.evaluate(() => { const i = document.getElementById('matchwhen'); i.value = ''; i.dispatchEvent(new Event('change')); });
   ok('sin hora no sale', (await page.evaluate(() => [st.time, signupText().split('\n')[0].split(' · ').length])).join() === ',2');
 
   // Clic fuera cierra el menú

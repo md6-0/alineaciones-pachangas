@@ -57,9 +57,12 @@ function keepBoard() { savedLayout = clone(layout); return saveNext(); }
 /** Cambia el formato: el reparto vuelve a salir solo. */
 function setMode(mode) { st.mode = mode; savedLayout = null; syncBoard(); return saveNext(); }
 
-/** Día (ISO o null para hoy) y hora ("12:00" o null) del partido. */
-function setMatchDate(iso) { st.date = iso && ISO_DATE.test(iso) ? iso : null; return saveNext(); }
-function setMatchTime(t) { st.time = /^\d\d:\d\d$/.test(t || "") ? t : null; return saveNext(); }
+/** Día y hora del partido a la vez, como los da el campo «Día y hora» ("2026-11-15T12:00"); vacío para hoy y sin hora. */
+function setMatchWhen(v) {
+  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(v || "");
+  st.date = m ? m[1] : null; st.time = m ? m[2] : null;
+  return saveNext();
+}
 
 /* ---------- Lista ---------- */
 

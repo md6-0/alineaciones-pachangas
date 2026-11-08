@@ -1,6 +1,6 @@
 "use strict";
 /* Día del partido: el que elige quien organiza (st.date, llega con next/current) mientras no haya pasado; si no, hoy.
-   Para cambiarlo: setMatchDate (next-match.js). */
+   Para cambiarlo: setMatchWhen (next-match.js), que cambia a la vez el día y la hora. */
 
 /** Fecha elegida, o null si no hay o ya pasó. */
 function customDate() {
