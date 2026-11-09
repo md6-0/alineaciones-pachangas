@@ -13,6 +13,7 @@ const { ok, done } = checker();
 
   // Día del partido (arriba en la pestaña Partido) y «Partido jugado»
   await tab(page, 'alin');
+  ok('enlace para reservar el campo', await page.isVisible('#reserve') && (await page.getAttribute('#reserve', 'href')).startsWith('https://deportesua.deporsite.net/reserva-pistas') && (await page.getAttribute('#reserve', 'target')) === '_blank');
   ok('día y hora arriba en Partido, en un solo campo', await page.isVisible('#matchwhen') && (await page.locator('#matchdate, #matchtime').count()) === 0);
   await page.fill('#matchwhen', '2099-03-07T19:30'); await page.dispatchEvent('#matchwhen', 'change');
   ok('fecha elegida: botón Hoy', await page.isVisible('#datereset'));

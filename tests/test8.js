@@ -31,6 +31,7 @@ const positions = page => page.locator('#board .mag').evaluateAll(els => Object.
   ok('alineación de los apuntados', (await page.locator('#board .mag').count()) === 14);
   ok('sin quitar, apuntar a otros, retocar ni guardar', (await page.locator('#slist .sdel').count()) === 0 && await page.isHidden('#saddform')
     && await page.isHidden('#fix') && await page.isHidden('#t-jug'));
+  ok('no ve el enlace para reservar el campo', await page.isHidden('#reserve'));
   ok('puede compartir', await page.isVisible('#sharebtn'));
   const mag = page.locator('#board .mag.W').nth(3), before = await mag.getAttribute('style'), box = await mag.boundingBox();
   await page.mouse.move(box.x + 10, box.y + 10); await page.mouse.down(); await page.mouse.move(box.x + 10, box.y - 200, { steps: 5 }); await page.mouse.up();
