@@ -15,7 +15,7 @@ try { const s = JSON.parse(localStorage.getItem(PREFS_KEY) || "null"); if (s && 
 ["ratings", "sort", "sel", "myName", "datePast", "form", "me"].forEach(k => delete st[k]);   // preferencias de versiones anteriores
 if (!FORMS[st.mode]) st.mode = "8";
 // Las direcciones #jugadores, #historial… abren esa pestaña
-const HASH_TABS = { "#jugadores": "jug", "#historial": "hist", "#estadisticas": "stats", "#opciones": "opc" };
+const HASH_TABS = { "#jugadores": "jug", "#historial": "hist", "#estadisticas": "stats", "#pagos": "pag", "#opciones": "opc" };
 if (HASH_TABS[location.hash]) st.tab = HASH_TABS[location.hash];
 
 const save = () => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(st)); } catch {} };

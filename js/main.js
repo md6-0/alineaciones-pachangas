@@ -1,5 +1,6 @@
 "use strict";
-/* Arranque: escucha los cambios de los datos (jugadores, historial, ajustes, apuntados y próximo partido) y pinta la app.
+/* Arranque: escucha los cambios de los datos (jugadores, historial, ajustes, apuntados y próximo partido; los pagos, solo
+   quien organiza) y pinta la app.
    Cada aviso de db vuelve a calcular el estado y repinta lo que depende de él. */
 
 let firstSignups = false;
@@ -33,7 +34,7 @@ function onNext(snap) {
 function onMatches(snap) {
   histLoaded = true;
   matches = snap.docs.map(d => Object.assign({ id: d.id }, d.data())).sort((a, b) => String(b.date || b.id).localeCompare(String(a.date || a.id)));
-  renderHistory(); renderStats();
+  renderHistory(); renderStats(); renderPayments();
 }
 
 function onSettings(snap) {
@@ -45,7 +46,7 @@ function onSettings(snap) {
 /** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver. */
 function applyRole() {
   document.body.classList.toggle("viewer", !canEdit());
-  paintAccount(); showTab(); renderAll();
+  watchPayments(); paintAccount(); showTab(); renderAll();
 }
 
 db.collection("settings").onSnapshot(onSettings, () => {});
@@ -56,5 +57,6 @@ db.collection("players").onSnapshot(onPlayers, () => { if (!loaded) { failed = t
 
 document.body.classList.toggle("viewer", !canEdit());
 db.onAuth(applyRole);
+watchPayments();
 paintGroup(); paintAccount(); showTab(); render(); renderPlayers(); renderHistory();
 window.addEventListener("load", initServiceWorker);

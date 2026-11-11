@@ -35,6 +35,10 @@ Solo para quien organiza. Cada jugador tiene nombre y una o varias posiciones (P
 
 En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
 
+### 💶 Pagos
+
+Solo para quien organiza (ni se ve ni se descarga para los demás). Por cada partido del historial, la pista (20 € por defecto, se cambia en cada partido) se reparte entre todos los que jugaron, banquillo incluido, y tocas a cada uno cuando te paga (o **Han pagado todos**). Arriba sale lo que queda por cobrar, y **Quién falta** manda por WhatsApp (o copia) la lista de quién debe cada partido, con lo que le toca y el total de cada uno. Los partidos ya cobrados se quedan plegados.
+
 ### 🎬 Rewind del año
 
 En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote y números para cada uno que haya jugado al menos 4 partidos. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
@@ -44,7 +48,7 @@ En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias
 - **Administrar** (solo con servidor): entrar para editar o salir.
 - **Nombre del grupo**: el que sale encima del título y en la imagen que compartes.
 - **Formato**: 7 vs 7, 8 vs 8 (por defecto) u 11 vs 11. Al cambiarlo, la alineación vuelve a salir sola.
-- **Copia de seguridad** (como todo lo de Opciones salvo Administrar, solo para quien organiza): descarga un archivo con todos los jugadores y el historial, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
+- **Copia de seguridad** (como todo lo de Opciones salvo Administrar, solo para quien organiza): descarga un archivo con todos los jugadores, el historial y los pagos, y restáuralo en el mismo móvil o en otro. Es la forma de pasar los datos de un dispositivo a otro.
 - **Borrar todos los datos**: deja la app vacía, para empezar de cero. Pide confirmación y no se puede deshacer.
 - **Versión**: al final de la pestaña, con un botón para buscar actualizaciones.
 
@@ -81,7 +85,7 @@ Para compartir la app con el grupo, los datos van a un proyecto de Firebase en e
 1. En [console.firebase.google.com](https://console.firebase.google.com), **Crear proyecto** (Google Analytics no hace falta).
 2. **Compilación → Firestore Database → Crear base de datos**, en una ubicación de Europa y en modo de producción.
 3. **Compilación → Authentication → Comenzar → Método de acceso**: activa **Correo electrónico/contraseña**. En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
-4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**.
+4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**. Si ya las tenías publicadas de antes de los pagos, añade el bloque `match /payments/{id}` (sin él, ni quien organiza puede ver los pagos).
 5. **Configuración del proyecto → Tus apps → Web (`</>`)**: registra la app (sin Hosting) y copia el objeto `firebaseConfig` en `js/firebase-config.js` (`const FIREBASE_CONFIG = { … };`). No es secreto: lo que protege los datos son las reglas.
 6. Publica una versión nueva. Quien organiza entra en **Opciones → Administrar** y, si tenía datos en el móvil, pulsa **Subir los datos de este dispositivo**.
 
@@ -121,6 +125,7 @@ css/board.css          la pizarra: campo, imanes y huecos
 css/lineup.css         pestaña Partido: lista de apuntados, equipos, banquillos y menú Compartir
 css/players.css        pestaña Jugadores
 css/history.css        pestaña Historial
+css/payments.css       pestaña Pagos
 css/stats.css          pestaña Estadísticas
 css/rewind.css         Rewind del año (recuadro e historias)
 css/options.css        pestaña Opciones
@@ -156,6 +161,7 @@ js/share.js            menú Compartir de la pestaña Partido
 js/share-signup.js     lista por WhatsApp con los apuntados
 js/tab-players.js      pestaña Jugadores
 js/tab-history.js      pestaña Historial
+js/tab-payments.js     pestaña Pagos: quién ha pagado la pista y la lista de quién falta (solo quien organiza)
 js/tab-stats.js        pestaña Estadísticas
 js/share-scorers.js    goleadores para compartir: texto, imagen y su menú
 js/rewind-ui.js        Rewind en pantalla: recuadro de Estadísticas, historias e imagen de cada una
@@ -188,7 +194,7 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 ### Cómo se guardan los datos
 
-Los datos son cinco colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo y el año del Rewind publicado), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
+Los datos son seis colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo y el año del Rewind publicado), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación) y `payments` (los pagos de cada partido, con el mismo id que el partido: `court`, el precio de la pista, y `paid`, los ids de quienes han pagado; solo quien organiza puede leerlos). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
 - **`pachangas-db-v1`** (sin servidor): las cinco colecciones. Cada partido de `matches` lleva la fecha como id, el formato, la formación, los jugadores de cada equipo con su puesto y su sitio, `score` y `goals`. La copia de seguridad lleva `players`, `matches` y `settings`.
 - **`pach-v4`**: las preferencias de este dispositivo: pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.

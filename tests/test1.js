@@ -7,7 +7,7 @@ const { ok, done } = checker();
   const mags = sel => page.locator(sel + ' .mag').count();
   const boardIds = () => page.locator('#board .mag').evaluateAll(els => els.map(e => e.dataset.n).sort().join(','));
 
-  ok('5 pestañas', (await page.locator('.tabs .tab').count()) === 5);
+  ok('6 pestañas', (await page.locator('.tabs .tab').count()) === 6);
   ok('empieza en Partido', (await page.getAttribute('#t-alin', 'aria-selected')) === 'true' && !(await page.isHidden('#p-alin')));
   ok('título con la fecha de hoy', /^\S+ \d+ \w+$/.test(await page.textContent('#h1')), await page.textContent('#h1'));
   await page.evaluate(() => { const i = document.getElementById('matchwhen'); i.value = '2099-12-30T12:00'; i.dispatchEvent(new Event('change')); });

@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="css/history.css">
 <link rel="stylesheet" href="css/stats.css">
 <link rel="stylesheet" href="css/rewind.css">
+<link rel="stylesheet" href="css/payments.css">
 <link rel="stylesheet" href="css/options.css">
 
 <!-- Scripts clásicos en orden de dependencia (ver README → Cómo está organizado el código). -->
@@ -54,6 +55,7 @@
 <script defer src="js/share-signup.js"></script>
 <script defer src="js/tab-players.js"></script>
 <script defer src="js/tab-history.js"></script>
+<script defer src="js/tab-payments.js"></script>
 <script defer src="js/tab-stats.js"></script>
 <script defer src="js/share-scorers.js"></script>
 <script defer src="js/rewind-ui.js"></script>
@@ -90,7 +92,8 @@
     <button class="tab edit-only" role="tab" id="t-jug" data-tab="jug" type="button">Jugadores</button>
     <button class="tab" role="tab" id="t-hist" data-tab="hist" type="button">Historial</button>
     <button class="tab" role="tab" id="t-stats" data-tab="stats" type="button"><span class="tl">Estadísticas</span><span class="ts">Stats</span></button>
-    <button class="tab tab-opc" role="tab" id="t-opc" data-tab="opc" type="button" aria-label="Opciones"><span class="ti">⚙</span><span class="tl">Opciones</span></button>
+    <button class="tab tab-ico edit-only" role="tab" id="t-pag" data-tab="pag" type="button" aria-label="Pagos"><span class="ti">€</span><span class="tl">Pagos</span></button>
+    <button class="tab tab-ico tab-opc" role="tab" id="t-opc" data-tab="opc" type="button" aria-label="Opciones"><span class="ti">⚙</span><span class="tl">Opciones</span></button>
   </nav>
 
   <div class="rw" id="rw" hidden role="dialog" aria-label="Pachanga Rewind">
@@ -171,7 +174,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.6.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.7.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>
@@ -188,6 +191,21 @@
 
   <section id="p-hist" class="folder" role="tabpanel" aria-labelledby="t-hist" hidden>
     <div class="hlist" id="hlist"></div>
+  </section>
+
+  <section id="p-pag" class="folder" role="tabpanel" aria-labelledby="t-pag" hidden>
+    <div class="paybar">
+      <p class="paysum" id="paysum"></p>
+      <div class="share">
+        <button class="btn" id="paybtn" type="button" aria-haspopup="true" aria-expanded="false">Quién falta ▾</button>
+        <div class="smenu" id="paymenu" hidden>
+          <a class="s-wa" href="#" target="_blank" rel="noopener">WhatsApp<small>Quién falta por pagar</small></a>
+          <button type="button" class="s-copy">Copiar<small>Para pegarlo donde quieras</small></button>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Solo lo ves tú. Toca a cada uno cuando te pague. La pista se reparte entre todos los que jugaron, banquillo incluido.</p>
+    <div class="paylist" id="paylist"></div>
   </section>
 
   <section id="p-jug" class="folder" role="tabpanel" aria-labelledby="t-jug" hidden>
