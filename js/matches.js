@@ -50,7 +50,8 @@ function changeGoal(mid, team, pid, delta) {
   });
 }
 
-const deleteMatch = id => db.doc("matches/" + id).delete();
+/** Borra el partido y, si los hay, sus pagos. */
+const deleteMatch = id => db.doc("matches/" + id).delete().then(() => canEdit() ? db.doc("payments/" + id).delete() : null);
 
 /** Resultado de un partido: "W", "D", "draw" o null si falta algún marcador. */
 function matchResult(m) {

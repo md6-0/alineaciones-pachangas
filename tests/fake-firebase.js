@@ -2,7 +2,7 @@
    Imita lo que usa db-cloud.js: initializeApp, firestore() con collection().onSnapshot y doc().set/update/delete,
    FieldPath y auth() con correo y contraseña. Los datos van en localStorage («fake-firestore»), así que las páginas de
    una misma prueba comparten «servidor»; la sesión va en sessionStorage, así que cada página entra por su cuenta.
-   Reglas como las de firestore.rules: lee cualquiera; escribe solo el usuario admin-uid. */
+   Reglas como las de firestore.rules: lee cualquiera (los pagos, solo admin-uid); escribe solo el usuario admin-uid. */
 (function () {
   const KEY = "fake-firestore", ADMIN = { uid: "admin-uid", email: "mario@example.com", isAnonymous: false }, PASS = "secreta";
   const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; } };
@@ -28,7 +28,9 @@
   const firestore = () => ({
     enablePersistence: () => Promise.resolve(),
     collection: c => ({
-      onSnapshot(cb) { const s = { c, cb }; subs.push(s); setTimeout(() => cb(snapOf(c)), 0); return () => subs.splice(subs.indexOf(s), 1); }
+      onSnapshot(cb, err) {
+        if (c === "payments" && !isAdmin()) { setTimeout(() => err && err({ code: "permission-denied" }), 0); return () => {}; }
+        const s = { c, cb }; subs.push(s); setTimeout(() => cb(snapOf(c)), 0); return () => subs.splice(subs.indexOf(s), 1); }
     }),
     doc: path => {
       const [c, id] = path.split("/");

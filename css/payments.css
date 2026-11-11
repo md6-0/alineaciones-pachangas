@@ -1,0 +1,26 @@
+/* Pestaña Pagos: lo que queda por cobrar y una tarjeta plegable por partido con quién ha pagado. */
+
+.paybar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.paysum{margin:0;font-size:.92rem;color:var(--muted)}
+.paysum b{color:var(--fg);font-size:1.3rem;font-weight:800;font-stretch:85%;font-variant-numeric:tabular-nums}
+#p-pag > .hint{margin:8px 0 12px}
+.paylist{display:flex;flex-direction:column;gap:10px}
+
+.pay{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.pay summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;cursor:pointer;list-style:none}
+.pay summary::-webkit-details-marker{display:none}
+.pdate{font-weight:800;font-stretch:78%;font-size:1.15rem;text-transform:uppercase;letter-spacing:.01em}
+.pk{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--fg);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pay.full .pdate{color:var(--muted)}
+.pay.full .pk{color:var(--accent);border-color:var(--accent)}
+
+.pbody{padding:0 16px 14px;display:flex;flex-direction:column;gap:12px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.86rem;color:var(--muted)}
+.prow input{font:inherit;font-weight:700;width:64px;text-align:center;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 0;margin:0 2px;font-variant-numeric:tabular-nums}
+.prow input:focus{outline:2px solid var(--accent);border-color:transparent}
+.pper b{color:var(--fg);font-size:1rem}
+
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{font:inherit;font-size:.86rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--bg);color:var(--fg)}
+.pchip.on{background:var(--accent);border-color:var(--accent);color:#16191a}
+.pfoot{display:flex;justify-content:flex-end}
