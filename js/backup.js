@@ -1,13 +1,13 @@
 "use strict";
 /* Copia de seguridad y borrado de todos los datos. No tocan la pantalla.
-   Formato de la copia: { app: "pachangas", version: 1, exportedAt, settings, players: { id: jugador }, matches: { id: partido }, payments: { id del partido: pagos } } */
+   Formato de la copia: { app: "pachangas", version: 1, exportedAt, settings, players: { id: jugador }, matches: { id: partido }, payments: { id del partido: pagos }, ratings: { id: niveles } } */
 
 function buildBackup() {
   return {
     app: "pachangas", version: 1, exportedAt: new Date().toISOString(),
     settings: Object.assign({}, settings), players: rawPlayers,
     matches: Object.fromEntries(matches.map(m => { const c = Object.assign({}, m); delete c.id; return [m.id, c]; })),
-    payments: Object.assign({}, payments)
+    payments: Object.assign({}, payments), ratings: Object.assign({}, ratings)
   };
 }
 const backupFilename = () => `pachangas-copia-${todayIso()}.json`;
@@ -36,6 +36,12 @@ async function restoreBackup(data) {
   for (const id of mIds) await db.doc("matches/" + id).set(cleanMatch(data.matches[id]));
   for (const m of matches) if (!mIds.includes(m.id)) await db.doc("matches/" + m.id).delete();
   if (data.settings && typeof data.settings === "object") await db.doc("settings/general").set(data.settings);
+  // Niveles de los jugadores (las copias antiguas no los traen: entonces no se tocan)
+  if (data.ratings && typeof data.ratings === "object") {
+    const rIds = Object.keys(data.ratings).filter(k => pIds.includes(k) && data.ratings[k] && typeof data.ratings[k] === "object");
+    for (const id of rIds) await db.doc("ratings/" + id).set(data.ratings[id]);
+    for (const id of Object.keys(ratings)) if (!rIds.includes(id)) await db.doc("ratings/" + id).delete();
+  }
   // Pagos (las copias antiguas no los traen: entonces no se tocan)
   if (data.payments && typeof data.payments === "object") {
     const ok = /^[A-Za-z0-9_\-.~:@+]{1,200}$/, payIds = Object.keys(data.payments).filter(k => ok.test(k) && data.payments[k] && typeof data.payments[k] === "object");
@@ -45,12 +51,13 @@ async function restoreBackup(data) {
   return { players: pIds.length, matches: mIds.length };
 }
 
-/** Borra jugadores, historial, pagos, ajustes, la lista de apuntados y el próximo partido. */
+/** Borra jugadores, medias, historial, pagos, ajustes, la lista de apuntados y el próximo partido. */
 async function wipeAll() {
   for (const id of Object.keys(signups)) await db.doc("signups/" + id).delete();
   for (const id of Object.keys(rawPlayers)) await db.doc("players/" + id).delete();
   for (const m of matches) await db.doc("matches/" + m.id).delete();
   for (const id of Object.keys(payments)) await db.doc("payments/" + id).delete();
+  for (const id of Object.keys(ratings)) await db.doc("ratings/" + id).delete();
   await db.doc("settings/general").delete();
   await db.doc("next/current").delete();
 }

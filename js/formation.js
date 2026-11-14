@@ -45,7 +45,8 @@ function place(team, players) {
 /** Reparto automático de los apuntados y su colocación (la alineación retocada está en next-match.js). */
 function rebuild() {
   layout = {};
-  const res = solve(P.filter(p => isSignedUp(p.id)));
+  const list = P.filter(p => isSignedUp(p.id));
+  const res = sharedTeams(list) || solve(list);   // quien no ve las medias usa el reparto que guardó quien organiza
   if (!res) return;
   place("W", res.A);
   place("D", res.B);

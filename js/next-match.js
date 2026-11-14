@@ -1,9 +1,10 @@
 "use strict";
 /* Próximo partido: la lista de apuntados y la alineación que ve todo el mundo. No toca la pantalla.
    signups/{id del jugador} = { at: cuándo se apuntó (ISO) }   (solo lo cambia quien organiza; la lista va por orden de llegada)
-   next/current = { date, time, mode, layout }   (solo lo cambia quien organiza)
+   next/current = { date, time, mode, layout, split }   (solo lo cambia quien organiza)
      Día, hora y formato del partido y, si quien organiza ha retocado la alineación, su colocación (layout).
-     Sin retocar, layout es null y la alineación sale sola a partir de los apuntados. */
+     Sin retocar, layout es null y la alineación sale sola a partir de los apuntados.
+     split: el reparto automático con medias que hace quien organiza (ver ratings.js), para que los demás vean los mismos equipos. */
 
 let signups = {};          // id → { at, uid }
 let signupsLoaded = false;
@@ -21,18 +22,19 @@ function applyNext(d) {
   st.date = typeof d.date === "string" && ISO_DATE.test(d.date) ? d.date : null;
   st.time = /^\d\d:\d\d$/.test(d.time || "") ? d.time : null;
   savedLayout = d.layout && typeof d.layout === "object" ? d.layout : null;
+  sharedSplit = d.split && typeof d.split === "object" ? d.split : null;
 }
 
 /** Guarda el partido (día, hora, formato y colocación) para todos. */
 function saveNext() {
-  return db.doc("next/current").set({ date: st.date, time: st.time, mode: st.mode, layout: savedLayout ? clone(savedLayout) : null });
+  return db.doc("next/current").set({ date: st.date, time: st.time, mode: st.mode, layout: savedLayout ? clone(savedLayout) : null, split: sharedSplit ? clone(sharedSplit) : null });
 }
 
 /* ---------- Alineación ---------- */
 
 /** Pone en la pizarra a los apuntados: la colocación retocada (con los nuevos en un hueco libre) o, si no hay, el reparto automático. */
 function syncBoard() {
-  if (!savedLayout) { rebuild(); return; }
+  if (!savedLayout) { rebuild(); shareSplit(); return; }
   layout = {};
   const ids = signupIds();
   ids.forEach(id => {
