@@ -29,7 +29,7 @@ Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con
 
 ### 👟 Jugadores
 
-Solo para quien organiza. Cada jugador tiene nombre y una o varias posiciones (POR, DEF, MED, ATQ). Los equipos se equilibran por posiciones, y en cada equipo va a la portería quien tenga la posición POR.
+Solo para quien organiza. Cada jugador tiene nombre, una o varias posiciones (POR, DEF, MED, ATQ) y una **media** del 1 al 99 que escribe quien organiza en su carta: bronce por debajo de 65, plata hasta 74, oro hasta 89 y azul de 90 para arriba. Los equipos se equilibran primero por posiciones (en cada equipo va a la portería quien tenga la posición POR) y después igualando la media de los dos equipos; quien no tiene media cuenta como 70. Las medias son privadas: los demás ven los equipos que salen, pero nunca un número.
 
 ### 🏆 Historial y estadísticas
 
@@ -85,7 +85,7 @@ Para compartir la app con el grupo, los datos van a un proyecto de Firebase en e
 1. En [console.firebase.google.com](https://console.firebase.google.com), **Crear proyecto** (Google Analytics no hace falta).
 2. **Compilación → Firestore Database → Crear base de datos**, en una ubicación de Europa y en modo de producción.
 3. **Compilación → Authentication → Comenzar → Método de acceso**: activa **Correo electrónico/contraseña**. En **Usuarios → Agregar usuario**, crea el de quien organiza y copia su **UID**.
-4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**. Si ya las tenías publicadas de antes de los pagos, añade el bloque `match /payments/{id}` (sin él, ni quien organiza puede ver los pagos).
+4. **Firestore Database → Reglas**: pega `firestore.rules` cambiando `PON_AQUI_TU_UID` por ese UID, y **Publicar**. Si ya las tenías publicadas de antes, añade los bloques que falten (`match /payments/{id}` y `match /ratings/{id}`): sin ellos, ni quien organiza puede ver los pagos ni las medias.
 5. **Configuración del proyecto → Tus apps → Web (`</>`)**: registra la app (sin Hosting) y copia el objeto `firebaseConfig` en `js/firebase-config.js` (`const FIREBASE_CONFIG = { … };`). No es secreto: lo que protege los datos son las reglas.
 6. Publica una versión nueva. Quien organiza entra en **Opciones → Administrar** y, si tenía datos en el móvil, pulsa **Subir los datos de este dispositivo**.
 
@@ -142,6 +142,7 @@ js/state.js            estado en memoria y preferencias de este dispositivo
 js/settings.js         ajustes que viajan con los datos (nombre del grupo)
 js/dates.js            día del partido
 js/players.js          jugadores: lectura, añadir, cambiar y quitar
+js/ratings.js          medias de los jugadores (privadas) y el reparto con medias que ven los demás
 js/teams.js            reparto en dos equipos equilibrados por posiciones
 js/formation.js        colocación en la pizarra: huecos, portero y soltar imanes
 js/matches.js          historial: guardar la alineación, resultado y goles
@@ -194,7 +195,7 @@ El flujo es siempre el mismo: una acción cambia los datos o la pizarra y se vue
 
 ### Cómo se guardan los datos
 
-Los datos son seis colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo y el año del Rewind publicado), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación) y `payments` (los pagos de cada partido, con el mismo id que el partido: `court`, el precio de la pista, y `paid`, los ids de quienes han pagado; solo quien organiza puede leerlos). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
+Los datos son siete colecciones: `players` (cada jugador: `name`, `pos` con sus posiciones y `order` en la lista), `matches` (el historial), `settings` (el nombre del grupo y el año del Rewind publicado), `signups` (los apuntados al próximo partido: el id del jugador, con `at`, cuándo se apuntó) y `next` (un documento, `current`, con el día, la hora, el formato y, si quien organiza la ha retocado, la colocación de la alineación y, en `split`, el reparto con medias que guarda quien organiza para que los demás, que no pueden leerlas, vean los mismos equipos) `ratings` (la media de cada jugador, `media`, con el mismo id que el jugador; solo quien organiza puede leerlas) y `payments` (los pagos de cada partido, con el mismo id que el partido: `court`, el precio de la pista, y `paid`, los ids de quienes han pagado; solo quien organiza puede leerlos). Con servidor están en Cloud Firestore (y Firestore guarda una copia en el dispositivo para funcionar sin conexión); sin servidor, en el `localStorage` del navegador. Además hay preferencias de cada dispositivo, siempre en `localStorage`:
 
 - **`pachangas-db-v1`** (sin servidor): las cinco colecciones. Cada partido de `matches` lleva la fecha como id, el formato, la formación, los jugadores de cada equipo con su puesto y su sitio, `score` y `goals`. La copia de seguridad lleva `players`, `matches` y `settings`.
 - **`pach-v4`**: las preferencias de este dispositivo: pestaña abierta y qué se comparte (alineación o equipos), y lo último que llegó del próximo partido.

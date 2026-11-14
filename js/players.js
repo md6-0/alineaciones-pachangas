@@ -36,8 +36,9 @@ function updatePlayer(id, patch) {
   return p;
 }
 
-/** Quita a un jugador (y de la lista de apuntados, si estaba). */
-const removePlayer = id => (signups[id] ? signOff(id) : Promise.resolve()).then(() => db.doc("players/" + id).delete());
+/** Quita a un jugador (y de la lista de apuntados y sus niveles, si los tenía). */
+const removePlayer = id => (signups[id] ? signOff(id) : Promise.resolve()).then(() => db.doc("players/" + id).delete())
+  .then(() => canEdit() && ratings[id] ? db.doc("ratings/" + id).delete() : null);
 
 /** Posiciones del jugador tras marcar o desmarcar una. */
 const toggledPositions = (p, r) => p.pos.includes(r) ? p.pos.filter(x => x !== r) : [...p.pos, r];

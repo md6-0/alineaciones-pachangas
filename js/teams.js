@@ -1,5 +1,5 @@
 "use strict";
-/* Reparto de los apuntados en dos equipos equilibrados por posiciones. No toca la pantalla.
+/* Reparto de los apuntados en dos equipos equilibrados por posiciones y, si se pueden leer, por medias. No toca la pantalla.
    Entre los repartos igual de equilibrados se elige uno al azar, con una semilla sacada de los ids:
    los mismos apuntados dan siempre el mismo reparto, en todos los móviles. */
 
@@ -16,6 +16,12 @@ function splitCost(A, B) {
   for (const r of ["POR", "DEF", "MED", "ATQ"]) {
     const d = Math.abs(A.filter(p => can(p, r)).length - B.filter(p => can(p, r)).length);
     cost += Math.max(0, d - 1) * (r === "POR" ? 6 : 1.5) + d * (r === "POR" ? .5 : .1);
+  }
+  // Con medias (solo quien organiza): que la media de los dos equipos se parezca. 4 puntos de diferencia pesan
+  // como una posición descompensada, así que las posiciones siguen mandando.
+  if (ratingsLoaded && A.length && B.length) {
+    const avg = T => T.reduce((s, p) => s + ratingOf(p.id), 0) / T.length;
+    cost += Math.abs(avg(A) - avg(B)) * .375;
   }
   return cost;
 }

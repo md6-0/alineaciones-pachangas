@@ -46,7 +46,7 @@ function onSettings(snap) {
 /** Con servidor: al saber quién ha entrado (o al entrar o salir), la app pasa a editar o a solo ver. */
 function applyRole() {
   document.body.classList.toggle("viewer", !canEdit());
-  watchPayments(); paintAccount(); showTab(); renderAll();
+  watchPayments(); watchRatings(); paintAccount(); showTab(); renderAll();
 }
 
 db.collection("settings").onSnapshot(onSettings, () => {});
@@ -57,6 +57,6 @@ db.collection("players").onSnapshot(onPlayers, () => { if (!loaded) { failed = t
 
 document.body.classList.toggle("viewer", !canEdit());
 db.onAuth(applyRole);
-watchPayments();
+watchPayments(); watchRatings();
 paintGroup(); paintAccount(); showTab(); render(); renderPlayers(); renderHistory();
 window.addEventListener("load", initServiceWorker);
