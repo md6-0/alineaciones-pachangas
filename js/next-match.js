@@ -66,6 +66,29 @@ function setMatchWhen(v) {
   return saveNext();
 }
 
+/** Deshace los retoques: los equipos vuelven a salir solos, por posiciones y medias. */
+function autoTeams() { savedLayout = null; syncBoard(); return saveNext(); }
+
+/** Carga en la pizarra un partido del historial: sus jugadores pasan a ser los apuntados, con la misma colocación y formato.
+    Devuelve cuántos jugadores del partido ya no están en la plantilla (se quedan fuera). */
+async function loadMatch(m) {
+  const lay = {}, ids = [];
+  let gone = 0;
+  SIDES.forEach(team => (Array.isArray(m[team]) ? m[team] : []).forEach(p => {
+    if (!p || !p.id || ids.includes(p.id)) return;
+    if (!BY[p.id]) { gone++; return; }
+    ids.push(p.id);
+    lay[p.id] = isFinite(p.x) && isFinite(p.y) && p.x !== null && p.y !== null ? { team, zone: "pitch", x: +p.x, y: +p.y } : { team, zone: "bench" };
+  }));
+  if (FORMS[m.mode]) st.mode = m.mode;
+  savedLayout = lay;   // antes de cambiar la lista, para que la pizarra use ya esta colocación
+  for (const id of Object.keys(signups)) if (!ids.includes(id)) await signOff(id);
+  const t = Date.now();
+  for (let i = 0; i < ids.length; i++) if (!signups[ids[i]]) await db.doc("signups/" + ids[i]).set({ at: new Date(t + i).toISOString() });
+  await saveNext();
+  return gone;
+}
+
 /* ---------- Lista ---------- */
 
 /** Apunta a un jugador al final de la lista, o lo quita. */
