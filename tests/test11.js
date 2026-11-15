@@ -31,6 +31,13 @@ const ratings = { p0: { media: 75 }, p1: { media: 75 }, p2: { media: 92 }, p3: {
   ok('fuera de 1-99 no se guarda', await page.evaluate(() => mediaOf(P[0].id) === 94));
   await page.fill('#plist .plrow >> nth=0 >> input.mcard', ''); await page.locator('#plist .plrow >> nth=0 >> input.mcard').blur(); await page.waitForTimeout(150);
   ok('vacía, sin media', await page.evaluate(() => mediaOf(P[0].id) === null));
+  // Ordenar por media
+  await page.evaluate(async () => { await setMedia(P[1].id, 99); await setMedia(P[2].id, 60); });
+  await page.click('#psortseg [data-psort=media]'); await page.waitForTimeout(150);
+  const order = await page.evaluate(() => [...document.querySelectorAll('#plist .plrow')].slice(0, 2).map(r => r.dataset.id));
+  ok('ordenar por media: la más alta arriba', order[0] === await page.evaluate(() => P[1].id) && await page.evaluate(() => st.psort === 'media'), JSON.stringify(order));
+  await page.click('#psortseg [data-psort=list]'); await page.waitForTimeout(150);
+  ok('volver al orden de la lista', await page.evaluate(() => document.querySelector('#plist .plrow').dataset.id === P[0].id));
   ok('sin errores (sin servidor)', !app.errors.length, app.errors.join(' | '));
   await app.close();
 

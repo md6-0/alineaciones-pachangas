@@ -2,6 +2,7 @@
 
 .pcol{display:flex;flex-direction:column;gap:14px}
 .ptools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.psort{display:flex;align-items:center;justify-content:flex-end;gap:10px;font-size:.82rem;color:var(--muted);margin-bottom:10px}
 .pcount{font-weight:800;font-stretch:80%;font-size:1.25rem;font-variant-numeric:tabular-nums;margin-right:auto}
 .addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .addrow input{width:180px}

@@ -11,6 +11,13 @@ function mediaCard(p) {
     value="${m === null ? "" : m}" placeholder="–" aria-label="Media de ${esc(p.n)}">`;
 }
 
+/** Jugadores en el orden elegido: el de la lista, o de mayor a menor media (sin media, al final; a igual media, por nombre). */
+function sortedPlayers() {
+  if (st.psort !== "media" || !ratingsLoaded) return P;
+  const key = p => { const m = mediaOf(p.id); return m === null ? -1 : m; };
+  return P.slice().sort((a, b) => key(b) - key(a) || a.n.localeCompare(b.n, "es"));
+}
+
 function playerRowHTML(p) {
   return `<div class="plrow" data-id="${esc(p.id)}">
       ${mediaCard(p)}
@@ -29,7 +36,8 @@ function renderPlayers() {
   const ae = document.activeElement;
   if (box.contains(ae) && ae.tagName === "INPUT") return;
   if (!P.length) { box.innerHTML = '<p class="hint">Todavía no hay jugadores. Añade el primero con el botón de arriba.</p>'; return; }
-  box.innerHTML = `<div class="plrows">${P.map(playerRowHTML).join("")}</div>`;
+  document.querySelectorAll("#psortseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.psort === st.psort));
+  box.innerHTML = `<div class="plrows">${sortedPlayers().map(playerRowHTML).join("")}</div>`;
 }
 
 /** Guarda un cambio y, si falla, avisa y vuelve a pintar la tabla con lo guardado. */
@@ -76,4 +84,10 @@ $("#addform").addEventListener("submit", e => {
   addPlayer(name)
     .then(() => { inp.value = ""; toast(`${name} añadido.`); })
     .catch(e => toast(e && e.code === "quota_exceeded" ? "No caben más jugadores." : "No se pudo añadir el jugador."));
+});
+
+// Ordenar por la lista o por media (se recuerda en este dispositivo)
+$("#psortseg").addEventListener("click", e => {
+  const b = e.target.closest("[data-psort]"); if (!b || b.dataset.psort === st.psort) return;
+  st.psort = b.dataset.psort; save(); renderPlayers();
 });

@@ -9,11 +9,13 @@ let st = {
   time: null,         // hora del partido ("12:00") o null
   mode: "8",          // formato: "7", "8" u "11" (por defecto, 8 vs 8)
   tab: "alin",        // pestaña abierta
+  psort: "list",      // orden en Jugadores: "list" (el de la lista) o "media" (de mayor a menor media)
   img: "lineup"       // qué se comparte (texto e imagen): "lineup" (la alineación) o "teams" (solo los jugadores de cada equipo)
 };
 try { const s = JSON.parse(localStorage.getItem(PREFS_KEY) || "null"); if (s && typeof s === "object") st = Object.assign(st, s); } catch {}
 ["ratings", "sort", "sel", "myName", "datePast", "form", "me"].forEach(k => delete st[k]);   // preferencias de versiones anteriores
 if (!FORMS[st.mode]) st.mode = "8";
+if (st.psort !== "media") st.psort = "list";
 // Las direcciones #jugadores, #historial… abren esa pestaña
 const HASH_TABS = { "#jugadores": "jug", "#historial": "hist", "#estadisticas": "stats", "#pagos": "pag", "#opciones": "opc" };
 if (HASH_TABS[location.hash]) st.tab = HASH_TABS[location.hash];
