@@ -19,6 +19,9 @@
 .thead{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .tname{font-weight:700;font-stretch:80%;font-size:1.3rem;text-transform:uppercase;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
 .tsub{font-size:.8rem;color:var(--muted);margin:-6px 0 0}
+.tavg{font-size:.78rem;color:var(--muted);white-space:nowrap}
+.tavg b{color:var(--fg);font-size:.95rem;font-variant-numeric:tabular-nums}
+.ttools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-bottom:10px}
 
 /* Banquillo: los imanes se vuelven pastillas en fila */
 .bench{min-height:58px;border-radius:4px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px dashed var(--line);background:var(--bg)}

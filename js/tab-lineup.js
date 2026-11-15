@@ -45,11 +45,28 @@ function magHTML(id) {
 
 const slotsHTML = team => freeSlots(team).map(s => `<div class="slot" style="left:${s.x}%;top:${s.y}%">${s.role === "GK" ? "POR" : s.role}</div>`).join("");
 
+/** Media del equipo (solo quien organiza, con las medias cargadas). */
+function teamAvgHTML(team) {
+  const ids = idsOf(team);
+  if (!canEdit() || !ratingsLoaded || !ids.length) return "";
+  const avg = ids.reduce((s, id) => s + ratingOf(id), 0) / ids.length;
+  return `<span class="tavg edit-only">Media <b>${avg.toFixed(1).replace(".", ",")}</b></span>`;
+}
+
+/** Arriba de los equipos (solo quien organiza): cómo se han hecho y, si están retocados a mano, rehacerlos por medias. */
+function teamToolsHTML() {
+  if (!canEdit()) return "";
+  return savedLayout
+    ? '<div class="ttools edit-only"><span>Alineación retocada a mano</span><button type="button" class="btn ghost" id="autoteams">Rehacer por medias</button></div>'
+    : '<div class="ttools edit-only"><span>Equipos por posiciones y medias</span></div>';
+}
+
 function teamHTML(team) {
   const bench = benchIds(team);
   return `<section class="sec team ${team}">
     <div class="thead">
       <div class="tname"><span class="sw ${team}"></span>${TEAMS[team]}</div>
+      ${teamAvgHTML(team)}
     </div>
     <p class="tsub">${pitchIds(team).length} en el campo</p>
     <div class="bench" data-team="${team}">${bench.length ? bench.map(magHTML).join("") : `<span class="empty">Banquillo vacío${canEdit() ? " · suelta aquí un imán" : ""}</span>`}</div>
@@ -69,7 +86,7 @@ function renderLineup() {
     + slotsHTML("D") + slotsHTML("W") + pitchIds().map(magHTML).join("");
   const empty = !P.length ? (canEdit() ? "Todavía no hay jugadores. Añádelos en la pestaña Jugadores o restaura una copia en Opciones (⚙)." : "Todavía no hay jugadores.")
     : "La alineación aparecerá cuando se apunten al menos dos jugadores.";
-  $("#teams").innerHTML = hasLineup() ? teamHTML("D") + teamHTML("W") : `<section class="sec"><p class="status">${empty}</p></section>`;
+  $("#teams").innerHTML = hasLineup() ? teamToolsHTML() + teamHTML("D") + teamHTML("W") : `<section class="sec"><p class="status">${empty}</p></section>`;
 }
 
 /* ---------- Acciones ---------- */
@@ -92,6 +109,14 @@ $("#clearlist").addEventListener("click", e => {
   if (!confirmFirst(btn, "Sí, vaciar la lista", 4000)) return;
   disarm(btn, "Vaciar la lista");
   clearSignups().then(() => toast("Lista vacía: lista para el próximo partido.")).catch(listFail);
+});
+
+// Rehacer los equipos por posiciones y medias (deshace los retoques a mano)
+$("#teams").addEventListener("click", e => {
+  const b = e.target.closest("#autoteams"); if (!b) return;
+  if (!confirmFirst(b, "¿Perder los retoques?", 3000)) return;
+  autoTeams().then(() => toast("Equipos rehechos por posiciones y medias."), () => toast("No se pudieron guardar los equipos."));
+  render();
 });
 
 // Partido jugado: guarda la alineación en el historial, vacía la lista y lleva al historial para apuntar el resultado.

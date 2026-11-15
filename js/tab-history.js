@@ -39,7 +39,7 @@ function matchHTML(m) {
         <div class="score">Blanco ${goalsInput("W", w, "Equipo Blanco")}<span class="dash">–</span>${goalsInput("D", d, "Equipo Oscuro")} Oscuro ${res ? RESULT[res] : '<span class="res">Sin resultado</span>'}</div>
       </div>
       <div class="mteams">${mteamHTML(m, "W")}${mteamHTML(m, "D")}</div>
-      <div class="mfoot edit-only"><button type="button" class="del" data-mdel>Borrar partido</button></div>
+      <div class="mfoot edit-only"><button type="button" class="btn ghost" data-mload>Cargar en la pizarra</button><button type="button" class="del" data-mdel>Borrar partido</button></div>
     </article>`;
 }
 
@@ -79,6 +79,16 @@ hlist.addEventListener("click", e => {
     const pid = ga ? box.querySelector("[data-gsel]").value : gd.dataset.gdel;
     if (!pid) { toast("Elige quién marcó el gol."); return; }
     changeGoal(mid, team, pid, ga ? 1 : -1).catch(() => toast("No se pudo guardar el gol."));
+    return;
+  }
+  const ld = e.target.closest("[data-mload]");
+  if (ld) {
+    if (!confirmFirst(ld, "Sustituye la lista: ¿seguro?", 3000)) return;
+    const m = matchById(ld.closest(".match").dataset.id); if (!m) return;
+    loadMatch(m).then(gone => {
+      st.tab = "alin"; save(); showTab(); render();
+      toast(`Alineación del ${fmtDate(m.date || m.id)} en la pizarra.` + (gone ? ` ${cnt(gone, "jugador ya no está", "jugadores ya no están")} en la plantilla.` : ""));
+    }, () => toast("No se pudo cargar la alineación."));
     return;
   }
   const del = e.target.closest("[data-mdel]");

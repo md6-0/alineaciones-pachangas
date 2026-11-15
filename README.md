@@ -29,11 +29,11 @@ Con el servidor configurado (ver *Para desarrolladores → Servidor*), basta con
 
 ### 👟 Jugadores
 
-Solo para quien organiza. Cada jugador tiene nombre, una o varias posiciones (POR, DEF, MED, ATQ) y una **media** del 1 al 99 que escribe quien organiza en su carta: bronce por debajo de 65, plata hasta 74, oro hasta 89 y azul de 90 para arriba. Los equipos se equilibran primero por posiciones (en cada equipo va a la portería quien tenga la posición POR) y después igualando la media de los dos equipos; quien no tiene media cuenta como 70. Las medias son privadas: los demás ven los equipos que salen, pero nunca un número.
+Solo para quien organiza. Cada jugador tiene nombre, una o varias posiciones (POR, DEF, MED, ATQ) y una **media** del 1 al 99 que escribe quien organiza en su carta: bronce por debajo de 65, plata hasta 74, oro hasta 89 y azul de 90 para arriba. Los equipos se equilibran primero por posiciones (en cada equipo va a la portería quien tenga la posición POR) y después igualando la media de los dos equipos; quien no tiene media cuenta como 70. En Partido, quien organiza ve la media de cada equipo y, si ha retocado la alineación a mano, puede **Rehacer por medias**. Las medias son privadas: los demás ven los equipos que salen, pero nunca un número.
 
 ### 🏆 Historial y estadísticas
 
-En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
+En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno). Con **Cargar en la pizarra** recupera la alineación de un partido: sus jugadores pasan a ser los apuntados, con la misma colocación y formato (los que ya no están en la plantilla se quedan fuera). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
 
 ### 💶 Pagos
 
