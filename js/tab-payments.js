@@ -64,10 +64,10 @@ function payHTML(m) {
   const ps = payers(m), paid = payOf(m.id).paid || {}, k = ps.filter(p => paid[p.id]).length, full = k === ps.length;
   const open = m.id in payOpen ? payOpen[m.id] : !full;
   return `<details class="pay${full ? " full" : ""}" data-id="${esc(m.id)}"${open ? " open" : ""}>
-      <summary><span class="pdate">${esc(fmtDate(m.date || m.id))}</span><span class="pk">${full ? "Pagado ✓" : `${k} de ${ps.length}`}</span></summary>
+      <summary><span class="pdate">${esc(fmtDate(m.date || m.id))}</span><span class="pk">${full ? "Pagado ✓" : `Faltan ${euros(shareOf(m) * (ps.length - k))}`}</span></summary>
       <div class="pbody">
         <div class="prow"><label>Pista <input type="number" inputmode="decimal" min="0" max="999" step="0.5" data-court value="${courtOf(m.id)}" aria-label="Precio de la pista"> €</label>
-          <span class="pper"><b>${euros(shareOf(m))}</b> cada uno (${ps.length})</span></div>
+          <span class="pper"><b>${euros(shareOf(m))}</b> cada uno · han pagado ${k} de ${ps.length}</span></div>
         <div class="pchips">${ps.map(p => `<button type="button" class="pchip${paid[p.id] ? " on" : ""}" data-pid="${esc(p.id)}" aria-pressed="${!!paid[p.id]}">${paid[p.id] ? "✓ " : ""}${esc(payName(p))}</button>`).join("")}</div>
         <div class="pfoot"><button type="button" class="btn ghost" data-all="${full ? "" : "1"}">${full ? "Desmarcar a todos" : "Han pagado todos"}</button></div>
       </div>

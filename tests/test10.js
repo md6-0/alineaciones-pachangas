@@ -25,7 +25,7 @@ const matches = { '2026-11-01': match('2026-11-01', [0, 1], [2, 3]), '2026-11-08
 
   await page.click('.pay >> nth=0 >> [data-pid="p0"]'); await page.waitForTimeout(100);
   ok('Ana pagada', await page.evaluate(() => payments['2026-11-08'].paid.p0 === true && payments['2026-11-08'].court === 20));
-  ok('1 de 5', /1 de 5/.test(await page.innerText('.pay >> nth=0 >> summary')));
+  ok('falta lo de 4 en ese partido', /Faltan 16,00 €/.test(await page.innerText('.pay >> nth=0 >> summary')) && /han pagado 1 de 5/.test(await page.innerText('.pay >> nth=0')));
   await page.click('.pay >> nth=1 >> [data-all]'); await page.waitForTimeout(100);
   ok('partido del 1 cobrado y plegado', /Pagado ✓/.test(await page.innerText('.pay >> nth=1 >> summary')) && !(await page.getAttribute('.pay >> nth=1', 'open') !== null));
 
@@ -69,7 +69,7 @@ const matches = { '2026-11-01': match('2026-11-01', [0, 1], [2, 3]), '2026-11-08
   await v.page.fill('#loginmail', 'mario@example.com'); await v.page.fill('#loginpass', 'secreta'); await v.page.click('#loginbtn');
   await v.page.waitForTimeout(400);
   await tab(v.page, 'pag'); await v.page.waitForTimeout(200);
-  ok('al entrar, ve los pagos', /1 de 5/.test(await v.page.innerText('#paylist')), await v.page.innerText('#paylist'));
+  ok('al entrar, ve los pagos', /han pagado 1 de 5/.test(await v.page.innerText('#paylist')), await v.page.innerText('#paylist'));
   ok('sin errores (servidor)', !v.errors.length, v.errors.join(' | '));
   await v.close();
   done();
