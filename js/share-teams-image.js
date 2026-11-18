@@ -11,12 +11,12 @@ const teamNames = team => [...pitchIds(team), ...benchIds(team)].map(nameOf).sor
 async function drawTeamsImage() {
   try { await document.fonts.ready; } catch {}
   const W = 1080, M = 48, gap = 28, colW = (W - 2 * M - gap) / 2, rowH = 70;
-  const teams = [["W", KIT.W.label], ["D", KIT.D.label]].map(([t, label]) => ({ t, label, squad: teamNames(t) }));
+  const teams = [["W", "EQUIPO BLANCO"], ["D", "EQUIPO OSCURO"]].map(([t, label]) => ({ t, label, squad: teamNames(t) }));
   const rows = Math.max(1, ...teams.map(x => x.squad.length));
   const top = POSTER_TOP, tabH = 70, cardH = tabH + 22 + rows * rowH + 14, H = top + cardH + 64;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), font = posterFont(c);
-  posterHead(c, "Equipos");
+  posterHead(c, "EQUIPOS");
 
   teams.forEach(({ t, label, squad }, i) => {
     const x = M + i * (colW + gap), light = t === "W";

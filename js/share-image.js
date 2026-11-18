@@ -4,7 +4,7 @@
    Aquí están también las piezas comunes con la imagen de los equipos (cabecera, carpetas, texto recortado). */
 
 const POSTER_F = "Archivo, system-ui, sans-serif", POSTER_TOP = 400, POSTER_ACC = "#9ad6b0", FOLDER_BG = "#254031";
-const KIT = { W: { bg: "#f5f4ef", ink: "#16191a", label: "Equipo blanco" }, D: { bg: "#15181a", ink: "#f1f1ee", label: "Equipo oscuro" } };
+const KIT = { W: { bg: "#f5f4ef", ink: "#16191a", label: "EQUIPO BLANCO" }, D: { bg: "#15181a", ink: "#f1f1ee", label: "EQUIPO OSCURO" } };
 
 /** Recorta un texto con «…» para que quepa en el ancho dado. */
 function fitText(c, s, max) {
@@ -26,18 +26,19 @@ function posterHead(c, title) {
   c.restore();
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   c.fillStyle = POSTER_ACC; c.fillRect(M, 58, 46, 6);
-  c.fillStyle = "#b4c6ba"; c.font = `600 27px ${F}`;
-  c.fillText(groupName(), M + 62, 71);
+  c.fillStyle = "#b4c6ba"; c.font = `600 24px ${F}`; c.letterSpacing = "4px";
+  c.fillText(groupName().toUpperCase(), M + 62, 70);
+  c.letterSpacing = "0px";
   font("700 104px", true); c.fillStyle = "#eef3ef";
   c.fillText(title, M - 3, 186);
-  const info = [["Día", matchDayLabel()], ["Hora", st.time || "—"], ["Formato", `${st.mode} vs ${st.mode}`]];
+  const info = [["DÍA", matchDayLabel()], ["HORA", st.time || "—"], ["FORMATO", `${st.mode} vs ${st.mode}`]];
   const iw = [W - 2 * M - 2 * 16 - 2 * 200, 200, 200];
   let ix = M;
   info.forEach(([k, v], i) => {
     c.fillStyle = FOLDER_BG; roundRect(c, ix, infoY, iw[i], 104, 10); c.fill();
-    c.fillStyle = POSTER_ACC; c.font = `600 21px ${F}`; c.fillText(k, ix + 24, infoY + 38);
+    c.fillStyle = POSTER_ACC; c.font = `600 18px ${F}`; c.letterSpacing = "3px"; c.fillText(k, ix + 24, infoY + 38); c.letterSpacing = "0px";
     font("600 40px", true); c.fillStyle = "#eef3ef";
-    c.fillText(fitText(c, v, iw[i] - 48), ix + 24, infoY + 84);
+    c.fillText(fitText(c, v.toUpperCase(), iw[i] - 48), ix + 24, infoY + 84);
     ix += iw[i] + 16;
   });
   font("600 20px");
@@ -133,7 +134,7 @@ async function drawImage() {
   const H = bodyY + bodyH + tabH + 64;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), F = POSTER_F, font = posterFont(c);
-  posterHead(c, "Alineación");
+  posterHead(c, "ALINEACIÓN");
 
   // Carpeta con una pestaña por equipo: el oscuro arriba (defiende esa portería) y el blanco abajo
   font("700 34px", true);
@@ -159,8 +160,8 @@ async function drawImage() {
   // Banquillos: el del oscuro encima del campo y el del blanco debajo
   [["D", bodyY + pad], ["W", pitchY + bh]].forEach(([team, y0]) => {
     const list = bench[team]; if (!list.length) return;
-    c.fillStyle = POSTER_ACC; font("600 22px"); c.textBaseline = "middle";
-    c.fillText("Banquillo", bx + 6, y0 + benchH / 2 - 10); c.textBaseline = "alphabetic";
+    c.fillStyle = POSTER_ACC; font("600 18px"); c.letterSpacing = "3px"; c.textBaseline = "middle";
+    c.fillText("BANQUILLO", bx + 6, y0 + benchH / 2 - 10); c.letterSpacing = "0px"; c.textBaseline = "alphabetic";
     const step = Math.min(185, (bw - 300) / Math.max(1, list.length - 1));   // si hay muchos, se juntan
     list.forEach((id, i) => drawMagnet(c, F, id, team, bx + 240 + i * step, y0 + benchH / 2 - 22, 28, "SUP"));
   });
