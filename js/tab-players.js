@@ -21,7 +21,7 @@ function sortedPlayers() {
 function playerRowHTML(p) {
   return `<div class="plrow" data-id="${esc(p.id)}">
       ${mediaCard(p)}
-      <input type="text" data-f="name" value="${esc(p.n)}" maxlength="20" aria-label="Nombre">
+      <input type="text" data-f="name" value="${esc(p.n)}" maxlength="25" aria-label="Nombre">
       <button type="button" class="del" data-del aria-label="Quitar a ${esc(p.n)}">Quitar</button>
       <div class="posb">${POSITIONS.map(r => `<button type="button" data-pos="${r}" aria-pressed="${p.pos.includes(r)}">${r}</button>`).join("")}</div>
     </div>`;
