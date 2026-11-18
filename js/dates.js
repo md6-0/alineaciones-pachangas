@@ -1,13 +1,9 @@
 "use strict";
-/* Día del partido: el que elige quien organiza (st.date, llega con next/current) mientras no haya pasado; si no, hoy.
+/* Día del partido: el que elige quien organiza (st.date, llega con next/current), también si es anterior a hoy; si no hay, hoy.
    Para cambiarlo: setMatchWhen (next-match.js), que cambia a la vez el día y la hora. */
 
-/** Fecha elegida, o null si no hay o ya pasó. */
-function customDate() {
-  if (!st.date) return null;
-  const dt = fromIso(st.date);
-  return dt >= startOfToday() ? dt : null;
-}
+/** Fecha elegida, o null si no hay. Se queda aunque ya haya pasado, hasta que se quite con «Hoy» o se elija otra. */
+const customDate = () => st.date ? fromIso(st.date) : null;
 /** Día del partido (a mediodía). */
 function matchDay() {
   const c = customDate(); if (c) return c;

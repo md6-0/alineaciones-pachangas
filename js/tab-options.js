@@ -60,7 +60,6 @@ function paintOptions() {
   $$("#modeseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === st.mode));
   const wi = $("#matchwhen");
   if (document.activeElement !== wi) wi.value = customDate() ? `${st.date}T${st.time || "00:00"}` : "";
-  wi.min = todayIso() + "T00:00";
   $("#datereset").hidden = !customDate();
 }
 
