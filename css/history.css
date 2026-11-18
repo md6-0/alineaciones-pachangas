@@ -17,11 +17,14 @@
 .res.D{background:var(--d-mag);color:#f1f1ee;border-color:rgba(255,255,255,.2)}
 
 /* Los dos equipos */
-.mteams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mteams{display:grid;grid-template-columns:1fr 1fr;gap:38px 12px;padding-top:30px}
 @media (max-width:560px){.mteams{grid-template-columns:1fr}}
-.mteam{border:2px solid var(--tb);border-radius:5px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.mteam.W{--tb:var(--w-border)} .mteam.D{--tb:var(--d-border)}
-.mteam h3{margin:0 0 4px;font-size:.95rem;font-weight:700;font-stretch:85%;text-transform:uppercase;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.mteam{position:relative;background:var(--folder);border-radius:0 8px 8px 8px;padding:18px 12px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.mteam.W{--kb:var(--kit-w-bg);--ki:var(--kit-w-ink)} .mteam.D{--kb:var(--kit-d-bg);--ki:var(--kit-d-ink)}
+/* El nombre del equipo, como pestaña de carpeta del color de su equipación */
+.mteam h3{position:absolute;left:0;top:-28px;height:28px;margin:0;padding:0 14px;box-sizing:border-box;border-radius:8px 8px 0 0;background:var(--kb);color:var(--ki)}
+.mteam h3 .sw{display:none}
+.mteam h3{font-size:.9rem;font-weight:700;font-stretch:80%;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:8px;justify-content:space-between}
 .mteam h3 span.l{display:flex;align-items:center;gap:8px}
 .mteam h3 small{font-weight:600;font-size:.75rem;color:var(--muted);text-transform:none;font-stretch:100%}
 .mline{display:flex;gap:10px;font-size:.88rem;line-height:1.4}

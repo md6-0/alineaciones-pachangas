@@ -7,7 +7,7 @@ function statCard(title, rows, key, cols, emptyText) {
   const body = rows.length
     ? rows.map((r, i) => `<tr><td class="pos">${rank(i)}</td><td class="n">${esc(r.name)}</td>${cols.map(([, cls, v]) => `<td${cls ? ` class="${cls}"` : ""}>${v(r)}</td>`).join("")}</tr>`).join("")
     : `<tr><td colspan="6" class="n none">${emptyText}</td></tr>`;
-  return `<section class="scard"><h2>${title}</h2><table class="st"><thead><tr><th></th><th>Jugador</th>${cols.map(([h, cls]) => `<th${cls ? ` class="${cls}"` : ""}>${h}</th>`).join("")}</tr></thead><tbody>
+  return `<section class="scard ftab"><h2>${title}</h2><table class="st"><thead><tr><th></th><th>Jugador</th>${cols.map(([h, cls]) => `<th${cls ? ` class="${cls}"` : ""}>${h}</th>`).join("")}</tr></thead><tbody>
       ${body}
     </tbody></table></section>`;
 }
