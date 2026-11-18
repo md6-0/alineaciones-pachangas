@@ -17,7 +17,7 @@ La primera pestaña es el **próximo partido**: arriba, quién va; debajo, cómo
 - Juega a **fútbol 7, fútbol 8 o fútbol 11**. El de 11 tiene su propio campo, con las medidas reales. Cada formato juega con una **formación fija**: 3-2-1 en fútbol 7, 3-3-1 en fútbol 8 y 4-2-3-1 en fútbol 11. Los jugadores se colocan solos en su línea y puedes moverlos arrastrando: al soltar un imán salta a la posición libre más cercana, y si lo sueltas en la otra mitad del campo cambia de equipo. Lo que retocas lo ve todo el mundo, y quien apuntes después entra en un hueco libre sin deshacerlo.
 - Quien organiza elige arriba el **día y la hora**, en un solo campo (con «Hoy», hoy y sin hora; cuando el día pasa, vuelve solo a hoy), tiene a mano el enlace para **reservar el campo**, **apunta y quita jugadores**, manda la **lista por WhatsApp** (el día y la hora y un hueco numerado por jugador, con los que ya se han apuntado) y, cuando empieza otra semana, **vacía la lista**.
 - **Partido jugado**, después de jugar: guarda la alineación en el historial con su fecha, vacía la lista para el próximo y te lleva al historial para apuntar el resultado y los goles.
-- **Compartir** manda la alineación en texto por WhatsApp o, con **Compartir imagen**, como imagen por el menú de compartir del móvil (en el ordenador, la descarga). Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (los jugadores de cada uno, sin posiciones; en imagen, en dos columnas). La app recuerda la última elección.
+- **Compartir** manda la alineación en texto por WhatsApp o, con **Compartir imagen**, como imagen por el menú de compartir del móvil (en el ordenador, la descarga). Arriba del menú eliges **qué compartes**, tanto en texto como en imagen: la **alineación** (posiciones y banquillo; en imagen, el campo con los imanes) o solo los **equipos** (en texto, los jugadores de cada uno; en imagen, un cartel con día, hora y formato, y los jugadores de cada equipo en una carpeta con su pestaña). La app recuerda la última elección.
 
 ### 👀 El grupo
 
@@ -156,7 +156,7 @@ js/pitch.js            dibujo del campo en SVG
 js/tab-lineup.js       pestaña Partido: lista de apuntados, pizarra y equipos
 js/drag.js             arrastrar imanes
 js/share-image.js      imagen de la alineación para compartir
-js/share-teams-image.js imagen de los equipos (solo jugadores) para compartir
+js/share-teams-image.js imagen de los equipos para compartir (cartel con una carpeta por equipo)
 js/share-menu.js       piezas comunes de los menús Compartir (abrir, cerrar, enlaces, botones de imagen)
 js/share.js            menú Compartir de la pestaña Partido
 js/share-signup.js     lista por WhatsApp con los apuntados
