@@ -16,14 +16,18 @@ function fitText(c, s, max) {
 /** Fija la fuente; cond: estrecha, como los títulos de la app (fontStretch va después de font, que lo reinicia). */
 const posterFont = c => (spec, cond) => { c.font = `${spec} ${POSTER_F}`; if ("fontStretch" in c) c.fontStretch = cond ? "condensed" : "normal"; };
 
-/** Fondo, franjas diagonales, grupo, título (de size px) y las casillas de día, hora y formato. El contenido empieza en POSTER_TOP. */
-function posterHead(c, title, size = 96) {
+/** Fondo, franjas diagonales, grupo, título (de size px) y, salvo con info = false, las casillas de día, hora y formato. El contenido empieza en POSTER_TOP. */
+function posterHead(c, title, size = 96, info = true) {
   const W = c.canvas.width, H = c.canvas.height, M = 48, infoY = 250, font = posterFont(c), F = POSTER_F;
   c.fillStyle = "#1d3327"; c.fillRect(0, 0, W, H);
   c.save(); c.beginPath(); c.rect(0, 0, W, infoY - 30); c.clip();
   c.strokeStyle = "rgba(255,255,255,.035)"; c.lineWidth = 26;
   for (let x = -infoY; x < W; x += 70) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x + infoY, infoY); c.stroke(); }
   c.restore();
+  if (!info) {   // sin las casillas debajo, las franjas se desvanecen en vez de cortarse
+    const g = c.createLinearGradient(0, 120, 0, infoY - 30); g.addColorStop(0, "rgba(29,51,39,0)"); g.addColorStop(1, "#1d3327");
+    c.fillStyle = g; c.fillRect(0, 120, W, infoY - 150);
+  }
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   c.fillStyle = POSTER_ACC; c.fillRect(M, 58, 46, 6);
   c.fillStyle = "#b4c6ba"; c.font = `600 24px ${F}`; c.letterSpacing = "4px";
@@ -31,10 +35,10 @@ function posterHead(c, title, size = 96) {
   c.letterSpacing = "0px";
   font(`700 ${size}px`, true); c.fillStyle = "#eef3ef";
   c.fillText(title, M - 3, 180);
-  const info = [["DÍA", matchDayLabel()], ["HORA", st.time || "—"], ["FORMATO", `${st.mode} vs ${st.mode}`]];
+  const boxes = info ? [["DÍA", matchDayLabel()], ["HORA", st.time || "—"], ["FORMATO", `${st.mode} vs ${st.mode}`]] : [];
   const iw = [W - 2 * M - 2 * 16 - 2 * 200, 200, 200];
   let ix = M;
-  info.forEach(([k, v], i) => {
+  boxes.forEach(([k, v], i) => {
     c.fillStyle = FOLDER_BG; roundRect(c, ix, infoY, iw[i], 104, 10); c.fill();
     c.fillStyle = POSTER_ACC; c.font = `600 18px ${F}`; c.letterSpacing = "3px"; c.fillText(k, ix + 24, infoY + 38); c.letterSpacing = "0px";
     font("600 40px", true); c.fillStyle = "#eef3ef";
