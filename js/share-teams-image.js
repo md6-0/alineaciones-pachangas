@@ -77,7 +77,6 @@ async function drawTeamsImage() {
       const y = body + 22 + j * rowH, mid = y + rowH / 2 - 4;
       if (j) { c.fillStyle = "rgba(255,255,255,.07)"; c.fillRect(x + 24, y - 4, colW - 48, 2); }
       c.beginPath(); c.arc(x + 50, mid, 22, 0, 7); c.fillStyle = kit; c.fill();
-      if (!light) { c.strokeStyle = "rgba(255,255,255,.3)"; c.lineWidth = 2; c.stroke(); }
       c.fillStyle = ink; c.font = `600 21px ${F}`; c.textAlign = "center"; c.textBaseline = "middle";
       c.fillText(String(j + 1), x + 50, mid + 1);
       c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `500 29px ${F}`;
