@@ -1,6 +1,6 @@
 "use strict";
-/* Imagen de los equipos para compartir (1080 px de ancho), como una convocatoria: grupo, día, hora y formato, y los
-   convocados de cada equipo en dos columnas, con dorsal y por orden alfabético (banquillo incluido). Usa roundRect (share-image.js). */
+/* Imagen de los equipos para compartir (1080 px de ancho), como un cartel: grupo, día, hora y formato, y los
+   jugadores de cada equipo en una carpeta con su pestaña, con dorsal y por orden alfabético (banquillo incluido). Usa roundRect (share-image.js). */
 
 /** Recorta un texto con «…» para que quepa en el ancho dado. */
 function fitText(c, s, max) {
@@ -13,13 +13,13 @@ function fitText(c, s, max) {
 const teamNames = team => [...pitchIds(team), ...benchIds(team)].map(nameOf).sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
 
 
-/** Dibuja la imagen de los equipos como una convocatoria y devuelve el canvas. */
+/** Dibuja la imagen de los equipos y devuelve el canvas. */
 async function drawTeamsImage() {
   try { await document.fonts.ready; } catch {}
   const W = 1080, M = 48, gap = 28, colW = (W - 2 * M - gap) / 2, rowH = 70;
   const teams = [["W", "EQUIPO BLANCO"], ["D", "EQUIPO OSCURO"]].map(([t, label]) => ({ t, label, squad: teamNames(t) }));
-  const rows = Math.max(1, ...teams.map(x => x.squad.length)), total = teams.reduce((s, x) => s + x.squad.length, 0);
-  const infoY = 250, top = infoY + 150, tabH = 70, cardH = tabH + 62 + rows * rowH + 14, H = top + cardH + 120;
+  const rows = Math.max(1, ...teams.map(x => x.squad.length));
+  const infoY = 250, top = infoY + 150, tabH = 70, cardH = tabH + 22 + rows * rowH + 14, H = top + cardH + 64;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif";
   // Fuente; cond: estrecha, como los títulos de la app (fontStretch se fija después de font, que lo reinicia)
@@ -33,15 +33,14 @@ async function drawTeamsImage() {
   for (let x = -H; x < W + H; x += 70) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x + infoY, infoY); c.stroke(); }
   c.restore();
 
-  // Cabecera: grupo y CONVOCATORIA
+  // Cabecera: grupo y EQUIPOS
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   c.fillStyle = ACC; c.fillRect(M, 58, 46, 6);
   c.fillStyle = "#b4c6ba"; c.font = `600 24px ${F}`; c.letterSpacing = "4px";
   c.fillText(groupName().toUpperCase(), M + 62, 70);
   c.letterSpacing = "0px";
-  font("700 132px", true); c.fillStyle = "#eef3ef";
-  const tw = c.measureText("CONVOCATORIA").width, fit = Math.min(1, (W - 2 * M) / tw);
-  c.save(); c.translate(M - 4, 196); c.scale(fit, fit); c.fillText("CONVOCATORIA", 0, 0); c.restore();
+  font("700 104px", true); c.fillStyle = "#eef3ef";
+  c.fillText("EQUIPOS", M - 3, 186);
 
   // Datos del partido: día, hora y formato
   const info = [["DÍA", matchDayLabel()], ["HORA", st.time || "—"], ["FORMATO", `${st.mode} vs ${st.mode}`]];
@@ -74,13 +73,9 @@ async function drawTeamsImage() {
     c.save(); c.clip(); c.fillStyle = kit; c.fillRect(x, top, tw, tabH); c.restore();   // la pestaña, del color de la camiseta
     if (!light) { c.strokeStyle = "rgba(255,255,255,.2)"; c.lineWidth = 2; c.stroke(); }
     c.fillStyle = ink; c.fillText(label, x + 28, top + 48);
-    // Convocados, junto a la pestaña
-    font("600 17px"); c.fillStyle = "#9fb6a6"; c.letterSpacing = "2px"; c.textAlign = "right";
-    c.fillText(cnt(squad.length, "convocado", "convocados").toUpperCase(), x + colW - 24, body + 40);
-    c.letterSpacing = "0px"; c.textAlign = "left";
     // Convocados: dorsal y nombre
     squad.forEach((p, j) => {
-      const y = body + 62 + j * rowH, mid = y + rowH / 2 - 4;
+      const y = body + 22 + j * rowH, mid = y + rowH / 2 - 4;
       if (j) { c.fillStyle = "rgba(255,255,255,.07)"; c.fillRect(x + 24, y - 4, colW - 48, 2); }
       c.beginPath(); c.arc(x + 50, mid, 22, 0, 7); c.fillStyle = kit; c.fill();
       if (!light) { c.strokeStyle = "rgba(255,255,255,.3)"; c.lineWidth = 2; c.stroke(); }
@@ -92,8 +87,5 @@ async function drawTeamsImage() {
     });
   });
 
-  // Pie: total de convocados
-  c.fillStyle = "#87a090"; c.font = `500 22px ${F}`;
-  c.fillText(cnt(total, "jugador convocado", "jugadores convocados"), M, H - 52);
   return cv;
 }
