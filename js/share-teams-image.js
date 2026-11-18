@@ -16,7 +16,7 @@ async function drawTeamsImage() {
   const top = POSTER_TOP, tabH = 70, cardH = tabH + 22 + rows * rowH + 14, H = top + cardH + 64;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), font = posterFont(c);
-  posterHead(c, "EQUIPOS");
+  posterHead(c, "EQUIPOS", 84);
 
   teams.forEach(({ t, label, squad }, i) => {
     const x = M + i * (colW + gap), light = t === "W";

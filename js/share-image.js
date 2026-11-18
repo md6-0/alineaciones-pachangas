@@ -16,8 +16,8 @@ function fitText(c, s, max) {
 /** Fija la fuente; cond: estrecha, como los títulos de la app (fontStretch va después de font, que lo reinicia). */
 const posterFont = c => (spec, cond) => { c.font = `${spec} ${POSTER_F}`; if ("fontStretch" in c) c.fontStretch = cond ? "condensed" : "normal"; };
 
-/** Fondo, franjas diagonales, grupo, título y las casillas de día, hora y formato. El contenido empieza en POSTER_TOP. */
-function posterHead(c, title) {
+/** Fondo, franjas diagonales, grupo, título (de size px) y las casillas de día, hora y formato. El contenido empieza en POSTER_TOP. */
+function posterHead(c, title, size = 96) {
   const W = c.canvas.width, H = c.canvas.height, M = 48, infoY = 250, font = posterFont(c), F = POSTER_F;
   c.fillStyle = "#1d3327"; c.fillRect(0, 0, W, H);
   c.save(); c.beginPath(); c.rect(0, 0, W, infoY - 30); c.clip();
@@ -29,8 +29,8 @@ function posterHead(c, title) {
   c.fillStyle = "#b4c6ba"; c.font = `600 24px ${F}`; c.letterSpacing = "4px";
   c.fillText(groupName().toUpperCase(), M + 62, 70);
   c.letterSpacing = "0px";
-  font("700 104px", true); c.fillStyle = "#eef3ef";
-  c.fillText(title, M - 3, 186);
+  font(`700 ${size}px`, true); c.fillStyle = "#eef3ef";
+  c.fillText(title, M - 3, 180);
   const info = [["DÍA", matchDayLabel()], ["HORA", st.time || "—"], ["FORMATO", `${st.mode} vs ${st.mode}`]];
   const iw = [W - 2 * M - 2 * 16 - 2 * 200, 200, 200];
   let ix = M;
