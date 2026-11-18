@@ -1,6 +1,78 @@
 "use strict";
-/* Imagen de la alineación para compartir (1080 px de ancho): el campo con los imanes y los banquillos.
-   Lleva nombres y posiciones. */
+/* Imagen de la alineación para compartir (1080 px de ancho), como un cartel: grupo, día, hora y formato, y el campo
+   dentro de una carpeta con una pestaña por equipo (arriba el oscuro, abajo el blanco) y sus banquillos.
+   Aquí están también las piezas comunes con la imagen de los equipos (cabecera, carpetas, texto recortado). */
+
+const POSTER_F = "Archivo, system-ui, sans-serif", POSTER_TOP = 400, POSTER_ACC = "#9ad6b0", FOLDER_BG = "#254031";
+const KIT = { W: { bg: "#f5f4ef", ink: "#16191a", label: "EQUIPO BLANCO" }, D: { bg: "#15181a", ink: "#f1f1ee", label: "EQUIPO OSCURO" } };
+
+/** Recorta un texto con «…» para que quepa en el ancho dado. */
+function fitText(c, s, max) {
+  if (c.measureText(s).width <= max) return s;
+  while (s.length > 1 && c.measureText(s + "…").width > max) s = s.slice(0, -1);
+  return s + "…";
+}
+
+/** Fija la fuente; cond: estrecha, como los títulos de la app (fontStretch va después de font, que lo reinicia). */
+const posterFont = c => (spec, cond) => { c.font = `${spec} ${POSTER_F}`; if ("fontStretch" in c) c.fontStretch = cond ? "condensed" : "normal"; };
+
+/** Fondo, franjas diagonales, grupo, título (de size px) y las casillas de día, hora y formato. El contenido empieza en POSTER_TOP. */
+function posterHead(c, title, size = 96) {
+  const W = c.canvas.width, H = c.canvas.height, M = 48, infoY = 250, font = posterFont(c), F = POSTER_F;
+  c.fillStyle = "#1d3327"; c.fillRect(0, 0, W, H);
+  c.save(); c.beginPath(); c.rect(0, 0, W, infoY - 30); c.clip();
+  c.strokeStyle = "rgba(255,255,255,.035)"; c.lineWidth = 26;
+  for (let x = -infoY; x < W; x += 70) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x + infoY, infoY); c.stroke(); }
+  c.restore();
+  c.textBaseline = "alphabetic"; c.textAlign = "left";
+  c.fillStyle = POSTER_ACC; c.fillRect(M, 58, 46, 6);
+  c.fillStyle = "#b4c6ba"; c.font = `600 24px ${F}`; c.letterSpacing = "4px";
+  c.fillText(groupName().toUpperCase(), M + 62, 70);
+  c.letterSpacing = "0px";
+  font(`700 ${size}px`, true); c.fillStyle = "#eef3ef";
+  c.fillText(title, M - 3, 180);
+  const info = [["DÍA", matchDayLabel()], ["HORA", st.time || "—"], ["FORMATO", `${st.mode} vs ${st.mode}`]];
+  const iw = [W - 2 * M - 2 * 16 - 2 * 200, 200, 200];
+  let ix = M;
+  info.forEach(([k, v], i) => {
+    c.fillStyle = FOLDER_BG; roundRect(c, ix, infoY, iw[i], 104, 10); c.fill();
+    c.fillStyle = POSTER_ACC; c.font = `600 18px ${F}`; c.letterSpacing = "3px"; c.fillText(k, ix + 24, infoY + 38); c.letterSpacing = "0px";
+    font("600 40px", true); c.fillStyle = "#eef3ef";
+    c.fillText(fitText(c, v.toUpperCase(), iw[i] - 48), ix + 24, infoY + 84);
+    ix += iw[i] + 16;
+  });
+  font("600 20px");
+}
+
+/** Carpeta verde (cuerpo de y a y + h) con pestañas a la izquierda: top sobresale por arriba y bottom por abajo,
+    cada una [ancho, alto, color]. Deja el trazado hecho (para recortar dentro). */
+function folder(c, x, y, w, h, { top, bottom } = {}) {
+  const r = 12, ri = 10, y1 = y + h;
+  c.beginPath();
+  if (top) {
+    const [tw, th] = top;
+    c.moveTo(x, y - th + r); c.arcTo(x, y - th, x + r, y - th, r);
+    c.lineTo(x + tw - r, y - th); c.arcTo(x + tw, y - th, x + tw, y - th + r, r);
+    c.lineTo(x + tw, y - ri); c.arcTo(x + tw, y, x + tw + ri, y, ri);
+  } else { c.moveTo(x, y + r); c.arcTo(x, y, x + r, y, r); }
+  c.lineTo(x + w - r, y); c.arcTo(x + w, y, x + w, y + r, r);
+  c.lineTo(x + w, y1 - r); c.arcTo(x + w, y1, x + w - r, y1, r);
+  if (bottom) {
+    const [tw, th] = bottom;
+    c.lineTo(x + tw + ri, y1); c.arcTo(x + tw, y1, x + tw, y1 + ri, ri);
+    c.lineTo(x + tw, y1 + th - r); c.arcTo(x + tw, y1 + th, x + tw - r, y1 + th, r);
+    c.lineTo(x + r, y1 + th); c.arcTo(x, y1 + th, x, y1 + th - r, r);
+  } else { c.lineTo(x + r, y1); c.arcTo(x, y1, x, y1 - r, r); }
+  c.closePath();
+  c.save(); c.shadowColor = "rgba(0,0,0,.35)"; c.shadowBlur = 30; c.shadowOffsetY = 14; c.fillStyle = FOLDER_BG; c.fill(); c.restore();
+  // Pestañas del color de la camiseta
+  c.save(); c.clip();
+  if (top) { c.fillStyle = top[2]; c.fillRect(x, y - top[1], top[0], top[1]); }
+  if (bottom) { c.fillStyle = bottom[2]; c.fillRect(x, y1, bottom[0], bottom[1]); }
+  c.restore();
+}
+
+
 
 /** Rectángulo con esquinas redondeadas. */
 function roundRect(ctx, x, y, w, h, r) {
@@ -37,42 +109,43 @@ function drawPitchLines(c, X, Y, sx, sy) {
 }
 
 /** Imán: disco con la posición y pastilla con el nombre debajo. */
-function drawMagnet(c, F, id, team, x, y, r, role, pill) {
+function drawMagnet(c, F, id, team, x, y, r, role) {
   const n = nameOf(id);
   c.save(); c.shadowColor = "rgba(0,0,0,.4)"; c.shadowBlur = 14; c.shadowOffsetY = 5;
   c.beginPath(); c.arc(x, y, r, 0, 7);
-  c.fillStyle = team === "W" ? "#f5f4ef" : "#1b1e21"; c.fill(); c.restore();
-  if (team === "W") { c.strokeStyle = "#cfcec6"; c.lineWidth = 2; c.stroke(); }
-  if (team === "D") { c.strokeStyle = "rgba(255,255,255,.25)"; c.lineWidth = 2; c.stroke(); }
-  c.fillStyle = team === "W" ? "#16191a" : "#f1f1ee";
-  c.font = `700 ${Math.round(r * .58)}px ${F}`; c.textAlign = "center"; c.textBaseline = "middle";
+  c.fillStyle = KIT[team].bg; c.fill(); c.restore();
+  c.fillStyle = KIT[team].ink;
+  c.font = `600 ${Math.round(r * .56)}px ${F}`; c.textAlign = "center"; c.textBaseline = "middle";
   c.fillText(role, x, y + 1);
-  c.font = `600 ${pill ? 25 : 23}px ${F}`;
-  const tw = c.measureText(n).width + 20, ly = y + r + 9;
-  c.fillStyle = pill ? "rgba(0,0,0,.5)" : "#16191a"; roundRect(c, x - tw / 2, ly, tw, 34, 6); c.fill();
-  c.fillStyle = "#fff"; c.fillText(n, x, ly + 18);
+  c.font = `500 25px ${F}`;
+  const tw = c.measureText(n).width + 22, ly = y + r + 9;
+  c.fillStyle = "rgba(0,0,0,.5)"; roundRect(c, x - tw / 2, ly, tw, 36, 8); c.fill();
+  c.fillStyle = "#fff"; c.fillText(n, x, ly + 19);
   c.textAlign = "left"; c.textBaseline = "alphabetic";
 }
 
 /** Dibuja la imagen y devuelve el canvas. */
 async function drawImage() {
   try { await document.fonts.ready; } catch {}
-  const PT = pitch(), W = 1080, M = 40, bw = W - 2 * M, bh = Math.round(bw * PT.h / PT.w), top = 205;
-  const benchW = benchIds("W"), benchD = benchIds("D");
-  const H = top + bh + 70 + (benchD.length ? 150 : 0) + (benchW.length ? 150 : 0);
+  const PT = pitch(), W = 1080, M = 48, fw = W - 2 * M, pad = 18, bw = fw - 2 * pad, bh = Math.round(bw * PT.h / PT.w);
+  const tabH = 70, benchH = 150, bench = { D: benchIds("D"), W: benchIds("W") };
+  const bodyY = POSTER_TOP + tabH, pitchY = bodyY + pad + (bench.D.length ? benchH : 0);
+  const bodyH = pad + (bench.D.length ? benchH : 0) + bh + (bench.W.length ? benchH : 0) + pad;
+  const H = bodyY + bodyH + tabH + 64;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-  const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif";
+  const c = cv.getContext("2d"), F = POSTER_F, font = posterFont(c);
+  posterHead(c, "ALINEACIÓN");
 
-  // Fondo y título
-  c.fillStyle = "#1d3327"; c.fillRect(0, 0, W, H);
-  c.fillStyle = "#87a090"; c.font = `600 22px ${F}`; c.textBaseline = "alphabetic";
-  c.fillText(`${groupName().toUpperCase()}  ·  ${st.mode} VS ${st.mode}`, M, 72);
-  c.fillStyle = "#eef3ef"; c.font = `800 56px ${F}`;
-  c.fillText(`ALINEACIÓN · ${matchDayLabel().toUpperCase()}`, M, 150);
+  // Carpeta con una pestaña por equipo: el oscuro arriba (defiende esa portería) y el blanco abajo
+  font("700 34px", true);
+  const tab = t => [Math.min(fw - 40, c.measureText(KIT[t].label).width + 56), tabH, KIT[t].bg];
+  folder(c, M, bodyY, fw, bodyH, { top: tab("D"), bottom: tab("W") });
+  c.fillStyle = KIT.D.ink; c.fillText(KIT.D.label, M + 28, POSTER_TOP + 48);
+  c.fillStyle = KIT.W.ink; c.fillText(KIT.W.label, M + 28, bodyY + bodyH + 48);
 
   // Campo a franjas, recortado con las esquinas redondeadas
-  const bx = M, by = top;
-  c.save(); roundRect(c, bx, by, bw, bh, 10); c.clip();
+  const bx = M + pad, by = pitchY;
+  c.save(); roundRect(c, bx, by, bw, bh, 8); c.clip();
   for (let i = 0; i < 10; i++) { c.fillStyle = i % 2 ? "#346649" : "#2f5e44"; c.fillRect(bx, by + i * bh / 10, bw, bh / 10 + 1); }
   const sx = bw / PT.w, sy = bh / PT.h;
   drawPitchLines(c, v => bx + v * sx, v => by + v * sy, sx, sy);
@@ -81,18 +154,16 @@ async function drawImage() {
   // Imanes del campo
   pitchIds().forEach(id => {
     const L = layout[id];
-    drawMagnet(c, F, id, L.team, bx + L.x / 100 * bw, by + L.y / 100 * bh, 34, roleAt(L.team, L.y), true);
+    drawMagnet(c, F, id, L.team, bx + L.x / 100 * bw, by + L.y / 100 * bh, 34, roleAt(L.team, L.y));
   });
 
-  // Banquillos
-  let y = by + bh + 70;
-  [["D", benchD], ["W", benchW]].forEach(([team, list]) => {
-    if (!list.length) return;
-    c.fillStyle = "#cfe3d2"; roundRect(c, M, y - 14, bw, 136, 10); c.fill();
-    c.fillStyle = "#2b4b39"; c.font = `700 20px ${F}`; c.fillText("BANQUILLO", M + 20, y + 46);
-    let x = M + 190;
-    list.forEach(id => { drawMagnet(c, F, id, team, x, y + 40, 28, "SUP", false); x += 150; });
-    y += 150;
+  // Banquillos: el del oscuro encima del campo y el del blanco debajo
+  [["D", bodyY + pad], ["W", pitchY + bh]].forEach(([team, y0]) => {
+    const list = bench[team]; if (!list.length) return;
+    c.fillStyle = POSTER_ACC; font("600 18px"); c.letterSpacing = "3px"; c.textBaseline = "middle";
+    c.fillText("BANQUILLO", bx + 6, y0 + benchH / 2 - 10); c.letterSpacing = "0px"; c.textBaseline = "alphabetic";
+    const step = Math.min(185, (bw - 300) / Math.max(1, list.length - 1));   // si hay muchos, se juntan
+    list.forEach((id, i) => drawMagnet(c, F, id, team, bx + 240 + i * step, y0 + benchH / 2 - 22, 28, "SUP"));
   });
   return cv;
 }
