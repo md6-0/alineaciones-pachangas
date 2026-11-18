@@ -19,7 +19,7 @@ async function drawTeamsImage() {
   const W = 1080, M = 48, gap = 28, colW = (W - 2 * M - gap) / 2, rowH = 70;
   const teams = [["W", "EQUIPO BLANCO"], ["D", "EQUIPO OSCURO"]].map(([t, label]) => ({ t, label, squad: teamNames(t) }));
   const rows = Math.max(1, ...teams.map(x => x.squad.length)), total = teams.reduce((s, x) => s + x.squad.length, 0);
-  const infoY = 250, top = infoY + 150, headH = 112, cardH = headH + rows * rowH + 18, H = top + cardH + 120;
+  const infoY = 250, top = infoY + 150, tabH = 70, cardH = tabH + 62 + rows * rowH + 14, H = top + cardH + 120;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif";
   // Fuente; cond: estrecha, como los títulos de la app (fontStretch se fija después de font, que lo reinicia)
@@ -58,24 +58,33 @@ async function drawTeamsImage() {
   teams.forEach(({ t, label, squad }, i) => {
     const x = M + i * (colW + gap), light = t === "W";
     const kit = light ? "#f5f4ef" : "#15181a", ink = light ? "#16191a" : "#f1f1ee";
-    // Tarjeta del equipo con la cabecera del color de la camiseta
-    c.fillStyle = "#254031"; roundRect(c, x, top, colW, cardH, 12); c.fill();
-    c.save(); roundRect(c, x, top, colW, cardH, 12); c.clip();
-    c.fillStyle = kit; c.fillRect(x, top, colW, headH - 12);
-    c.restore();
-    if (!light) { c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; roundRect(c, x + 1, top + 1, colW - 2, cardH - 2, 12); c.stroke(); }
-    font("700 40px", true); c.fillStyle = ink; c.fillText(label, x + 26, top + 50);
-    font("600 17px"); c.fillStyle = light ? "#5d6660" : "#9aa59e"; c.letterSpacing = "2px";
-    c.fillText(cnt(squad.length, "convocado", "convocados").toUpperCase(), x + 26, top + 80); c.letterSpacing = "0px";
-    // Convocados: dorsal, nombre y posición
+    // Carpeta del color de la camiseta, con el nombre del equipo en la pestaña que sobresale por arriba (como el menú de la app)
+    font("700 34px", true);
+    const tw = Math.min(colW - 40, c.measureText(label).width + 56), body = top + tabH, bottom = top + cardH, r = 12, ri = 10;
+    c.beginPath();
+    c.moveTo(x, body);
+    c.lineTo(x, top + r); c.arcTo(x, top, x + r, top, r);
+    c.lineTo(x + tw - r, top); c.arcTo(x + tw, top, x + tw, top + r, r);
+    c.lineTo(x + tw, body - ri); c.arcTo(x + tw, body, x + tw + ri, body, ri);
+    c.lineTo(x + colW - r, body); c.arcTo(x + colW, body, x + colW, body + r, r);
+    c.lineTo(x + colW, bottom - r); c.arcTo(x + colW, bottom, x + colW - r, bottom, r);
+    c.lineTo(x + r, bottom); c.arcTo(x, bottom, x, bottom - r, r);
+    c.closePath();
+    c.save(); c.shadowColor = "rgba(0,0,0,.35)"; c.shadowBlur = 30; c.shadowOffsetY = 14; c.fillStyle = kit; c.fill(); c.restore();
+    if (!light) { c.strokeStyle = "rgba(255,255,255,.2)"; c.lineWidth = 2; c.stroke(); }
+    c.fillStyle = ink; c.fillText(label, x + 28, top + 48);
+    // Convocados, junto a la pestaña
+    font("600 17px"); c.fillStyle = light ? "#6b746e" : "#9aa59e"; c.letterSpacing = "2px"; c.textAlign = "right";
+    c.fillText(cnt(squad.length, "convocado", "convocados").toUpperCase(), x + colW - 24, body + 40);
+    c.letterSpacing = "0px"; c.textAlign = "left";
+    // Convocados: dorsal y nombre
     squad.forEach((p, j) => {
-      const y = top + headH + 6 + j * rowH, mid = y + rowH / 2 - 4;
-      if (j) { c.fillStyle = "rgba(255,255,255,.07)"; c.fillRect(x + 24, y - 4, colW - 48, 2); }
-      c.beginPath(); c.arc(x + 50, mid, 22, 0, 7); c.fillStyle = kit; c.fill();
-      if (!light) { c.strokeStyle = "rgba(255,255,255,.3)"; c.lineWidth = 2; c.stroke(); }
-      c.fillStyle = ink; c.font = `600 21px ${F}`; c.textAlign = "center"; c.textBaseline = "middle";
+      const y = body + 62 + j * rowH, mid = y + rowH / 2 - 4;
+      if (j) { c.fillStyle = light ? "rgba(0,0,0,.08)" : "rgba(255,255,255,.08)"; c.fillRect(x + 24, y - 4, colW - 48, 2); }
+      c.beginPath(); c.arc(x + 50, mid, 22, 0, 7); c.fillStyle = ink; c.fill();
+      c.fillStyle = kit; c.font = `600 21px ${F}`; c.textAlign = "center"; c.textBaseline = "middle";
       c.fillText(String(j + 1), x + 50, mid + 1);
-      c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `500 29px ${F}`;
+      c.textAlign = "left"; c.fillStyle = ink; c.font = `500 29px ${F}`;
       c.fillText(fitText(c, p, colW - 130), x + 88, mid + 1);
       c.textBaseline = "alphabetic";
     });
