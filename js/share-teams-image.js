@@ -71,7 +71,6 @@ async function drawTeamsImage() {
     c.closePath();
     c.save(); c.shadowColor = "rgba(0,0,0,.35)"; c.shadowBlur = 30; c.shadowOffsetY = 14; c.fillStyle = "#254031"; c.fill(); c.restore();
     c.save(); c.clip(); c.fillStyle = kit; c.fillRect(x, top, tw, tabH); c.restore();   // la pestaña, del color de la camiseta
-    if (!light) { c.strokeStyle = "rgba(255,255,255,.2)"; c.lineWidth = 2; c.stroke(); }
     c.fillStyle = ink; c.fillText(label, x + 28, top + 48);
     // Convocados: dorsal y nombre
     squad.forEach((p, j) => {
