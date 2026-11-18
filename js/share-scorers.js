@@ -1,6 +1,6 @@
 "use strict";
 /* Tabla de goleadores para compartir: en texto (WhatsApp) o en imagen (1080 px de ancho), desde la pestaña Estadísticas.
-   Usa computeStats y scoreRanks (stats.js) y roundRect y fitText (share-image.js y share-teams-image.js). */
+   Usa computeStats y scoreRanks (stats.js) y la cabecera, la carpeta y fitText (share-image.js). */
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 const MEDAL_COLORS = ["#c9a24a", "#b9c0c4", "#b0774a"];
@@ -15,48 +15,48 @@ function scorersText() {
     ...rows.map((r, i) => `${rk[i] <= 3 ? MEDALS[rk[i] - 1] : rk[i] + "."} ${r.name}: ${cnt(r.g, "gol", "goles")} (${r.pj} PJ)`)].join("\n");
 }
 
-/** Dibuja la imagen de los goleadores y devuelve el canvas: los goles destacados; los partidos jugados, más pequeños y apagados. */
+/** Dibuja la imagen de los goleadores y devuelve el canvas, como un cartel: la tabla va en una carpeta con una pestaña verde.
+    Los goles, destacados; los partidos jugados, más pequeños y apagados. La cabecera y la carpeta son las de share-image.js. */
 async function drawScorersImage() {
   try { await document.fonts.ready; } catch {}
   const rows = scorers(), rk = scoreRanks(rows);
-  const W = 1080, M = 40, top = 222, rowH = 78, H = top + rows.length * rowH + 60;
-  const nameX = M + 92, pjC = W - M - 90, golC = pjC - 160;   // centro de cada columna de números
+  const W = 1080, M = 48, top = 250, tabH = 62, body = top + tabH, headH = 62, rowH = 78, bodyH = headH + rows.length * rowH + 22, H = body + bodyH + 64;
+  const x0 = M + 28, nameX = x0 + 76, pjC = W - M - 90, golC = pjC - 160;   // centro de cada columna de números
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-  const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif";
-  const MUTED = "#9fb5a7";
+  const c = cv.getContext("2d"), font = posterFont(c);
+  posterHead(c, "GOLEADORES", 84, false);
 
-  // Fondo y título (como las otras imágenes)
-  c.fillStyle = "#1d3327"; c.fillRect(0, 0, W, H);
-  c.textBaseline = "alphabetic"; c.textAlign = "left";
-  c.fillStyle = "#87a090"; c.font = `600 22px ${F}`; c.fillText(scorersSub().toUpperCase(), M, 72);
-  c.fillStyle = "#eef3ef"; c.font = `800 56px ${F}`; c.fillText("GOLEADORES", M, 150);
+  // Carpeta verde; en la pestaña, los partidos del historial
+  const label = cnt(matches.length, "partido", "partidos").toUpperCase();
+  font("700 28px", true); c.letterSpacing = "2px";
+  const tw = c.measureText(label).width + 56;
+  folder(c, M, body, W - 2 * M, bodyH, { top: [tw, tabH, POSTER_ACC] });
+  c.fillStyle = "#16221b"; c.textBaseline = "middle"; c.fillText(label, M + 28, top + tabH / 2 + 2);
+  c.letterSpacing = "0px";
 
   // Cabecera de la tabla
-  c.fillStyle = "#87a090"; c.font = `700 18px ${F}`;
-  if ("letterSpacing" in c) c.letterSpacing = "2px";
-  c.fillText("JUGADOR", nameX, 200);
-  c.textAlign = "center";
-  c.fillText("GOLES", golC, 200); c.fillText("PJ", pjC, 200);
-  if ("letterSpacing" in c) c.letterSpacing = "0px";
+  c.fillStyle = POSTER_ACC; c.font = `600 18px ${POSTER_F}`; c.letterSpacing = "3px";
+  const hy = body + headH / 2 + 4;
+  c.textAlign = "left"; c.fillText("JUGADOR", nameX, hy);
+  c.textAlign = "center"; c.fillText("GOLES", golC, hy); c.fillText("PJ", pjC, hy);
+  c.letterSpacing = "0px";
 
   rows.forEach((r, i) => {
-    const y = top + i * rowH, h = rowH - 12, mid = y + h / 2, podium = rk[i] <= 3;
-    c.fillStyle = podium ? "#2c4d3a" : "#254031"; roundRect(c, M, y, W - 2 * M, h, 10); c.fill();
+    const y = body + headH + i * rowH, mid = y + rowH / 2, podium = rk[i] <= 3;
+    c.fillStyle = "rgba(255,255,255,.07)"; c.fillRect(x0, y, W - 2 * x0, 2);
     // Puesto: disco de color para los tres primeros, número suelto para el resto
     c.textBaseline = "middle"; c.textAlign = "center";
     if (podium) {
-      c.beginPath(); c.arc(M + 48, mid, 24, 0, 7); c.fillStyle = MEDAL_COLORS[rk[i] - 1]; c.fill();
-      c.fillStyle = "#16191a"; c.font = `800 24px ${F}`;
-    } else { c.fillStyle = "#87a090"; c.font = `700 24px ${F}`; }
-    c.fillText(String(rk[i]), M + 48, mid + 1);
+      c.beginPath(); c.arc(x0 + 24, mid, 24, 0, 7); c.fillStyle = MEDAL_COLORS[rk[i] - 1]; c.fill();
+      c.fillStyle = "#16191a"; c.font = `700 24px ${POSTER_F}`;
+    } else { c.fillStyle = "#87a090"; c.font = `600 24px ${POSTER_F}`; }
+    c.fillText(String(rk[i]), x0 + 24, mid + 1);
     // Goles en grande; partidos jugados, pequeños y apagados
-    c.textAlign = "center";
-    c.fillStyle = "#eef3ef"; c.font = `800 40px ${F}`; c.fillText(String(r.g), golC, mid + 1);
-    c.fillStyle = MUTED; c.font = `600 26px ${F}`;
-    c.fillText(String(r.pj), pjC, mid + 1);
+    font("700 46px", true); c.fillStyle = "#eef3ef"; c.fillText(String(r.g), golC, mid + 1);
+    c.fillStyle = "#9fb5a7"; c.font = `500 26px ${POSTER_F}`; c.fillText(String(r.pj), pjC, mid + 1);
     // Nombre en el espacio que queda hasta los goles
-    c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `${podium ? 700 : 600} 30px ${F}`;
-    c.fillText(fitText(c, r.name, golC - 60 - nameX), nameX, mid + 1);
+    c.textAlign = "left"; c.fillStyle = "#eef3ef"; c.font = `${podium ? 600 : 500} 30px ${POSTER_F}`;
+    c.fillText(fitText(c, r.name, golC - 70 - nameX), nameX, mid + 1);
   });
   c.textBaseline = "alphabetic"; c.textAlign = "left";
   return cv;
