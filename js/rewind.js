@@ -1,5 +1,5 @@
 "use strict";
-/* Rewind del año: los números, los premios y un cromo para cada uno que haya jugado al menos REWIND_MIN partidos.
+/* Rewind del año: los números, los premios, un cromo para cada uno que haya jugado al menos REWIND_MIN partidos.
    No toca la pantalla: rewindCards(año) devuelve las historias ya escritas y rewind-ui.js las enseña.
    Victorias, derrotas y rachas cuentan solo partidos con resultado; los goles y la asistencia, todos los del año. */
 
@@ -15,7 +15,7 @@ function rewindData(year) {
   if (!ms.length) return null;
   const R = {}, pairs = {}, rivals = {};
   const get = pl => R[pl.id] || (R[pl.id] = { id: pl.id, name: BY[pl.id] ? BY[pl.id].n : pl.name, pos: BY[pl.id] ? BY[pl.id].pos : [],
-    apps: 0, pj: 0, w: 0, d: 0, l: 0, g: 0, hat: 0, cur: 0, best: 0 });
+    apps: 0, pj: 0, w: 0, d: 0, l: 0, g: 0, hat: 0, mvp: 0, cur: 0, best: 0 });
   const key = (a, b) => [a, b].sort().join("|");
   let goals = 0, withResult = 0, winsW = 0, winsD = 0, draws = 0, biggest = null, crazy = null;
   const hattricks = [];
@@ -55,6 +55,8 @@ function rewindData(year) {
         if (g[id] >= 3) hattricks.push({ name: get(pl).name, n: g[id], date: m.date || m.id });
       });
     });
+    // MVP del partido (después de los equipos, para no cambiar el orden en que salen los jugadores)
+    if (m.mvp) { const pl = side("W").concat(side("D")).find(p => p.id === m.mvp) || { id: m.mvp, name: nameOf(m.mvp) }; get(pl).mvp++; }
   });
   const people = Object.values(R);
   return { year, ms, people, goals, withResult, winsW, winsD, draws, biggest, crazy, hattricks,
@@ -81,6 +83,7 @@ const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
 const MOTES = [
   ["Delantero centro de los de antes", (r, c) => c.gpm >= 1 ? 4 + c.gpm : 0],
   ["Hat-trick en el bolsillo", r => r.hat ? 3.5 + r.hat / 10 : 0],
+  ["MVP de los de verdad", r => r.mvp >= 2 ? 3.8 + r.mvp / 10 : 0],
   ["Olfato de gol", (r, c) => c.gpm >= .5 ? 3 + c.gpm : 0],
   ["Talismán: si viene, se gana", (r, c) => r.pj >= 3 && c.wr >= .65 ? 3 + c.wr : 0],
   ["No falla ni con fiebre", (r, c) => c.share >= .85 ? 3 + c.share : 0],
@@ -88,6 +91,7 @@ const MOTES = [
   ["Imparable mientras duró", r => r.best >= 3 ? 2.5 + r.best / 10 : 0],
   ["Defensa con alma de delantero", r => r.pos.includes("DEF") && r.g >= 2 ? 3.5 : 0],
   ["Corazón de equipo, aunque el marcador no acompañe", (r, c) => r.pj >= 3 && c.wr <= .3 ? 2 + (.3 - c.wr) : 0],
+  ["Con el MVP en la vitrina", r => r.mvp === 1 ? 2.4 : 0],
   ["De los de siempre", (r, c) => c.share >= .7 ? 2 + c.share : 0],
   ["Manos seguras", r => r.pos.includes("POR") ? 4.2 : 0],
   ["Muro: lo suyo es que no pase nadie", r => r.pos.includes("DEF") && !r.g ? 3.2 : 0],
@@ -139,6 +143,8 @@ function rewindCards(year) {
 
   const pich = best(P, r => r.g);
   if (pich.length) add({ emoji: "🥇", kicker: "Pichichi", title: joinNames(names(pich)), big: cnt(pich[0].g, "gol", "goles"), sub: pich.length > 1 ? "Empatados arriba. Que lo decidan a penaltis." : "La red tiembla cuando la ve venir." });
+  const mvp = best(P, r => r.mvp);
+  if (mvp.length && (mvp[0].mvp >= 2 || mvp.length <= 2)) add({ emoji: "🏆", kicker: "MVP del año", title: joinNames(names(mvp)), big: `${cnt(mvp[0].mvp, "vez", "veces")} MVP`, sub: mvp.length > 1 ? "Reparten la vitrina. Que no se peleen por el trofeo." : "Cuando el partido se ponía feo, aparecía." });
   const fijo = best(P, r => r.apps, 2);
   if (fijo.length) add({ emoji: "📅", kicker: "El fijo", title: joinNames(names(fijo)), big: `${fijo[0].apps} de ${d.ms.length} partidos`, sub: "Llueva, truene o haya boda." });
   const minPj = Math.max(REWIND_MIN, Math.ceil(d.withResult * .3));
@@ -164,8 +170,20 @@ function rewindCards(year) {
   for (let p = 0; p < pages; p++) {
     add({ kind: "squad", emoji: "🃏", kicker: `La plantilla del año${pages > 1 ? ` · ${p + 1}/${pages}` : ""}`, title: "",
       cromos: squad.slice(cut(p), cut(p + 1)).map(r => ({ name: r.name, nick: nicks[r.id],
-        stats: `${cnt(r.apps, "partido", "partidos")} · ${cnt(r.g, "gol", "goles")}${r.pj ? ` · ${r.w}V ${r.d}E ${r.l}D` : ""}` })) });
+        stats: `${cnt(r.apps, "partido", "partidos")} · ${cnt(r.g, "gol", "goles")}${r.pj ? ` · ${r.w}V ${r.d}E ${r.l}D` : ""}${r.mvp ? ` · ${r.mvp} MVP` : ""}` })) });
   }
+
+  // Las estadísticas del año: los tres primeros de cada cuenta (los empatados comparten medalla)
+  const top = (title, score, unit) => {
+    const list = P.filter(r => score(r) > 0).sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, "es")).slice(0, 3);
+    const rank = r => P.filter(x => score(x) > score(r)).length;
+    // Si hay más empatados que filas, la última lo dice: «Carla y 3 más»
+    const hidden = list.length ? P.filter(x => score(x) === score(list[list.length - 1])).length - list.filter(x => score(x) === score(list[list.length - 1])).length : 0;
+    return list.length ? { title, rows: list.map((r, i) => ({ medal: ["🥇", "🥈", "🥉"][Math.min(rank(r), 2)], name: r.name + (i === list.length - 1 && hidden > 0 ? ` y ${hidden} más` : ""), v: unit(score(r)) })) } : null;
+  };
+  const blocks = [top("Más partidos", r => r.apps, n => cnt(n, "partido", "partidos")), top("Más goles", r => r.g, n => cnt(n, "gol", "goles")),
+    top("Más victorias", r => r.w, n => cnt(n, "victoria", "victorias")), top("Más MVP", r => r.mvp, n => cnt(n, "MVP", "MVP"))].filter(Boolean);
+  if (blocks.length) add({ kind: "stats", emoji: "📈", kicker: "Las estadísticas del año", title: "", blocks });
 
   add({ kind: "outro", emoji: "🙌", kicker: groupName(), title: `Gracias por ${year}`, sub: `Nos vemos en el campo en ${+year + 1}.` });
   return cards;

@@ -53,6 +53,8 @@ function stepRewind(d) {
 }
 
 function cardHTML(c) {
+  if (c.kind === "stats") return `<p class="rwk">${esc(c.kicker)}</p><div class="rwstats">${c.blocks.map(b =>
+    `<section class="rwblock"><h3>${esc(b.title)}</h3><ol>${b.rows.map(r => `<li><span>${r.medal}</span><b>${esc(r.name)}</b><em>${esc(r.v)}</em></li>`).join("")}</ol></section>`).join("")}</div>`;
   if (c.kind === "squad") return `<p class="rwk">${esc(c.kicker)}</p><div class="rwsquad">${c.cromos.map(k =>
     `<div class="cromo"><b>${esc(k.name)}</b><span class="nick">${esc(k.nick)}</span><small>${esc(k.stats)}</small></div>`).join("")}</div>`;
   return `<div class="rwe">${c.emoji}</div><p class="rwk">${esc(c.kicker)}</p><h2 class="rwt">${esc(c.title)}</h2>`
@@ -113,6 +115,23 @@ function drawRewindCard(card, i) {
       c.globalAlpha = .75; c.font = `500 34px ${F}`; c.fillText(fitText(c, k.stats, W - 260), W / 2, y + 235); c.globalAlpha = 1;
       y += 340;
     });
+  } else if (card.kind === "stats") {
+    c.globalAlpha = .75; c.font = `700 40px ${F}`; c.fillText(card.kicker.toUpperCase(), W / 2, 230); c.globalAlpha = 1;
+    y = 320;
+    card.blocks.forEach(b => {
+      c.textAlign = "left"; c.globalAlpha = .75; c.font = `700 36px ${F}`; c.fillText(b.title.toUpperCase(), 100, y); c.globalAlpha = 1;
+      y += 22;
+      b.rows.forEach(r => {
+        c.fillStyle = "rgba(255,255,255,.12)"; roundRect(c, 90, y, W - 180, 80, 22); c.fill();
+        c.fillStyle = "#fff"; c.textBaseline = "middle";
+        c.textAlign = "left"; c.font = `400 44px ${F}`; c.fillText(r.medal, 120, y + 42);
+        c.font = `700 44px ${F}`; c.fillText(fitText(c, r.name, 520), 200, y + 42);
+        c.textAlign = "right"; c.font = `500 38px ${F}`; c.globalAlpha = .85; c.fillText(r.v, W - 120, y + 42); c.globalAlpha = 1;
+        c.textBaseline = "alphabetic"; y += 92;
+      });
+      y += 36;
+    });
+    c.textAlign = "center";
   } else {
     c.font = `200px ${F}`; c.fillText(card.emoji, W / 2, 620);
     c.globalAlpha = .75; c.font = `700 44px ${F}`; c.fillText(card.kicker.toUpperCase(), W / 2, 780); c.globalAlpha = 1;
