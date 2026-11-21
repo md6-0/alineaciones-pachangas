@@ -48,3 +48,9 @@
   .mhead{gap:8px}
 }
 .score .sval{display:inline-block;min-width:1.6em;text-align:center;font-size:1.1rem;font-variant-numeric:tabular-nums}
+
+/* MVP del partido: insignia dorada (la de la media ≥ 75), o desplegable para quien organiza */
+.mvp{display:flex;align-items:center;gap:10px;border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.mvpl{font-size:.62rem;font-weight:800;letter-spacing:.12em;padding:4px 9px;border-radius:5px;background:linear-gradient(160deg,#e9d28a,#b8923c);color:#2a2210}
+.mvpname{font-weight:700;font-size:.95rem}
+.mvp select{font:inherit;font-size:.84rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 6px;min-width:0;flex:1;max-width:260px}

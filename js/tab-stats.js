@@ -1,5 +1,5 @@
 "use strict";
-/* Pestaña Estadísticas: goleadores, partidos jugados y G/E/P (los cálculos están en stats.js). */
+/* Pestaña Estadísticas: goleadores, MVP, partidos jugados y G/E/P (los cálculos están en stats.js). */
 
 /** Tarjeta con una tabla. cols: [[cabecera, clase, valor(fila)]]. Los empatados comparten puesto (key). */
 function statCard(title, rows, key, cols, emptyText) {
@@ -18,12 +18,13 @@ function renderStats() {
   if (failed) { box.innerHTML = `<p class="hint">${LOAD_ERROR}</p>`; return; }
   if (!histLoaded) { box.innerHTML = '<p class="hint">Cargando estadísticas…</p>'; return; }
   if (!matches.length) { box.innerHTML = '<p class="hint">Aún no hay partidos. Guarda una alineación en el historial y apunta el resultado en Historial para ver las estadísticas.</p>'; return; }
-  const { scorers, played, record, withResult } = computeStats(matches);
+  const { scorers, mvps, played, record, withResult } = computeStats(matches);
   const noResult = "Todavía no hay partidos con resultado.";
   box.innerHTML = `<div class="sgrid">
     ${statCard("Goleadores", scorers, r => r.g + "/" + r.pj, [["Goles", "big c", r => r.g], ["PJ", "soft c", r => r.pj]], "Todavía no hay goles apuntados.")}
+    ${mvps.length ? statCard("MVP", mvps, r => r.mv + "/" + r.pj, [["MVP", "big c", r => r.mv], ["PJ", "soft c", r => r.pj]], "") : ""}
     ${statCard("Partidos jugados", played, r => r.pj, [["PJ", "big", r => r.pj]], noResult)}
     ${statCard("Ganados, empatados y perdidos", record, r => r.w + "/" + r.l + "/" + r.d, [["G", "win", r => r.w], ["E", "", r => r.d], ["P", "", r => r.l]], noResult)}
   </div>
-  <p class="hint stats-note">Partidos jugados y G/E/P cuentan solo los partidos con el resultado de los dos equipos apuntado (${withResult} de ${matches.length}); los suplentes de ese día cuentan como jugadores. Los goles cuentan siempre.</p>`;
+  <p class="hint stats-note">Partidos jugados y G/E/P cuentan solo los partidos con el resultado de los dos equipos apuntado (${withResult} de ${matches.length}); los suplentes de ese día cuentan como jugadores. Los goles y los MVP cuentan siempre.</p>`;
 }
