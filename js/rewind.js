@@ -71,9 +71,8 @@ function best(list, score, min = 1) {
   return top >= min ? list.filter(x => score(x) === top) : [];
 }
 const names = list => list.map(x => x.name);
-/** «Ana», «Ana y Luis», «Ana, Luis y Pepe»; con muchos empatados, «Ana, Luis, Pepe y 9 más». */
+/** «Ana», «Ana y Luis», «Ana, Luis y Pepe»: salen todos, aunque haya muchos empatados. */
 function joinNames(l) {
-  if (l.length > 4) return l.slice(0, 3).join(", ") + ` y ${l.length - 3} más`;
   return l.length <= 1 ? (l[0] || "") : l.slice(0, -1).join(", ") + " y " + l[l.length - 1];
 }
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
@@ -160,7 +159,7 @@ function rewindCards(year) {
   if (d.crazy && d.crazy.tot >= 8 && d.crazy.m !== (d.biggest && d.biggest.m)) { const m = d.crazy.m; add({ emoji: "🎢", kicker: "El partido más loco", title: `${m.score.W} – ${m.score.D}`, big: date(m), sub: `${cnt(d.crazy.tot, "gol", "goles")} en un solo día. Los porteros aún lo sueñan.` }); }
   if (d.hattricks.length) add({ emoji: "🎩", kicker: "Noches mágicas", title: cnt(d.hattricks.length, "hat-trick", "hat-tricks"), lines: d.hattricks.map(h => `${h.name}: ${h.n} goles · ${fmtDate(h.date)}`) });
   const max = Math.max(0, ...P.map(r => r.apps));
-  const missed = max >= 4 ? best(P, r => -r.apps, -Infinity).filter(r => r.apps <= max / 4).slice(0, 3) : [];
+  const missed = max >= 4 ? best(P, r => -r.apps, -Infinity).filter(r => r.apps <= max / 4) : [];
   if (missed.length) add({ emoji: "👻", kicker: "Se le echó de menos", title: joinNames(names(missed)), big: cnt(missed[0].apps, "partido", "partidos"), sub: "El año que viene te guardamos sitio." });
 
   // La plantilla: un cromo para cada uno con al menos REWIND_MIN partidos, hasta 4 por historia (repartidos a partes iguales)
@@ -173,13 +172,11 @@ function rewindCards(year) {
         stats: `${cnt(r.apps, "partido", "partidos")} · ${cnt(r.g, "gol", "goles")}${r.pj ? ` · ${r.w}V ${r.d}E ${r.l}D` : ""}${r.mvp ? ` · ${r.mvp} MVP` : ""}` })) });
   }
 
-  // Las estadísticas del año: los tres primeros de cada cuenta (los empatados comparten medalla)
+  // Las estadísticas del año: los tres primeros puestos de cada cuenta; en cada puesto salen todos los empatados
   const top = (title, score, unit) => {
-    const list = P.filter(r => score(r) > 0).sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, "es")).slice(0, 3);
-    const rank = r => P.filter(x => score(x) > score(r)).length;
-    // Si hay más empatados que filas, la última lo dice: «Carla y 3 más»
-    const hidden = list.length ? P.filter(x => score(x) === score(list[list.length - 1])).length - list.filter(x => score(x) === score(list[list.length - 1])).length : 0;
-    return list.length ? { title, rows: list.map((r, i) => ({ medal: ["🥇", "🥈", "🥉"][Math.min(rank(r), 2)], name: r.name + (i === list.length - 1 && hidden > 0 ? ` y ${hidden} más` : ""), v: unit(score(r)) })) } : null;
+    const vals = [...new Set(P.map(score).filter(v => v > 0))].sort((a, b) => b - a).slice(0, 3);
+    return vals.length ? { title, rows: vals.map((v, i) => ({ medal: ["🥇", "🥈", "🥉"][i],
+      name: joinNames(P.filter(r => score(r) === v).map(r => r.name).sort((a, b) => a.localeCompare(b, "es"))), v: unit(v) })) } : null;
   };
   const blocks = [top("Más partidos", r => r.apps, n => cnt(n, "partido", "partidos")), top("Más goles", r => r.g, n => cnt(n, "gol", "goles")),
     top("Más victorias", r => r.w, n => cnt(n, "victoria", "victorias")), top("Más MVP", r => r.mvp, n => cnt(n, "MVP", "MVP"))].filter(Boolean);

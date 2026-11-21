@@ -57,7 +57,7 @@ function cardHTML(c) {
     `<section class="rwblock"><h3>${esc(b.title)}</h3><ol>${b.rows.map(r => `<li><span>${r.medal}</span><b>${esc(r.name)}</b><em>${esc(r.v)}</em></li>`).join("")}</ol></section>`).join("")}</div>`;
   if (c.kind === "squad") return `<p class="rwk">${esc(c.kicker)}</p><div class="rwsquad">${c.cromos.map(k =>
     `<div class="cromo"><b>${esc(k.name)}</b><span class="nick">${esc(k.nick)}</span><small>${esc(k.stats)}</small></div>`).join("")}</div>`;
-  return `<div class="rwe">${c.emoji}</div><p class="rwk">${esc(c.kicker)}</p><h2 class="rwt">${esc(c.title)}</h2>`
+  return `<div class="rwe">${c.emoji}</div><p class="rwk">${esc(c.kicker)}</p><h2 class="rwt${c.title.length > 28 ? " long" : ""}">${esc(c.title)}</h2>`
     + (c.big ? `<p class="rwb">${esc(c.big)}</p>` : "") + (c.sub ? `<p class="rws">${esc(c.sub)}</p>` : "")
     + (c.lines.length ? `<ul class="rwl">${c.lines.map(l => `<li>${esc(l)}</li>`).join("")}</ul>` : "");
 }
@@ -98,6 +98,14 @@ function wrapCenter(c, text, x, y, max, lh) {
   return y;
 }
 
+/** Parte un texto en líneas que quepan en max (con la fuente ya puesta). */
+function wrapLines(c, text, max) {
+  const out = []; let line = "";
+  String(text).split(" ").forEach(w => { const t = line ? line + " " + w : w; if (c.measureText(t).width > max && line) { out.push(line); line = w; } else line = t; });
+  if (line) out.push(line);
+  return out;
+}
+
 function drawRewindCard(card, i) {
   const W = 1080, H = 1920, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d"), F = "Archivo, system-ui, sans-serif", [a, b] = RW_COLORS[i % RW_COLORS.length];
@@ -117,25 +125,35 @@ function drawRewindCard(card, i) {
     });
   } else if (card.kind === "stats") {
     c.globalAlpha = .75; c.font = `700 40px ${F}`; c.fillText(card.kicker.toUpperCase(), W / 2, 230); c.globalAlpha = 1;
+    // Los nombres salen todos: si son muchos, la letra se achica hasta que la historia entre en la imagen
+    const nameW = 520, plan = f => {
+      c.font = `700 ${f}px ${F}`; const lh = Math.round(f * 1.15); let h = 0;
+      const blocks = card.blocks.map(b => { const rows = b.rows.map(r => { const lines = wrapLines(c, r.name, nameW); return { r, lines, h: Math.max(80, 28 + lines.length * lh) }; });
+        h += 58 + rows.reduce((t, x) => t + x.h + 12, 0) + 44; return { b, rows }; });
+      return { blocks, h, lh };
+    };
+    let fs = 44, p = plan(fs);
+    for (const f of [44, 38, 32, 28, 24, 20]) { fs = f; p = plan(f); if (p.h <= 1400) break; }
     y = 320;
-    card.blocks.forEach(b => {
+    p.blocks.forEach(({ b, rows }) => {
       c.textAlign = "left"; c.globalAlpha = .75; c.font = `700 36px ${F}`; c.fillText(b.title.toUpperCase(), 100, y); c.globalAlpha = 1;
       y += 22;
-      b.rows.forEach(r => {
-        c.fillStyle = "rgba(255,255,255,.12)"; roundRect(c, 90, y, W - 180, 80, 22); c.fill();
-        c.fillStyle = "#fff"; c.textBaseline = "middle";
-        c.textAlign = "left"; c.font = `400 44px ${F}`; c.fillText(r.medal, 120, y + 42);
-        c.font = `700 44px ${F}`; c.fillText(fitText(c, r.name, 520), 200, y + 42);
-        c.textAlign = "right"; c.font = `500 38px ${F}`; c.globalAlpha = .85; c.fillText(r.v, W - 120, y + 42); c.globalAlpha = 1;
-        c.textBaseline = "alphabetic"; y += 92;
+      rows.forEach(({ r, lines, h }) => {
+        c.fillStyle = "rgba(255,255,255,.12)"; roundRect(c, 90, y, W - 180, h, 22); c.fill();
+        c.fillStyle = "#fff"; c.textBaseline = "middle"; const mid = y + h / 2;
+        c.textAlign = "left"; c.font = `400 44px ${F}`; c.fillText(r.medal, 120, mid + 2);
+        c.font = `700 ${fs}px ${F}`; lines.forEach((l, k) => c.fillText(l, 200, mid + 2 + (k - (lines.length - 1) / 2) * p.lh));
+        c.textAlign = "right"; c.font = `500 38px ${F}`; c.globalAlpha = .85; c.fillText(r.v, W - 120, mid + 2); c.globalAlpha = 1;
+        c.textBaseline = "alphabetic"; y += h + 12;
       });
-      y += 36;
+      y += 44;
     });
     c.textAlign = "center";
   } else {
     c.font = `200px ${F}`; c.fillText(card.emoji, W / 2, 620);
     c.globalAlpha = .75; c.font = `700 44px ${F}`; c.fillText(card.kicker.toUpperCase(), W / 2, 780); c.globalAlpha = 1;
-    c.font = `800 104px ${F}`; y = wrapCenter(c, card.title, W / 2, 920, W - 160, 112);
+    const ts = card.title.length <= 28 ? 104 : card.title.length <= 56 ? 84 : 66;
+    c.font = `800 ${ts}px ${F}`; y = wrapCenter(c, card.title, W / 2, 920, W - 160, Math.round(ts * 1.08));
     if (card.big) { c.font = `700 64px ${F}`; y = wrapCenter(c, card.big, W / 2, y + 40, W - 160, 76); }
     if (card.sub) { c.globalAlpha = .85; c.font = `500 46px ${F}`; y = wrapCenter(c, card.sub, W / 2, y + 50, W - 200, 60); c.globalAlpha = 1; }
     if (card.lines.length) { c.font = `600 42px ${F}`; y += 30; card.lines.forEach(l => { y = wrapCenter(c, l, W / 2, y + 20, W - 200, 54); }); }

@@ -41,8 +41,17 @@ const matches = {
   const fin = cards.find(c => c.kind === 'stats');
   const rowsOf = t => fin.blocks.find(b => b.title === t).rows.map(r => r.name + ' ' + r.v).join(', ');
   ok('historia final de estadísticas, antes del cierre', fin && cards.indexOf(fin) === cards.length - 2 && cards[cards.length - 1].kind === 'outro');
-  ok('más partidos (empatados con la misma medalla)', fin.blocks[0].title === 'Más partidos' && rowsOf('Más partidos') === 'Ana 5 partidos, Bea 5 partidos, Carla y 1 más 5 partidos' && fin.blocks[0].rows.every(r => r.medal === '🥇'), rowsOf('Más partidos'));
-  ok('más goles, más victorias y más MVP', rowsOf('Más goles').startsWith('Bea 8 goles, Carla 4 goles, Dani 2 goles') && rowsOf('Más victorias').startsWith('Ana 4 victorias') && rowsOf('Más MVP').startsWith('Bea 3 MVP, Ana 1 MVP, Carla 1 MVP'), [rowsOf('Más goles'), rowsOf('Más victorias'), rowsOf('Más MVP')].join(' / '));
+  ok('más partidos: los empatados, juntos en el mismo puesto', fin.blocks[0].title === 'Más partidos' && rowsOf('Más partidos') === 'Ana, Bea, Carla y Dani 5 partidos, Edu 4 partidos, Fran 1 partido' && fin.blocks[0].rows.map(r => r.medal).join('') === '🥇🥈🥉', rowsOf('Más partidos'));
+  ok('más goles, más victorias y más MVP', rowsOf('Más goles') === 'Bea 8 goles, Carla 4 goles, Dani 2 goles' && rowsOf('Más victorias').startsWith('Ana y Bea 4 victorias, Carla 2 victorias') && rowsOf('Más MVP') === 'Bea 3 MVP, Ana y Carla 1 MVP', [rowsOf('Más goles'), rowsOf('Más victorias'), rowsOf('Más MVP')].join(' / '));
+  const many = await page.evaluate(() => {
+    const nm = Array.from({ length: 12 }, (_, i) => 'Jugador ' + (i + 1));
+    const sq = nm.map((n, i) => ({ id: 'z' + i, name: n }));
+    const card = { kind: 'stats', emoji: '📈', kicker: 'Las estadísticas del año', title: '', blocks: ['Más partidos', 'Más goles', 'Más victorias', 'Más MVP'].map(t => ({ title: t, rows: [{ medal: '🥇', name: joinNames(nm), v: '9 partidos' }, { medal: '🥈', name: joinNames(nm.slice(0, 5)), v: '8' }, { medal: '🥉', name: 'Ana', v: '7' }] })) };
+    const c = drawRewindCard(card, 3);
+    return { joined: joinNames(nm), size: c.width + 'x' + c.height };
+  });
+  ok('con 12 empatados salen los 12 nombres, sin «y N más»', !/más/.test(many.joined) && many.joined.split(',').length === 11 && many.joined.endsWith('y Jugador 12'), many.joined);
+  ok('la imagen de estadísticas con muchos empatados se dibuja', many.size === '1080x1920');
   ok('mayor goleada', by('La mayor goleada').title === '4 – 0');
   const squad = cards.filter(c => c.kind === 'squad').flatMap(c => c.cromos);
   ok('un cromo para cada uno con 4 o más partidos', squad.map(k => k.name).sort().join() === 'Ana,Bea,Carla,Dani,Edu', squad.map(k => k.name).join());

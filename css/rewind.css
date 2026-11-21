@@ -29,6 +29,7 @@ body.rw-on{overflow:hidden}
 .rwe{font-size:4.5rem;line-height:1}
 .rwk{margin:6px 0 0;font-size:.8rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.8}
 .rwt{margin:0;font-size:clamp(1.8rem,9vw,3rem);font-weight:800;font-stretch:80%;line-height:1.02;text-transform:uppercase}
+.rwt.long{font-size:clamp(1.3rem,6.5vw,2.1rem)}
 .rwb{margin:4px 0 0;font-size:1.35rem;font-weight:700}
 .rws{margin:4px 0 0;font-size:1rem;opacity:.88;max-width:34ch}
 .rwl{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-weight:600}
@@ -44,5 +45,5 @@ body.rw-on{overflow:hidden}
 .rwblock h3{margin:0 0 4px;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
 .rwblock ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
 .rwblock li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.12);border-radius:10px;padding:6px 12px}
-.rwblock li b{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rwblock li em{font-style:normal;opacity:.85;font-size:.9rem}
+.rwblock li b{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.rwblock li em{font-style:normal;opacity:.85;font-size:.9rem;white-space:nowrap}
