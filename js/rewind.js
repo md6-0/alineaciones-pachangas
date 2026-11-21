@@ -1,5 +1,5 @@
 "use strict";
-/* Rewind del año: los números, los premios y un cromo para cada uno que haya jugado al menos REWIND_MIN partidos.
+/* Rewind del año: los números, los premios, un cromo para cada uno que haya jugado al menos REWIND_MIN partidos.
    No toca la pantalla: rewindCards(año) devuelve las historias ya escritas y rewind-ui.js las enseña.
    Victorias, derrotas y rachas cuentan solo partidos con resultado; los goles y la asistencia, todos los del año. */
 
@@ -15,7 +15,7 @@ function rewindData(year) {
   if (!ms.length) return null;
   const R = {}, pairs = {}, rivals = {};
   const get = pl => R[pl.id] || (R[pl.id] = { id: pl.id, name: BY[pl.id] ? BY[pl.id].n : pl.name, pos: BY[pl.id] ? BY[pl.id].pos : [],
-    apps: 0, pj: 0, w: 0, d: 0, l: 0, g: 0, cur: 0, best: 0 });
+    apps: 0, pj: 0, w: 0, d: 0, l: 0, g: 0, hat: 0, mvp: 0, cur: 0, best: 0 });
   const key = (a, b) => [a, b].sort().join("|");
   let goals = 0, withResult = 0, winsW = 0, winsD = 0, draws = 0, biggest = null, crazy = null;
   const hattricks = [];
@@ -51,9 +51,12 @@ function rewindData(year) {
         if (!(g[id] > 0)) return;
         const pl = team.find(p => p.id === id) || { id, name: nameOf(id) };
         get(pl).g += g[id];
+        if (g[id] >= 3) get(pl).hat++;
         if (g[id] >= 3) hattricks.push({ name: get(pl).name, n: g[id], date: m.date || m.id });
       });
     });
+    // MVP del partido (después de los equipos, para no cambiar el orden en que salen los jugadores)
+    if (m.mvp) { const pl = side("W").concat(side("D")).find(p => p.id === m.mvp) || { id: m.mvp, name: nameOf(m.mvp) }; get(pl).mvp++; }
   });
   const people = Object.values(R);
   return { year, ms, people, goals, withResult, winsW, winsD, draws, biggest, crazy, hattricks,
@@ -75,19 +78,53 @@ function joinNames(l) {
 }
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
 
-/** Mote de cada cromo: lo más llamativo de su año (de cachondeo suave). */
-function nickname(r, d) {
-  const share = r.apps / d.ms.length, wr = r.pj ? r.w / r.pj : 0, gpm = r.g / Math.max(r.apps, 1);
-  if (gpm >= 1) return "Delantero centro de los de antes";
-  if (gpm >= .5) return "Olfato de gol";
-  if (r.pj >= 3 && wr >= .65) return "Talismán: si viene, se gana";
-  if (share >= .85) return "No falla ni con fiebre";
-  if (r.pj >= 3 && r.d / r.pj >= .3) return "Rey del empate";
-  if (r.pos.includes("POR")) return "Manos seguras";
-  if (r.pos.includes("DEF") && !r.g) return "Muro: lo suyo es que no pase nadie";
-  if (!r.g) return "Generoso: los goles, para los demás";
-  if (r.pj >= 3 && wr <= .3) return "Corazón de equipo, aunque el marcador no acompañe";
-  return "Pieza clave del vestuario";
+/** Motes con su encaje: devuelve 0 si no le va a ese jugador y, si le va, un número mayor cuanto mejor le queda.
+    c: sus proporciones (asistencia, victorias, empates, derrotas y goles por partido). */
+const MOTES = [
+  ["Delantero centro de los de antes", (r, c) => c.gpm >= 1 ? 4 + c.gpm : 0],
+  ["Hat-trick en el bolsillo", r => r.hat ? 3.5 + r.hat / 10 : 0],
+  ["MVP de los de verdad", r => r.mvp >= 2 ? 3.8 + r.mvp / 10 : 0],
+  ["Olfato de gol", (r, c) => c.gpm >= .5 ? 3 + c.gpm : 0],
+  ["Talismán: si viene, se gana", (r, c) => r.pj >= 3 && c.wr >= .65 ? 3 + c.wr : 0],
+  ["No falla ni con fiebre", (r, c) => c.share >= .85 ? 3 + c.share : 0],
+  ["Rey del empate", (r, c) => r.pj >= 3 && c.draw >= .3 ? 3 + c.draw : 0],
+  ["Imparable mientras duró", r => r.best >= 3 ? 2.5 + r.best / 10 : 0],
+  ["Defensa con alma de delantero", r => r.pos.includes("DEF") && r.g >= 2 ? 3.5 : 0],
+  ["Corazón de equipo, aunque el marcador no acompañe", (r, c) => r.pj >= 3 && c.wr <= .3 ? 2 + (.3 - c.wr) : 0],
+  ["Con el MVP en la vitrina", r => r.mvp === 1 ? 2.4 : 0],
+  ["De los de siempre", (r, c) => c.share >= .7 ? 2 + c.share : 0],
+  ["Manos seguras", r => r.pos.includes("POR") ? 4.2 : 0],
+  ["Muro: lo suyo es que no pase nadie", r => r.pos.includes("DEF") && !r.g ? 3.2 : 0],
+  ["Nunca da un balón por perdido", (r, c) => r.pj >= 3 && c.loss >= .5 ? 1.8 : 0],
+  ["Sabe lo que es ganar", (r, c) => r.pj >= 3 && c.wr >= .5 ? 1.6 : 0],
+  ["Va y viene, pero siempre suma", (r, c) => c.share <= .45 ? 1.6 : 0],
+  ["Nueve de área", r => r.pos.includes("ATQ") ? 1.5 : 0],
+  ["Gol de vez en cuando, pero qué gol", (r, c) => r.g >= 1 && c.gpm < .3 ? 1.4 : 0],
+  ["Generoso: los goles, para los demás", r => r.g ? 0 : 1.3],
+  ["El que piensa por todos desde el medio", r => r.pos.includes("MED") ? 1.2 : 0]
+];
+/** Motes para cualquiera, por si ya no queda uno que le vaya mejor. */
+const MOTES_GENERALES = ["Pieza clave del vestuario", "El alma del tercer tiempo", "Siempre llega justo", "Compañero de los buenos", "Cumple y no se queja",
+  "Corre por dos", "Pone la tranquilidad", "Se entrega hasta el final", "Siempre suma, aunque no lo parezca", "El que trae el buen rollo",
+  "Trabajador incansable", "Fiel escudero del equipo", "Más listo de lo que parece", "Una apuesta segura", "Discreto pero imprescindible",
+  "Siempre dispuesto", "Pierna fuerte, corazón mayor", "Entra y cambia el ritmo", "Capitán sin brazalete", "El que ordena el desorden",
+  "Veterano del barro", "Aparece y se nota", "Vestuario feliz", "El que nunca se queja del césped", "Sin él no es lo mismo"];
+
+/** Un mote distinto para cada cromo: se reparten de mayor a menor encaje, y quien se queda sin uno propio recibe un mote general.
+    Si hubiera más jugadores que motes, los últimos repiten el primero de los generales. Devuelve { id: mote }. */
+function assignNicks(squad, d) {
+  const texts = [...MOTES.map(m => m[0]), ...MOTES_GENERALES], jitter = str => { let h = 0; for (const ch of str) h = (h * 31 + ch.charCodeAt(0)) | 0; return (Math.abs(h) % 1000) / 25000; };
+  const pairs = [];
+  squad.forEach((r, i) => {
+    const c = { share: r.apps / d.ms.length, wr: r.pj ? r.w / r.pj : 0, draw: r.pj ? r.d / r.pj : 0, loss: r.pj ? r.l / r.pj : 0, gpm: r.g / Math.max(r.apps, 1) };
+    MOTES.forEach(([, fit], k) => { const f = fit(r, c); if (f > 0) pairs.push([f, i, k]); });
+    MOTES_GENERALES.forEach((t, k) => pairs.push([.05 + jitter(r.id + t), i, MOTES.length + k]));   // el repartido «al azar» siempre sale igual
+  });
+  pairs.sort((a, b) => b[0] - a[0] || a[1] - b[1] || a[2] - b[2]);
+  const mine = {}, used = new Set();
+  pairs.forEach(([, i, k]) => { if (mine[squad[i].id] === undefined && !used.has(k)) { mine[squad[i].id] = texts[k]; used.add(k); } });
+  squad.forEach(r => { if (mine[r.id] === undefined) mine[r.id] = MOTES_GENERALES[0]; });
+  return mine;
 }
 
 /** Historias del Rewind de un año: [{ kind, emoji, kicker, title, big, sub, lines }]. null si no hay partidos. */
@@ -106,6 +143,8 @@ function rewindCards(year) {
 
   const pich = best(P, r => r.g);
   if (pich.length) add({ emoji: "🥇", kicker: "Pichichi", title: joinNames(names(pich)), big: cnt(pich[0].g, "gol", "goles"), sub: pich.length > 1 ? "Empatados arriba. Que lo decidan a penaltis." : "La red tiembla cuando la ve venir." });
+  const mvp = best(P, r => r.mvp);
+  if (mvp.length && (mvp[0].mvp >= 2 || mvp.length <= 2)) add({ emoji: "🏆", kicker: "MVP del año", title: joinNames(names(mvp)), big: `${cnt(mvp[0].mvp, "vez", "veces")} MVP`, sub: mvp.length > 1 ? "Reparten la vitrina. Que no se peleen por el trofeo." : "Cuando el partido se ponía feo, aparecía." });
   const fijo = best(P, r => r.apps, 2);
   if (fijo.length) add({ emoji: "📅", kicker: "El fijo", title: joinNames(names(fijo)), big: `${fijo[0].apps} de ${d.ms.length} partidos`, sub: "Llueva, truene o haya boda." });
   const minPj = Math.max(REWIND_MIN, Math.ceil(d.withResult * .3));
@@ -126,12 +165,25 @@ function rewindCards(year) {
 
   // La plantilla: un cromo para cada uno con al menos REWIND_MIN partidos, hasta 4 por historia (repartidos a partes iguales)
   const squad = regular.sort((a, b) => b.apps - a.apps || b.g - a.g || a.name.localeCompare(b.name, "es"));
+  const nicks = assignNicks(squad, d);
   const pages = Math.ceil(squad.length / 4), cut = p => Math.round(p * squad.length / pages);
   for (let p = 0; p < pages; p++) {
     add({ kind: "squad", emoji: "🃏", kicker: `La plantilla del año${pages > 1 ? ` · ${p + 1}/${pages}` : ""}`, title: "",
-      cromos: squad.slice(cut(p), cut(p + 1)).map(r => ({ name: r.name, nick: nickname(r, d),
-        stats: `${cnt(r.apps, "partido", "partidos")} · ${cnt(r.g, "gol", "goles")}${r.pj ? ` · ${r.w}V ${r.d}E ${r.l}D` : ""}` })) });
+      cromos: squad.slice(cut(p), cut(p + 1)).map(r => ({ name: r.name, nick: nicks[r.id],
+        stats: `${cnt(r.apps, "partido", "partidos")} · ${cnt(r.g, "gol", "goles")}${r.pj ? ` · ${r.w}V ${r.d}E ${r.l}D` : ""}${r.mvp ? ` · ${r.mvp} MVP` : ""}` })) });
   }
+
+  // Las estadísticas del año: los tres primeros de cada cuenta (los empatados comparten medalla)
+  const top = (title, score, unit) => {
+    const list = P.filter(r => score(r) > 0).sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, "es")).slice(0, 3);
+    const rank = r => P.filter(x => score(x) > score(r)).length;
+    // Si hay más empatados que filas, la última lo dice: «Carla y 3 más»
+    const hidden = list.length ? P.filter(x => score(x) === score(list[list.length - 1])).length - list.filter(x => score(x) === score(list[list.length - 1])).length : 0;
+    return list.length ? { title, rows: list.map((r, i) => ({ medal: ["🥇", "🥈", "🥉"][Math.min(rank(r), 2)], name: r.name + (i === list.length - 1 && hidden > 0 ? ` y ${hidden} más` : ""), v: unit(score(r)) })) } : null;
+  };
+  const blocks = [top("Más partidos", r => r.apps, n => cnt(n, "partido", "partidos")), top("Más goles", r => r.g, n => cnt(n, "gol", "goles")),
+    top("Más victorias", r => r.w, n => cnt(n, "victoria", "victorias")), top("Más MVP", r => r.mvp, n => cnt(n, "MVP", "MVP"))].filter(Boolean);
+  if (blocks.length) add({ kind: "stats", emoji: "📈", kicker: "Las estadísticas del año", title: "", blocks });
 
   add({ kind: "outro", emoji: "🙌", kicker: groupName(), title: `Gracias por ${year}`, sub: `Nos vemos en el campo en ${+year + 1}.` });
   return cards;

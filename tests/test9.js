@@ -7,13 +7,13 @@ const { ok, done } = checker();
 const players = {};
 ['Ana', 'Bea', 'Carla', 'Dani', 'Edu', 'Fran'].forEach((n, i) => { players['p' + i] = { name: n, pos: i === 0 ? ['POR'] : ['MED'], order: i }; });
 const pl = (ids, y) => ids.map(i => ({ id: 'p' + i, name: players['p' + i].name, role: 'MED', x: 50, y }));
-const match = (date, w, d, sW, sD, goals) => ({ date, mode: '7', formation: { W: '3-2-1', D: '3-2-1' }, W: pl(w, 70), D: pl(d, 30), score: { W: sW, D: sD }, goals });
+const match = (date, w, d, sW, sD, goals, mvp) => ({ date, mode: '7', formation: { W: '3-2-1', D: '3-2-1' }, W: pl(w, 70), D: pl(d, 30), score: { W: sW, D: sD }, goals, mvp });
 const matches = {
-  '2025-01-05': match('2025-01-05', [0, 1, 2], [3, 4], 3, 1, { W: { p1: 3 }, D: { p3: 1 } }),
-  '2025-02-05': match('2025-02-05', [0, 1, 3], [2, 4], 2, 0, { W: { p1: 2 }, D: {} }),
-  '2025-03-05': match('2025-03-05', [0, 1, 4], [2, 3], 1, 1, { W: { p1: 1 }, D: { p2: 1 } }),
-  '2025-04-05': match('2025-04-05', [0, 1, 2], [3, 4], 4, 0, { W: { p0: 1, p2: 3 }, D: {} }),
-  '2025-05-05': match('2025-05-05', [0, 1, 5], [2, 3], 2, 1, { W: { p1: 2 }, D: { p3: 1 } }),
+  '2025-01-05': match('2025-01-05', [0, 1, 2], [3, 4], 3, 1, { W: { p1: 3 }, D: { p3: 1 } }, 'p1'),
+  '2025-02-05': match('2025-02-05', [0, 1, 3], [2, 4], 2, 0, { W: { p1: 2 }, D: {} }, 'p1'),
+  '2025-03-05': match('2025-03-05', [0, 1, 4], [2, 3], 1, 1, { W: { p1: 1 }, D: { p2: 1 } }, 'p0'),
+  '2025-04-05': match('2025-04-05', [0, 1, 2], [3, 4], 4, 0, { W: { p0: 1, p2: 3 }, D: {} }, 'p2'),
+  '2025-05-05': match('2025-05-05', [0, 1, 5], [2, 3], 2, 1, { W: { p1: 2 }, D: { p3: 1 } }, 'p1'),
   '2026-01-05': match('2026-01-05', [0, 1], [2, 3], 1, 0, { W: { p1: 1 }, D: {} })
 };
 
@@ -37,10 +37,22 @@ const matches = {
   ok('el fijo', by('El fijo').title === 'Ana, Bea, Carla y Dani' && by('El fijo').big === '5 de 5 partidos');
   ok('la racha', by('La racha').title === 'Ana y Bea' && by('La racha').big === '2 victorias seguidas', JSON.stringify(by('La racha')));
   ok('noches mágicas (hat-tricks)', by('Noches mágicas').title === '2 hat-tricks');
+  ok('MVP del año', by('MVP del año').title === 'Bea' && by('MVP del año').big === '3 veces MVP', JSON.stringify(by('MVP del año')));
+  const fin = cards.find(c => c.kind === 'stats');
+  const rowsOf = t => fin.blocks.find(b => b.title === t).rows.map(r => r.name + ' ' + r.v).join(', ');
+  ok('historia final de estadísticas, antes del cierre', fin && cards.indexOf(fin) === cards.length - 2 && cards[cards.length - 1].kind === 'outro');
+  ok('más partidos (empatados con la misma medalla)', fin.blocks[0].title === 'Más partidos' && rowsOf('Más partidos') === 'Ana 5 partidos, Bea 5 partidos, Carla y 1 más 5 partidos' && fin.blocks[0].rows.every(r => r.medal === '🥇'), rowsOf('Más partidos'));
+  ok('más goles, más victorias y más MVP', rowsOf('Más goles').startsWith('Bea 8 goles, Carla 4 goles, Dani 2 goles') && rowsOf('Más victorias').startsWith('Ana 4 victorias') && rowsOf('Más MVP').startsWith('Bea 3 MVP, Ana 1 MVP, Carla 1 MVP'), [rowsOf('Más goles'), rowsOf('Más victorias'), rowsOf('Más MVP')].join(' / '));
   ok('mayor goleada', by('La mayor goleada').title === '4 – 0');
   const squad = cards.filter(c => c.kind === 'squad').flatMap(c => c.cromos);
   ok('un cromo para cada uno con 4 o más partidos', squad.map(k => k.name).sort().join() === 'Ana,Bea,Carla,Dani,Edu', squad.map(k => k.name).join());
   ok('cada cromo con mote y números', squad.every(k => k.nick && /^\d+ partidos · \d+ gol(es)?/.test(k.stats)), JSON.stringify(squad));
+  ok('motes distintos para cada cromo', new Set(squad.map(k => k.nick)).size === squad.length, squad.map(k => k.nick).join(' | '));
+  const big = await page.evaluate(() => {
+    const sq = Array.from({ length: 40 }, (_, i) => ({ id: 'x' + i, name: 'X' + i, pos: i % 4 ? [['POR', 'DEF', 'MED', 'ATQ'][i % 4]] : [], apps: 4 + i % 7, pj: 4 + i % 7, w: i % 5, d: i % 3, l: i % 4, g: i % 6, hat: i % 9 === 0 ? 1 : 0, cur: 0, best: i % 5 }));
+    const n = assignNicks(sq, { ms: Array(12) }); return Object.values(n);
+  });
+  ok('con 40 jugadores, ningún mote se repite', big.length === 40 && new Set(big).size === 40, big.length + ' / ' + new Set(big).size);
   ok('Fran (1 partido) no tiene cromo pero se le echa de menos', !squad.some(k => k.name === 'Fran') && by('Se le echó de menos').title === 'Fran');
 
   // Historias
@@ -53,6 +65,7 @@ const matches = {
   ok('tocar a la izquierda vuelve', /Pachanga Rewind/i.test(await page.innerText('#rwcard')));
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#rwshare')]);
   ok('compartir esta (en el ordenador, se descarga)', dl.suggestedFilename() === 'pachanga-rewind-2025-1.png');
+  ok('imagen de la historia de estadísticas', (await page.evaluate(() => { const i = rw.cards.findIndex(c => c.kind === 'stats'); const c = drawRewindCard(rw.cards[i], i); return [c.width, c.height].join('x'); })) === '1080x1920');
   ok('imagen vertical', (await page.evaluate(() => { const c = drawRewindCard(rw.cards[3], 3); return [c.width, c.height].join('x'); })) === '1080x1920');
   await page.keyboard.press('Escape');
   ok('Escape cierra', await page.isHidden('#rw'));

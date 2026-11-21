@@ -33,7 +33,7 @@ Solo para quien organiza. Cada jugador tiene nombre, una o varias posiciones (PO
 
 ### 🏆 Historial y estadísticas
 
-En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno). Con **Cargar en la pizarra** recupera la alineación de un partido: sus jugadores pasan a ser los apuntados, con la misma colocación y formato (los que ya no están en la plantilla se quedan fuera). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
+En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno) y el **MVP** del partido, que eliges entre quienes jugaron (los demás lo ven como una insignia dorada). Con **Cargar en la pizarra** recupera la alineación de un partido: sus jugadores pasan a ser los apuntados, con la misma colocación y formato (los que ya no están en la plantilla se quedan fuera). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), los MVP (solo cuando hay alguno; se desempata igual), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
 
 ### 💶 Pagos
 
@@ -41,7 +41,7 @@ Solo para quien organiza (ni se ve ni se descarga para los demás). Por cada par
 
 ### 🎬 Rewind del año
 
-En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote y números para cada uno que haya jugado al menos 4 partidos. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
+En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el MVP del año, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote (distinto para cada uno) y números para cada uno que haya jugado al menos 4 partidos. Antes del cierre, **las estadísticas del año**: los tres primeros en partidos, goles, victorias y MVP. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
 
 ### ⚙️ Opciones
 
@@ -145,7 +145,7 @@ js/players.js          jugadores: lectura, añadir, cambiar y quitar
 js/ratings.js          medias de los jugadores (privadas) y el reparto con medias que ven los demás
 js/teams.js            reparto en dos equipos equilibrados por posiciones
 js/formation.js        colocación en la pizarra: huecos, portero y soltar imanes
-js/matches.js          historial: guardar la alineación, resultado y goles
+js/matches.js          historial: guardar la alineación, resultado, goles y MVP
 js/next-match.js       próximo partido: apuntados, día, hora, formato y la alineación (automática o retocada)
 js/stats.js            cálculo de las estadísticas
 js/rewind.js           Rewind del año: números, premios, cromos y publicarlo

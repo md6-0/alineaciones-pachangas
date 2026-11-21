@@ -1,7 +1,7 @@
 "use strict";
 /* Reglas del historial: guardar la alineación como partido, el resultado y los goles.
    Cada partido se guarda con la fecha como id:
-     { date, mode, formation: { W, D }, W: [jugador], D: [jugador], score: { W, D }, goals: { W: { id: n }, D: {…} }, fixedAt }
+     { date, mode, formation: { W, D }, W: [jugador], D: [jugador], score: { W, D }, goals: { W: { id: n }, D: {…} }, mvp: id, fixedAt }
    y cada jugador del partido como { id, name, role: POR|DEF|MED|ATQ|SUP, x, y } (x e y vacíos en el banquillo).
    Los partidos antiguos pueden traer las medias (ovr, por): se ignoran y se borran al subir los datos. */
 
@@ -38,6 +38,9 @@ function queueMatch(id, fn) {
 
 /** Goles de un equipo (null para dejarlo sin apuntar). */
 const setScore = (id, team, v) => queueMatch(id, () => db.doc("matches/" + id).update({ score: { [team]: v } }));
+
+/** Jugador MVP del partido (null o vacío para quitarlo). */
+const setMvp = (id, pid) => queueMatch(id, () => db.doc("matches/" + id).update({ mvp: pid || null }));
 
 /** Suma o quita un gol a un jugador; el marcador de su equipo cambia con él. */
 function changeGoal(mid, team, pid, delta) {

@@ -1,6 +1,6 @@
 "use strict";
-/* Pestaña Historial: los partidos guardados, con el resultado y los goles de cada jugador.
-   Quien organiza apunta resultados y goles, y borra partidos; los demás solo los ven. */
+/* Pestaña Historial: los partidos guardados, con el resultado, los goles de cada jugador y el MVP.
+   Quien organiza apunta resultados, goles y MVP, y borra partidos; los demás solo los ven. */
 
 const RESULT = { W: '<span class="res W">Gana Blanco</span>', D: '<span class="res D">Gana Oscuro</span>', draw: '<span class="res">Empate</span>' };
 
@@ -26,6 +26,14 @@ function mteamHTML(m, team) {
   return `<div class="mteam ${team}"><h3><span class="l"><span class="sw ${team}"></span>${TEAMS[team]}</span></h3>${lines || '<p class="hint">Sin jugadores</p>'}${goalsHTML(m, team, list)}</div>`;
 }
 
+/** MVP del partido: quien organiza lo elige entre los que jugaron; los demás ven solo la insignia (si lo hay). */
+function mvpHTML(m) {
+  const all = [...(Array.isArray(m.W) ? m.W : []), ...(Array.isArray(m.D) ? m.D : [])].sort((a, b) => a.name.localeCompare(b.name, "es", { numeric: true }));
+  const cur = all.find(p => p.id === m.mvp), name = cur ? cur.name : (m.mvp ? nameOf(m.mvp) : "");
+  if (!canEdit()) return m.mvp ? `<div class="mvp"><span class="mvpl">MVP</span><span class="mvpname">${esc(name)}</span></div>` : "";
+  return `<div class="mvp"><span class="mvpl">MVP</span><select data-mvp aria-label="MVP del partido"><option value="">Sin elegir…</option>${all.map(p => `<option value="${esc(p.id)}"${p.id === m.mvp ? " selected" : ""}>${esc(p.name)}</option>`).join("")}</select></div>`;
+}
+
 function matchHTML(m) {
   const sc = m.score || {}, w = sc.W, d = sc.D, res = matchResult(m);
   const f = m.formation || {}, mode = esc(m.mode || "7");
@@ -39,6 +47,7 @@ function matchHTML(m) {
         <div class="score">Blanco ${goalsInput("W", w, "Equipo Blanco")}<span class="dash">–</span>${goalsInput("D", d, "Equipo Oscuro")} Oscuro ${res ? RESULT[res] : '<span class="res">Sin resultado</span>'}</div>
       </div>
       <div class="mteams">${mteamHTML(m, "W")}${mteamHTML(m, "D")}</div>
+      ${mvpHTML(m)}
       <div class="mfoot edit-only"><button type="button" class="btn ghost" data-mload>Cargar en la pizarra</button><button type="button" class="del" data-mdel>Borrar partido</button></div>
     </article>`;
 }
@@ -57,6 +66,8 @@ function renderHistory() {
 
 const hlist = $("#hlist");
 hlist.addEventListener("change", e => {
+  const mv = e.target.closest("select[data-mvp]");
+  if (mv) { setMvp(mv.closest(".match").dataset.id, mv.value).catch(() => toast("No se pudo guardar el MVP.")); return; }
   const inp = e.target.closest("input[data-s]"); if (!inp) return;
   const id = inp.closest(".match").dataset.id;
   let v = inp.value === "" ? null : clamp(Math.round(+inp.value), 0, 99);
