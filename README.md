@@ -33,7 +33,7 @@ Solo para quien organiza. Cada jugador tiene nombre, una o varias posiciones (PO
 
 ### 🏆 Historial y estadísticas
 
-En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno) y el **MVP** del partido, que eliges entre quienes jugaron (los demás lo ven como una insignia dorada). Con **Cargar en la pizarra** recupera la alineación de un partido: sus jugadores pasan a ser los apuntados, con la misma colocación y formato (los que ya no están en la plantilla se quedan fuera). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
+En el historial, quien organiza apunta el resultado y quién marcó cada gol (con **+** y **−** junto a cada goleador para sumarle o quitarle uno) y el **MVP** del partido, que eliges entre quienes jugaron (los demás lo ven como una insignia dorada). Con **Cargar en la pizarra** recupera la alineación de un partido: sus jugadores pasan a ser los apuntados, con la misma colocación y formato (los que ya no están en la plantilla se quedan fuera). La pestaña de estadísticas muestra goleadores (con sus partidos jugados; a igualdad de goles, va antes quien ha jugado menos partidos), los MVP (solo cuando hay alguno; se desempata igual), partidos jugados y partidos ganados, empatados y perdidos de cada jugador. Los datos no mienten. Con **Compartir goleadores** mandas la tabla de goleadores en texto por WhatsApp o como imagen.
 
 ### 💶 Pagos
 

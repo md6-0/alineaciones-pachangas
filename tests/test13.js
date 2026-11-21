@@ -23,7 +23,14 @@ const { ok, done } = checker();
   ok('los demás ven la insignia con el nombre', /class="mvpname">Beta</.test(html) && !/<select/.test(html), html);
   const sin = await page.evaluate(() => { const c = db.cloud, u = db.user; db.cloud = true; db.user = null; const h = mvpHTML({ ...matchById('2026-10-04'), mvp: null }); db.cloud = c; db.user = u; return h; });
   ok('sin MVP, los demás no ven nada', sin === '');
+  // Estadísticas: tarjeta de MVP solo cuando hay alguno
+  await tab(page, 'stats'); await page.waitForTimeout(150);
+  const pn = await page.evaluate(id => BY[id].n, ids[1]);
+  ok('tarjeta MVP con el elegido', (await page.locator('#stats .scard h2').allInnerTexts()).includes('MVP') && (await page.locator('#stats .scard', { hasText: 'MVP' }).first().locator('tbody tr').first().innerText()).replace(/\s+/g, ' ').trim() === `1 ${pn} 1 1`);
+  await tab(page, 'hist'); await page.waitForTimeout(100);
   await sel.selectOption(''); await page.waitForTimeout(300);
+  await tab(page, 'stats'); await page.waitForTimeout(150);
+  ok('sin MVP no hay tarjeta', !(await page.locator('#stats .scard h2').allInnerTexts()).includes('MVP'));
   ok('se puede quitar', (await page.evaluate(() => matchById('2026-10-04').mvp)) == null);
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close();
