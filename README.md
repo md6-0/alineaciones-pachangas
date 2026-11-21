@@ -41,7 +41,7 @@ Solo para quien organiza (ni se ve ni se descarga para los demás). Por cada par
 
 ### 🎬 Rewind del año
 
-En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote y números para cada uno que haya jugado al menos 4 partidos. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
+En **Estadísticas**, quien organiza tiene el **Rewind** de cada año: historias a pantalla completa, al estilo de los resúmenes anuales de las apps de música, que se pasan tocando a la derecha (y a la izquierda para volver). Lleva los números del año, el duelo Blanco contra Oscuro, premios (pichichi, el fijo, el amuleto, la racha, la pareja letal, enemigos íntimos, la mayor goleada, el partido más loco, los hat-tricks, a quién se echó de menos) y **la plantilla del año**: un cromo con mote (distinto para cada uno) y números para cada uno que haya jugado al menos 4 partidos. Cada historia se comparte como imagen vertical. Solo lo ve quien organiza hasta que pulsa **Publicar para todos**; entonces aparece en Estadísticas para el grupo.
 
 ### ⚙️ Opciones
 
