@@ -41,6 +41,12 @@ const matches = {
   const squad = cards.filter(c => c.kind === 'squad').flatMap(c => c.cromos);
   ok('un cromo para cada uno con 4 o más partidos', squad.map(k => k.name).sort().join() === 'Ana,Bea,Carla,Dani,Edu', squad.map(k => k.name).join());
   ok('cada cromo con mote y números', squad.every(k => k.nick && /^\d+ partidos · \d+ gol(es)?/.test(k.stats)), JSON.stringify(squad));
+  ok('motes distintos para cada cromo', new Set(squad.map(k => k.nick)).size === squad.length, squad.map(k => k.nick).join(' | '));
+  const big = await page.evaluate(() => {
+    const sq = Array.from({ length: 40 }, (_, i) => ({ id: 'x' + i, name: 'X' + i, pos: i % 4 ? [['POR', 'DEF', 'MED', 'ATQ'][i % 4]] : [], apps: 4 + i % 7, pj: 4 + i % 7, w: i % 5, d: i % 3, l: i % 4, g: i % 6, hat: i % 9 === 0 ? 1 : 0, cur: 0, best: i % 5 }));
+    const n = assignNicks(sq, { ms: Array(12) }); return Object.values(n);
+  });
+  ok('con 40 jugadores, ningún mote se repite', big.length === 40 && new Set(big).size === 40, big.length + ' / ' + new Set(big).size);
   ok('Fran (1 partido) no tiene cromo pero se le echa de menos', !squad.some(k => k.name === 'Fran') && by('Se le echó de menos').title === 'Fran');
 
   // Historias
