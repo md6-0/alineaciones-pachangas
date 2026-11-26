@@ -55,7 +55,8 @@ function matchHTML(m) {
 /* ---------- Calendario: un mes con los días de partido marcados (toca uno para ir a su tarjeta) ---------- */
 
 const MONTHS_FULL = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-let calMonth = null;   // "AAAA-MM" del mes que se ve; null = el del último partido (o el de hoy)
+let calMonth = null;
+let calView = "year";   // "year": los 12 meses con su número de partidos; "month": los días de un mes   // "AAAA-MM" del mes que se ve; null = el del último partido (o el de hoy)
 const matchDate = m => String(m.date || m.id).slice(0, 10);
 
 function renderCalendar() {
@@ -65,7 +66,18 @@ function renderCalendar() {
   matches.forEach(m => (byDay[matchDate(m)] = byDay[matchDate(m)] || []).push(m));
   const days = Object.keys(byDay).sort();
   if (!calMonth) calMonth = (days[days.length - 1] || todayIso()).slice(0, 7);
-  const [y, mo] = calMonth.split("-").map(Number), first = new Date(y, mo - 1, 1);
+  const [y, mo] = calMonth.split("-").map(Number);
+  if (calView === "year") {
+    const perMonth = n => matches.filter(m => matchDate(m).startsWith(`${y}-${String(n).padStart(2, "0")}`)).length;
+    const total = matches.filter(m => matchDate(m).startsWith(y + "-")).length;
+    box.innerHTML = `<div class="calhead"><button type="button" class="cnav" data-cnavy="-1" aria-label="Año anterior">‹</button>
+      <h2>${y}<small>${total ? cnt(total, "partido", "partidos") : "Sin partidos"}</small></h2>
+      <button type="button" class="cnav" data-cnavy="1" aria-label="Año siguiente">›</button></div>
+      <div class="cyear">${MONTHS_FULL.map((name, i) => { const n = perMonth(i + 1);
+        return `<button type="button" class="cm${n ? " has" : ""}" data-cmonth="${y}-${String(i + 1).padStart(2, "0")}" aria-label="${name} ${y}: ${n ? cnt(n, "partido", "partidos") : "sin partidos"}"><span>${name.slice(0, 3)}</span><b>${n || "·"}</b><small>${n ? (n === 1 ? "partido" : "partidos") : ""}</small></button>`; }).join("")}</div>`;
+    return;
+  }
+  const first = new Date(y, mo - 1, 1);
   const lead = (first.getDay() + 6) % 7, total = new Date(y, mo, 0).getDate(), today = todayIso();
   const key = n => `${calMonth}-${String(n).padStart(2, "0")}`;
   const cells = [];
@@ -79,7 +91,8 @@ function renderCalendar() {
     cells.push(`<button type="button" class="${cls.join(" ")}" data-cday="${key(n)}" aria-label="Partido del ${esc(fmtDate(key(n)))}${ms.length > 1 ? ` (${ms.length})` : ""}">${n}</button>`);
   }
   const inMonth = days.filter(d => d.startsWith(calMonth)).length;
-  box.innerHTML = `<div class="calhead"><button type="button" class="cnav" data-cnav="-1" aria-label="Mes anterior">‹</button>
+  box.innerHTML = `<button type="button" class="cback" data-cyear>‹ ${y}</button>
+    <div class="calhead"><button type="button" class="cnav" data-cnav="-1" aria-label="Mes anterior">‹</button>
     <h2>${MONTHS_FULL[mo - 1]} ${y}<small>${inMonth ? cnt(inMonth, "partido", "partidos") : "Sin partidos"}</small></h2>
     <button type="button" class="cnav" data-cnav="1" aria-label="Mes siguiente">›</button></div>
     <div class="cgrid">${["L", "M", "X", "J", "V", "S", "D"].map(d => `<span class="cw">${d}</span>`).join("")}${cells.join("")}</div>
@@ -144,6 +157,11 @@ hlist.addEventListener("focusout", () => {
   setTimeout(() => { if (!hlist.contains(document.activeElement)) renderHistory(); }, 50);
 });
 $("#cal").addEventListener("click", e => {
+  const ny = e.target.closest("[data-cnavy]");
+  if (ny) { const [y] = calMonth.split("-").map(Number); calMonth = `${y + Number(ny.dataset.cnavy)}-${calMonth.slice(5)}`; renderCalendar(); return; }
+  const cm = e.target.closest("[data-cmonth]");
+  if (cm) { calMonth = cm.dataset.cmonth; calView = "month"; renderCalendar(); return; }
+  if (e.target.closest("[data-cyear]")) { calView = "year"; hideDayTip(); renderCalendar(); return; }
   const nav = e.target.closest("[data-cnav]");
   if (nav) {
     const [y, mo] = calMonth.split("-").map(Number), d = new Date(y, mo - 1 + Number(nav.dataset.cnav), 1);

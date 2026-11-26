@@ -86,3 +86,14 @@ button.cd.has:hover{outline:2px solid var(--accent)}
 #caltip .tip + .tip{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
 #caltip b{font-size:.82rem;text-transform:uppercase;letter-spacing:.03em}
 #caltip span{color:var(--muted)}
+
+/* Vista del año: los 12 meses con su número de partidos */
+.cyear{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cm{font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:10px 4px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--faint);cursor:pointer;text-transform:uppercase}
+.cm span{font-size:.72rem;font-weight:700;letter-spacing:.14em}
+.cm b{font-size:1.7rem;font-weight:800;font-stretch:78%;line-height:1.1;font-variant-numeric:tabular-nums}
+.cm small{font-size:.62rem;letter-spacing:.1em;min-height:1em}
+.cm.has{color:var(--fg);border-color:var(--accent)}
+.cm.has b{color:var(--accent)}
+.cm:hover{outline:2px solid var(--accent)}
+.cback{font:inherit;font-size:.78rem;font-weight:700;letter-spacing:.08em;background:none;border:0;color:var(--accent);cursor:pointer;padding:0 0 8px}
