@@ -59,9 +59,9 @@ function teamAvgHTML(team) {
 /** Arriba de los equipos (solo quien organiza): cómo se han hecho y, si están retocados a mano, rehacerlos por medias. */
 function teamToolsHTML() {
   if (!canEdit()) return "";
-  return savedLayout
-    ? '<div class="ttools edit-only"><span>Alineación retocada a mano</span><button type="button" class="btn ghost" id="autoteams">Rehacer por medias</button></div>'
-    : '<div class="ttools edit-only"><span>Equipos por posiciones y medias</span></div>';
+  const note = savedLayout ? "Alineación retocada a mano" : shuffleSeed ? "Equipos mezclados, equilibrados por posiciones y medias" : "Equipos por posiciones y medias";
+  return `<div class="ttools edit-only"><span>${note}</span><span class="tbtns"><button type="button" class="btn ghost" id="shuffleteams">🔀 Mezclar equipos</button>`
+    + `${savedLayout || shuffleSeed ? '<button type="button" class="btn ghost" id="autoteams">Rehacer por medias</button>' : ""}</span></div>`;
 }
 
 function teamHTML(team) {
@@ -114,10 +114,16 @@ $("#clearlist").addEventListener("click", e => {
   clearSignups().then(() => toast("Lista vacía: lista para el próximo partido.")).catch(listFail);
 });
 
-// Rehacer los equipos por posiciones y medias (deshace los retoques a mano)
+// Rehacer los equipos por posiciones y medias, o mezclarlos (los dos deshacen los retoques a mano, y piden confirmación si los hay)
 $("#teams").addEventListener("click", e => {
+  const sh = e.target.closest("#shuffleteams");
+  if (sh) {
+    if (savedLayout && !confirmFirst(sh, "¿Perder los retoques?", 3000)) return;
+    shuffleTeams().then(msg => { toast(msg); render(); }, () => toast("No se pudieron guardar los equipos."));
+    return;
+  }
   const b = e.target.closest("#autoteams"); if (!b) return;
-  if (!confirmFirst(b, "¿Perder los retoques?", 3000)) return;
+  if (savedLayout && !confirmFirst(b, "¿Perder los retoques?", 3000)) return;
   autoTeams().then(() => toast("Equipos rehechos por posiciones y medias."), () => toast("No se pudieron guardar los equipos."));
   render();
 });

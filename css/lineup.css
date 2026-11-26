@@ -25,6 +25,7 @@
 .tsub{font-size:.8rem;color:var(--muted);margin:-6px 0 0}
 .tavg{font-size:.78rem;color:var(--muted);white-space:nowrap}
 .tavg b{color:var(--fg);font-size:.95rem;font-variant-numeric:tabular-nums}
+.tbtns{display:flex;gap:8px;flex-wrap:wrap}
 .ttools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-bottom:10px}
 
 /* Banquillo: los imanes se vuelven pastillas en fila */

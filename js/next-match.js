@@ -1,14 +1,16 @@
 "use strict";
 /* Próximo partido: la lista de apuntados y la alineación que ve todo el mundo. No toca la pantalla.
    signups/{id del jugador} = { at: cuándo se apuntó (ISO) }   (solo lo cambia quien organiza; la lista va por orden de llegada)
-   next/current = { date, time, mode, layout, split }   (solo lo cambia quien organiza)
+   next/current = { date, time, mode, layout, split, shuffle }   (solo lo cambia quien organiza)
      Día, hora y formato del partido y, si quien organiza ha retocado la alineación, su colocación (layout).
      Sin retocar, layout es null y la alineación sale sola a partir de los apuntados.
-     split: el reparto automático con medias que hace quien organiza (ver ratings.js), para que los demás vean los mismos equipos. */
+     split: el reparto automático con medias que hace quien organiza (ver ratings.js), para que los demás vean los mismos equipos.
+     shuffle: el número de «Mezclar equipos» (0 si no se ha mezclado): cada número da su propio reparto equilibrado (ver teams.js). */
 
 let signups = {};          // id → { at, uid }
 let signupsLoaded = false;
 let savedLayout = null;    // colocación retocada por quien organiza (next/current.layout), o null
+let shuffleSeed = 0;       // número de la última mezcla de equipos (next/current.shuffle); 0 = el mejor reparto
 
 /** Apuntados que siguen en la lista de jugadores, por orden de llegada. */
 const signupIds = () => Object.keys(signups).filter(id => BY[id])
@@ -23,11 +25,12 @@ function applyNext(d) {
   st.time = /^\d\d:\d\d$/.test(d.time || "") ? d.time : null;
   savedLayout = d.layout && typeof d.layout === "object" ? d.layout : null;
   sharedSplit = d.split && typeof d.split === "object" ? d.split : null;
+  shuffleSeed = Number.isInteger(d.shuffle) && d.shuffle > 0 ? d.shuffle : 0;
 }
 
 /** Guarda el partido (día, hora, formato y colocación) para todos. */
 function saveNext() {
-  return db.doc("next/current").set({ date: st.date, time: st.time, mode: st.mode, layout: savedLayout ? clone(savedLayout) : null, split: sharedSplit ? clone(sharedSplit) : null });
+  return db.doc("next/current").set({ date: st.date, time: st.time, mode: st.mode, layout: savedLayout ? clone(savedLayout) : null, split: sharedSplit ? clone(sharedSplit) : null, shuffle: shuffleSeed });
 }
 
 /* ---------- Alineación ---------- */
@@ -66,8 +69,25 @@ function setMatchWhen(v) {
   return saveNext();
 }
 
-/** Deshace los retoques: los equipos vuelven a salir solos, por posiciones y medias. */
-function autoTeams() { savedLayout = null; syncBoard(); return saveNext(); }
+/** Deshace los retoques y las mezclas: los equipos vuelven a salir solos, con el mejor reparto por posiciones y medias. */
+function autoTeams() { savedLayout = null; shuffleSeed = 0; syncBoard(); return saveNext(); }
+
+/** Mezcla los equipos: otro reparto equilibrado por posiciones y medias, distinto del que hay (deshace los retoques a mano).
+    Devuelve el aviso que se enseña (con las medias de los dos equipos, si se pueden leer). */
+async function shuffleTeams() {
+  const list = P.filter(p => isSignedUp(p.id));
+  if (list.length < 2) return "Hacen falta al menos 2 apuntados.";
+  const key = ids => ids.slice().sort().join("|"), now = [key(idsOf("W")), key(idsOf("D"))];
+  for (let i = 1; i <= 40; i++) {
+    const seed = shuffleSeed + i, res = solve(list, seed);
+    if (!res || now.includes(key(res.A.map(p => p.id)))) continue;   // el mismo reparto (con o sin los lados cambiados): se prueba otro
+    shuffleSeed = seed; savedLayout = null; syncBoard();
+    await saveNext();
+    const avg = T => (T.reduce((s, p) => s + ratingOf(p.id), 0) / T.length).toFixed(1).replace(".", ",");
+    return ratingsLoaded ? `Equipos mezclados. Medias: ${avg(res.A)} (Blanco) y ${avg(res.B)} (Oscuro).` : "Equipos mezclados.";
+  }
+  return "No hay otro reparto equilibrado con estos apuntados.";
+}
 
 /** Carga en la pizarra un partido del historial: sus jugadores pasan a ser los apuntados, con la misma colocación y formato.
     Devuelve cuántos jugadores del partido ya no están en la plantilla (se quedan fuera). */
