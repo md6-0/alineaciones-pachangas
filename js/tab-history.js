@@ -52,7 +52,42 @@ function matchHTML(m) {
     </article>`;
 }
 
+/* ---------- Calendario: un mes con los días de partido marcados (toca uno para ir a su tarjeta) ---------- */
+
+const MONTHS_FULL = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+let calMonth = null;   // "AAAA-MM" del mes que se ve; null = el del último partido (o el de hoy)
+const matchDate = m => String(m.date || m.id).slice(0, 10);
+
+function renderCalendar() {
+  const box = $("#cal");
+  if (failed || !histLoaded || !matches.length) { box.innerHTML = ""; return; }
+  const byDay = {};
+  matches.forEach(m => (byDay[matchDate(m)] = byDay[matchDate(m)] || []).push(m));
+  const days = Object.keys(byDay).sort();
+  if (!calMonth) calMonth = (days[days.length - 1] || todayIso()).slice(0, 7);
+  const [y, mo] = calMonth.split("-").map(Number), first = new Date(y, mo - 1, 1);
+  const lead = (first.getDay() + 6) % 7, total = new Date(y, mo, 0).getDate(), today = todayIso();
+  const key = n => `${calMonth}-${String(n).padStart(2, "0")}`;
+  const cells = [];
+  for (let i = 0; i < lead; i++) cells.push('<span class="cd empty"></span>');
+  for (let n = 1; n <= total; n++) {
+    const ms = byDay[key(n)], cls = ["cd"];
+    if (key(n) === today) cls.push("today");
+    if (!ms) { cells.push(`<span class="${cls.join(" ")}">${n}</span>`); continue; }
+    const r = matchResult(ms[0]);
+    cls.push("has", r || "none");
+    cells.push(`<button type="button" class="${cls.join(" ")}" data-cday="${key(n)}" aria-label="Partido del ${esc(fmtDate(key(n)))}${ms.length > 1 ? ` (${ms.length})` : ""}">${n}</button>`);
+  }
+  const inMonth = days.filter(d => d.startsWith(calMonth)).length;
+  box.innerHTML = `<div class="calhead"><button type="button" class="cnav" data-cnav="-1" aria-label="Mes anterior">‹</button>
+    <h2>${MONTHS_FULL[mo - 1]} ${y}<small>${inMonth ? cnt(inMonth, "partido", "partidos") : "Sin partidos"}</small></h2>
+    <button type="button" class="cnav" data-cnav="1" aria-label="Mes siguiente">›</button></div>
+    <div class="cgrid">${["L", "M", "X", "J", "V", "S", "D"].map(d => `<span class="cw">${d}</span>`).join("")}${cells.join("")}</div>
+    <p class="clegend"><i class="W"></i>Gana Blanco <i class="D"></i>Gana Oscuro <i class="draw"></i>Empate <i class="none"></i>Sin resultado</p>`;
+}
+
 function renderHistory() {
+  renderCalendar();
   const box = $("#hlist");
   if (failed) { box.innerHTML = `<p class="hint">${LOAD_ERROR}</p>`; return; }
   if (!histLoaded) { box.innerHTML = '<p class="hint">Cargando historial…</p>'; return; }
@@ -77,6 +112,18 @@ hlist.addEventListener("change", e => {
 });
 hlist.addEventListener("focusout", () => {
   setTimeout(() => { if (!hlist.contains(document.activeElement)) renderHistory(); }, 50);
+});
+$("#cal").addEventListener("click", e => {
+  const nav = e.target.closest("[data-cnav]");
+  if (nav) {
+    const [y, mo] = calMonth.split("-").map(Number), d = new Date(y, mo - 1 + Number(nav.dataset.cnav), 1);
+    calMonth = isoDate(d).slice(0, 7); renderCalendar(); return;
+  }
+  const day = e.target.closest("[data-cday]"); if (!day) return;
+  const m = matches.find(x => matchDate(x) === day.dataset.cday); if (!m) return;
+  const card = hlist.querySelector(`.match[data-id="${CSS.escape(m.id)}"]`); if (!card) return;
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+  card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
 });
 hlist.addEventListener("click", e => {
   const ga = e.target.closest("[data-gadd]"), gd = e.target.closest("[data-gdel]"), gi = e.target.closest("[data-ginc]");
