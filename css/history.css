@@ -78,3 +78,11 @@ button.cd.has:hover{outline:2px solid var(--accent)}
 .match.flash{animation:cflash 1.4s ease-out}
 @keyframes cflash{0%,30%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 3px transparent}}
 @media (prefers-reduced-motion:reduce){.match.flash{animation:none}}
+
+/* Detalle al pasar el ratón por un día del calendario */
+.cal{position:relative}
+#caltip{position:absolute;z-index:5;pointer-events:none;background:var(--bg);border:1px solid var(--accent);border-radius:6px;padding:8px 10px;font-size:.78rem;line-height:1.35;box-shadow:0 6px 18px rgba(0,0,0,.45);min-width:190px;max-width:290px}
+#caltip .tip{display:flex;flex-direction:column;gap:2px}
+#caltip .tip + .tip{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+#caltip b{font-size:.82rem;text-transform:uppercase;letter-spacing:.03em}
+#caltip span{color:var(--muted)}

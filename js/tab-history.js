@@ -86,6 +86,36 @@ function renderCalendar() {
     <p class="clegend"><i class="W"></i>Gana Blanco <i class="D"></i>Gana Oscuro <i class="draw"></i>Empate <i class="none"></i>Sin resultado</p>`;
 }
 
+/** Detalle de los partidos de un día (para el cuadro que sale al pasar el ratón o enfocar el día). */
+function dayTipHTML(day) {
+  return matches.filter(m => matchDate(m) === day).map(m => {
+    const sc = m.score || {}, res = matchResult(m), all = [...(Array.isArray(m.W) ? m.W : []), ...(Array.isArray(m.D) ? m.D : [])];
+    const nm = id => { const pl = all.find(p => p.id === id); return pl ? pl.name : nameOf(id); };
+    const g = {}; ["W", "D"].forEach(t => Object.entries((m.goals && m.goals[t]) || {}).forEach(([id, n]) => { if (n > 0) g[id] = (g[id] || 0) + n; }));
+    const scorers = Object.keys(g).sort((a, b) => g[b] - g[a]).map(id => `${esc(nm(id))}${g[id] > 1 ? ` ×${g[id]}` : ""}`);
+    const mode = esc(m.mode || "7");
+    return `<div class="tip"><b>${esc(fmtDate(matchDate(m)))}</b>`
+      + `<span>${typeof sc.W === "number" && typeof sc.D === "number" ? `Blanco ${sc.W} – ${sc.D} Oscuro` : "Sin resultado"}${res ? ` · ${res === "draw" ? "Empate" : (res === "W" ? "Gana Blanco" : "Gana Oscuro")}` : ""}</span>`
+      + `<span>${mode} vs ${mode} · ${all.length} jugadores</span>`
+      + (scorers.length ? `<span>⚽ ${scorers.join(", ")}</span>` : "")
+      + (m.mvp ? `<span>MVP: ${esc(nm(m.mvp))}</span>` : "") + `</div>`;
+  }).join("");
+}
+
+function showDayTip(btn) {
+  const box = $("#cal"); let tip = $("#caltip");
+  if (!tip) { tip = document.createElement("div"); tip.id = "caltip"; tip.setAttribute("role", "tooltip"); box.appendChild(tip); }
+  tip.innerHTML = dayTipHTML(btn.dataset.cday); tip.hidden = false;
+  const b = box.getBoundingClientRect(), r = btn.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = clamp(r.left - b.left + r.width / 2 - w / 2, 4, Math.max(4, b.width - w - 4)) + "px";
+  tip.style.top = (r.top - b.top - h - 6 >= 0 ? r.top - b.top - h - 6 : r.bottom - b.top + 6) + "px";
+}
+const hideDayTip = () => { const t = $("#caltip"); if (t) t.hidden = true; };
+$("#cal").addEventListener("mouseover", e => { const d = e.target.closest("[data-cday]"); d ? showDayTip(d) : hideDayTip(); });
+$("#cal").addEventListener("mouseleave", hideDayTip);
+$("#cal").addEventListener("focusin", e => { const d = e.target.closest("[data-cday]"); d ? showDayTip(d) : hideDayTip(); });
+$("#cal").addEventListener("focusout", hideDayTip);
+
 function renderHistory() {
   renderCalendar();
   const box = $("#hlist");
