@@ -6,20 +6,20 @@ const { ok, done } = checker();
   const app = await open(), { page } = app;
   await tab(page, 'jug');
   ok('título', (await page.textContent('#h1')) === 'Jugadores');
-  ok('24 jugadores', (await page.innerText('#pcount')) === '24 jugadores');
+  ok('24 fijos', (await page.innerText('#pcount')) === '24 fijos');
   ok('lista con 24 jugadores', (await page.locator('#plist .plrow').count()) === 24);
 
   // Añadir
   await page.fill('#newname', '  Íñigo Pérez ');
   await page.click('#addform button[type=submit]');
   await page.waitForTimeout(100);
-  ok('añadido', (await page.innerText('#pcount')) === '25 jugadores');
-  ok('aviso de añadido', (await toastText(page)) === 'Íñigo Pérez añadido.', await toastText(page));
+  ok('añadido', (await page.innerText('#pcount')) === '25 fijos');
+  ok('aviso de añadido', (await toastText(page)) === 'Íñigo Pérez añadido a fijos.', await toastText(page));
   ok('campo vacío', (await page.inputValue('#newname')) === '');
   const row = page.locator('#plist .plrow').last();
   const id = await row.getAttribute('data-id');
   ok('id a partir del nombre', /^inigo-perez-[a-z0-9]{1,4}$/.test(id), id);
-  ok('vacío no añade', await (async () => { await page.fill('#newname', '   '); await page.click('#addform button[type=submit]'); return (await page.innerText('#pcount')) === '25 jugadores'; })());
+  ok('vacío no añade', await (async () => { await page.fill('#newname', '   '); await page.click('#addform button[type=submit]'); return (await page.innerText('#pcount')) === '25 fijos'; })());
 
   // Posiciones
   await row.locator('[data-pos=DEF]').click(); await page.waitForTimeout(100);
@@ -48,14 +48,14 @@ const { ok, done } = checker();
   await del.click();
   ok('pide confirmación', (await del.innerText()) === '¿Seguro?');
   await del.click(); await page.waitForTimeout(100);
-  ok('quitado', (await page.innerText('#pcount')) === '24 jugadores');
+  ok('quitado', (await page.innerText('#pcount')) === '24 fijos');
   await tab(page, 'alin');
   ok('desaparece de la pizarra', (await page.locator(`.mag[data-n="${id}"]`).count()) === 0 && (await page.locator('#board .mag').count()) === 14);
 
   // Persistencia
   await page.reload(); await page.waitForSelector('#board .mag');
   await tab(page, 'jug');
-  ok('persiste tras recargar', (await page.innerText('#pcount')) === '24 jugadores');
+  ok('persiste tras recargar', (await page.innerText('#pcount')) === '24 fijos');
 
   ok('sin errores', !app.errors.length, app.errors.join(' | '));
   await app.close(); done();

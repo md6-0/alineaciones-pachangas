@@ -29,7 +29,10 @@ function renderSignups() {
   }).join("") || `<li class="sempty">${!signupsLoaded ? "Cargando la lista…" : "Todavía no se ha apuntado nadie."}</li>`;
   if (canEdit()) {
     const free = [...P].filter(p => !isSignedUp(p.id)).sort(byName);
-    $("#saddsel").innerHTML = `<option value="">${free.length ? "Apuntar a…" : "Están todos apuntados"}</option>` + free.map(p => `<option value="${esc(p.id)}">${esc(p.n)}</option>`).join("");
+    const opt = p => `<option value="${esc(p.id)}">${esc(p.n)}</option>`, wild = free.filter(p => p.wild);
+    // Con wildcards, el desplegable los separa de los fijos
+    $("#saddsel").innerHTML = `<option value="">${free.length ? "Apuntar a…" : "Están todos apuntados"}</option>`
+      + (wild.length ? `<optgroup label="Fijos">${free.filter(p => !p.wild).map(opt).join("")}</optgroup><optgroup label="Wildcards">${wild.map(opt).join("")}</optgroup>` : free.map(opt).join(""));
   }
 }
 
