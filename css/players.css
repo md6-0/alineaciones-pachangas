@@ -6,10 +6,13 @@
 .pcount{font-weight:800;font-stretch:80%;font-size:1.25rem;font-variant-numeric:tabular-nums;margin-right:auto}
 .addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .addrow input{width:180px}
+.addrow select{width:auto;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px;font-weight:600}
 
-.plistwrap{background:var(--surface);border:1px solid var(--line);border-radius:6px}
-.plistwrap .hint{padding:16px}
-.addrow input{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
+.plistwrap{display:flex;flex-direction:column;gap:2px}
+/* Cada lista (fijos, wildcards): una carpeta con la pestaña verde de .ftab */
+.plgroup{background:var(--surface);border:0;border-radius:0 8px 8px 8px}
+.plgroup .hint{padding:16px;margin:0}
+.addrow input,.addrow select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
 
 /* Cada jugador: media, nombre y Quitar arriba; debajo, sus posiciones con el nivel en cada una */
 .plrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -18,7 +21,9 @@
 .plrow input:focus,.addrow input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
 
 /* Botones de posición */
-.posb{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:420px}
+.prow2{grid-column:1 / -1;display:flex;align-items:center;gap:10px}
+.posb{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:320px;min-width:0}
+.pmove{min-width:92px;text-align:center;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:4px;padding:4px 10px;font-size:.74rem;font-weight:700;white-space:nowrap}
 .posb button{border:1px solid var(--line);background:transparent;color:var(--faint);border-radius:4px;padding:4px 0;font-size:.74rem;font-weight:700;letter-spacing:.06em}
 .posb button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 

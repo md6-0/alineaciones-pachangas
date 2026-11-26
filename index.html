@@ -175,7 +175,7 @@
         <button class="btn ghost danger" id="wipe" type="button">Borrar todo</button>
       </div>
     </div>
-    <div class="appver" id="appver"><span>Mi pachanga · versión 2.16.1</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
+    <div class="appver" id="appver"><span>Mi pachanga · versión 2.17.0</span><button class="btn ghost" id="chk" type="button">Buscar actualizaciones</button></div>
   </section>
 
   <section id="p-stats" class="folder" role="tabpanel" aria-labelledby="t-stats" hidden>
@@ -215,6 +215,7 @@
         <span class="pcount" id="pcount"></span>
         <form class="addrow" id="addform">
           <input id="newname" type="text" placeholder="Nombre del jugador" aria-label="Nombre del nuevo jugador" maxlength="25">
+          <select id="newkind" aria-label="Lista del nuevo jugador"><option value="fijo">Fijo</option><option value="wild">Wildcard</option></select>
           <button class="btn" type="submit">Añadir jugador</button>
         </form>
       </div>
@@ -222,7 +223,7 @@
         <button type="button" data-psort="list" aria-pressed="true">Lista</button><button type="button" data-psort="media" aria-pressed="false">Media</button>
       </div></div>
       <div class="plistwrap" id="plist"></div>
-      <p class="hint" id="phint">Los cambios se guardan al salir de cada casilla. Marca varias posiciones si alguien es polivalente. Escribe la media de cada uno (1-99) en su carta: sirve para igualar los equipos y solo la ves tú. Sin media cuenta como 70. En cada equipo va a la portería quien tenga la posición POR.</p>
+      <p class="hint" id="phint">Los cambios se guardan al salir de cada casilla. Marca varias posiciones si alguien es polivalente. Escribe la media de cada uno (1-99) en su carta: sirve para igualar los equipos y solo la ves tú. Sin media cuenta como 70. Fijos son los de siempre; wildcards, quienes se apuntan alguna vez y aún no se sabe si serán fijos (pásalos de una lista a otra con el botón de cada fila). En cada equipo va a la portería quien tenga la posición POR.</p>
     </div>
   </section>
 </div>

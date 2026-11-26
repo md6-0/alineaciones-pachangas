@@ -1,6 +1,7 @@
 "use strict";
 /* Reglas de los jugadores: cómo se leen los guardados. No tocan la pantalla.
-   Cada jugador guardado es { name, pos: ["DEF", …], order } y cada jugador calculado (en P y BY) es { id, n: nombre, pos, order }.
+   Cada jugador guardado es { name, pos: ["DEF", …], order, kind } y cada jugador calculado (en P y BY) es { id, n: nombre, pos, order, wild }.
+   kind es «fijo» (lo normal, y lo que se entiende si falta) o «wild»: un wildcard, gente que a lo mejor se apunta alguna vez y aún no se sabe si será fija.
    No hay medias: las notas antiguas (atq, def, por) se ignoran y se borran al subir los datos (ver backup.js). */
 
 /** Recalcula P, BY y rawPlayers a partir de los documentos guardados. */
@@ -9,7 +10,7 @@ function derivePlayers(docs) {
   P = docs.map(d => {
     const v = d.data() || {};
     const pos = Array.isArray(v.pos) ? v.pos.filter(x => POSITIONS.includes(x)) : [];
-    return { id: d.id, n: v.name || d.id, pos, order: +v.order || 0 };
+    return { id: d.id, n: v.name || d.id, pos, order: +v.order || 0, wild: v.kind === "wild" };
   }).sort((a, b) => a.order - b.order || a.n.localeCompare(b.n));
   BY = Object.fromEntries(P.map(p => [p.id, p]));
 }
@@ -22,10 +23,10 @@ function playerId(name) {
 
 /* ---------- Cambios (se guardan en db; la pantalla se actualiza sola al llegar el aviso) ---------- */
 
-/** Añade un jugador sin posiciones, al final de la lista. */
-function addPlayer(name) {
+/** Añade un jugador sin posiciones, al final de la lista (fijo, o wildcard si wild es true). */
+function addPlayer(name, wild = false) {
   const order = P.reduce((a, p) => Math.max(a, p.order), 0) + 1;
-  return db.doc("players/" + playerId(name)).set({ name, pos: [], order });
+  return db.doc("players/" + playerId(name)).set({ name, pos: [], order, kind: wild ? "wild" : "fijo" });
 }
 
 const playerQueues = {};
