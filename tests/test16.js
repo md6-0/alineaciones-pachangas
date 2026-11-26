@@ -1,0 +1,26 @@
+/* Calendario del Historial: marca los días con partido, cambia de mes y lleva a la tarjeta. */
+const { open, checker, tab } = require('./helpers');
+const { ok, done } = checker();
+
+(async () => {
+  const app = await open({ mode: null }), { page } = app;
+  await page.evaluate(async () => {
+    const ids = P.slice(0, 2).map(p => p.id), mk = (date, w, d) => ({ date, mode: '7', formation: { W: '3-2-1', D: '3-2-1' },
+      W: [{ id: ids[0], name: 'A', role: 'POR', x: 50, y: 94 }], D: [{ id: ids[1], name: 'B', role: 'MED', x: 27, y: 30 }], score: w === null ? {} : { W: w, D: d } });
+    await db.doc('matches/2026-10-04').set(mk('2026-10-04', 3, 1));
+    await db.doc('matches/2026-10-18').set(mk('2026-10-18', 2, 2));
+    await db.doc('matches/2026-09-27').set(mk('2026-09-27', null));
+  });
+  await tab(page, 'hist'); await page.waitForTimeout(250);
+  ok('el historial sigue con sus tarjetas', (await page.locator('.match').count()) === 3);
+  ok('mes del último partido', /octubre 2026/i.test(await page.locator('.calhead h2').innerText()));
+  ok('dos días marcados en octubre', (await page.locator('button.cd.has').count()) === 2);
+  ok('colores por resultado', (await page.locator('button.cd.W').count()) === 1 && (await page.locator('button.cd.draw').count()) === 1);
+  await page.click('[data-cnav="-1"]');
+  ok('mes anterior con el partido sin resultado', /septiembre 2026/i.test(await page.locator('.calhead h2').innerText()) && (await page.locator('button.cd.none').count()) === 1);
+  await page.click('[data-cnav="1"]'); await page.click('button.cd.W'); await page.waitForTimeout(300);
+  ok('tocar un día resalta su tarjeta', await page.evaluate(() => document.querySelector('.match[data-id="2026-10-04"]').classList.contains('flash')));
+  ok('sin errores', !app.errors.length, app.errors.join(' | '));
+  await app.close();
+  done();
+})().catch(e => { console.log('CRASH', e); process.exit(1); });
