@@ -38,3 +38,9 @@
 input.mcard::-webkit-inner-spin-button,input.mcard::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input.mcard:focus{outline:2px solid var(--accent);outline-offset:2px}
 input.mcard::placeholder{color:var(--faint)}
+
+/* En pantalla ancha, fijos y wildcards van una al lado de la otra */
+@media (min-width:900px){
+  .plistwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 18px;align-items:start}
+  .plistwrap > .hint{grid-column:1 / -1}
+}
