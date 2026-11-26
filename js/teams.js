@@ -1,7 +1,12 @@
 "use strict";
 /* Reparto de los apuntados en dos equipos equilibrados por posiciones y, si se pueden leer, por medias. No toca la pantalla.
    Entre los repartos igual de equilibrados se elige uno al azar, con una semilla sacada de los ids:
-   los mismos apuntados dan siempre el mismo reparto, en todos los móviles. */
+   los mismos apuntados dan siempre el mismo reparto, en todos los móviles.
+   Al «mezclar» (shuffleSeed > 0, ver next-match.js) se elige al azar entre los repartos casi tan equilibrados como el mejor
+   y se cambian los lados al azar; cada número de mezcla da su reparto, el mismo en todos los móviles. */
+
+/** Cuánto peor que el mejor puede ser un reparto al mezclar (en coste: unos 2,7 puntos de media entre los equipos con las mismas posiciones). */
+const SHUFFLE_TOL = 1;
 
 /** Portero que tendría un equipo: el primero que tenga la posición POR (si no hay, el primero). */
 function pickGK(list) {
@@ -71,12 +76,18 @@ function searchSplits(list) {
   return out;
 }
 
-/** Reparto de la lista: uno al azar entre los más equilibrados (siempre el mismo para la misma lista). null si hay menos de 2. */
-function solve(list) {
+/** Reparto de la lista: uno al azar entre los más equilibrados (siempre el mismo para la misma lista). null si hay menos de 2.
+    Con seed > 0 (una mezcla), uno al azar entre los casi tan equilibrados, y con los lados al azar. */
+function solve(list, seed = shuffleSeed) {
   if (list.length < 2) return null;
   const out = list.length <= 16 ? allSplits(list) : searchSplits(list);
   if (!out.length) return null;
   out.sort((a, b) => a.cost - b.cost);
+  if (seed > 0) {
+    const pool = out.filter(s => s.cost <= out[0].cost + SHUFFLE_TOL), r = rng((idsHash(list) ^ Math.imul(seed, 0x9E3779B1)) >>> 0);
+    const s = pool[Math.floor(r() * pool.length)];
+    return r() < .5 ? { A: s.B, B: s.A } : { A: s.A, B: s.B };
+  }
   const best = out.filter(s => s.cost <= out[0].cost + 1e-9);
   const s = best[Math.floor(rng(idsHash(list))() * best.length)];
   return { A: s.A, B: s.B };
